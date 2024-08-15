@@ -1,0 +1,292 @@
+/* You can add global styles to this file, and also import other style files */
+
+/* SCSS */
+@import "scss/style";
+
+body {
+  background: $primary-color;
+}
+
+.card-switch {
+  display: none;
+  transform: scaleX(0);
+  opacity: 0;
+  animation: anim .3s ease-in-out;
+  &.show {
+    display: block;
+    transform: scaleX(1);
+    opacity: 1;
+    transition: transform .3s ease-in-out, opacity .3s ease-in-out;
+  }
+}
+
+@keyframes anim {
+  0% {
+    display: none;
+    opacity: 0;
+  }
+
+  10% {
+    display: block;
+    opacity: 0.5;
+    transform: scaleX(0.5);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+}
+
+input[type="radio"], input[type="checkbox"] {
+  box-sizing: border-box;
+  padding: 0;
+  left: 4px;
+  top: 3px;
+  height: 100%;
+  z-index: 1;
+}
+
+.text-telu {
+  color: #e01a3f !important;
+}
+
+.bg-telu {
+  background-color: #e01a3f !important;
+}
+
+ng-select.lang select-dropdown > div .filter {
+  display: none !important;
+}
+
+input[disabled].form-control, textarea[disabled].form-control, ng-select > div.disabled {
+  background-color: #ffffff !important;
+  color: #4680ff !important;
+  & > div.single > div.placeholder {
+    color: #4680ff !important;
+  }
+}
+
+ng-select > div.disabled > div.single > div.clear, ng-select > div.disabled > div.single > div.toggle {
+  display: none;
+}
+
+ul.navbar-nav.ml-auto {
+  li.lang {
+    width: 93px;
+  }
+  @media (max-width: 991px) {
+    li.lang {
+      width: 75px !important;
+    }
+  }
+}
+
+.spinner-infinite {
+  display: inline-block;
+  width: 6rem;
+  height: 6rem;
+  vertical-align: text-bottom;
+  margin: 0 auto;
+}
+
+
+a.drp-icon.dropdown-toggle.dropdown-toggle {
+  cursor: pointer;
+  &:hover {
+    color: #e01a3f;
+  }
+}
+
+.row.pro-head {
+  display: table !important;
+  .col.align-middle {
+    display: table-cell;
+  }
+}
+
+.btn-success {
+  color: #fff;
+  background-color: #28a745 !important;
+  border-color: #28a745 !important;
+  &:hover {
+    color: #fff;
+    background-color: #218838 !important;
+    border-color: #1e7e34 !important;
+  }
+  &:active {
+    color: #fff;
+    background-color: #1e7e34 !important;
+    border-color: #1c7430 !important;
+  }
+  &:focus, &.focus {
+    box-shadow: 0px 0px 0px 3px rgba(40, 167, 69, 0.5);
+  }
+}
+
+.card-header {
+  padding: 1rem 0.8rem;
+}
+
+// DATATABLE CUSTOMIZED - BEGIN
+
+.dataTables_wrapper .dataTables_processing {
+  background: transparent;
+}
+
+.row.border-b {
+  border-radius: 0.55rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05) !important;
+  &:last-child {
+    border-bottom: none !important;
+  }
+}
+
+div.row > div {
+  // padding-right: 10px !important;
+  // padding-left: 10px !important;
+  .card {
+    border-radius: $border-radius;
+    .carousel-inner {
+      border-radius: 5px;
+    }
+  }
+}
+
+.col-1, .col-2, .col-3, .col-4, .col-5, .col-6,
+.col-7, .col-8, .col-9, .col-10, .col-11, .col-12,
+.col-sm-1, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6,
+.col-sm-7, .col-sm-8, .col-sm-9, .col-sm-10, .col-sm-11, .col-sm-12,
+.col-md-1, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6,
+.col-md-7, .col-md-8, .col-md-9, .col-md-10, .col-md-11, .col-md-12,
+.col-lg-1, .col-lg-2, .col-lg-3, .col-lg-4, .col-lg-5, .col-lg-6,
+.col-lg-7, .col-lg-8, .col-lg-9, .col-lg-10, .col-lg-11, .col-lg-12,
+.col-xl-1, .col-xl-2, .col-xl-3, .col-xl-4, .col-xl-5, .col-xl-6,
+.col-xl-7, .col-xl-8, .col-xl-9, .col-xl-10, .col-xl-11, .col-xl-12,
+.col-md-auto, .col-lg, .col-lg-auto, .col-xl, .col-xl-auto
+.col, .col-auto, .col-sm, .col-sm-auto, .col-md {
+  padding-right: 10px;
+  padding-left: 10px;
+  .card {
+    border-radius: $border-radius;
+    .carousel-inner {
+      border-radius: 5px;
+    }
+  }
+}
+
+.dataTables_info {
+  font-size: 11px;
+  color: #b5b5b5;
+}
+
+.modal-content {
+  border-radius: $border-radius;
+  border: none;
+}
+
+.card-img, .card-img-top {
+  border-radius: $border-radius;
+}
+
+.bd-bottom {
+  border-radius: $border-radius;
+  border-bottom: 1px solid #e2e5e8;
+}
+
+.theme-color.nav {
+  > a {
+    width: calc(100% / 3 - 6px);
+  }
+}
+
+table.dataTable tbody td, table.dataTable tbody th,
+table.dataTable tfoot td, table.dataTable tfoot th,
+table.dataTable thead td, table.dataTable thead th {
+  padding: 0.6rem 0.5rem;
+}
+
+td.dataTables_empty {
+  display: none !important;
+}
+
+table {
+  &.dataTable[class*="table-"] {
+    border-radius: $border-radius;
+    thead th {
+      &:first-child {
+        border-radius: $border-rad-ul;
+      }
+      &:last-child {
+        border-radius: $border-rad-ur;
+      }
+    }
+    tbody {
+      tr:nth-last-child(2), tbody tr:last-child {
+        th {
+          border-radius: $border-rad-br;
+        }
+        td:last-child {
+          border-radius: $border-rad-bl;
+        }
+      }
+      tr > td.no-data-available {
+        border-radius: 0 0 0.50rem 0.50rem;
+      }
+    }
+  }
+}
+
+input {
+  caret-color: $primary-color;
+}
+
+.btn {
+  border-radius: 0.5rem;
+  &.btn-sm {
+    border-radius: 5px;
+  }
+}
+
+/* Change the white to any color */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active{
+    -webkit-box-shadow: 0 0 0 30px white inset !important;
+}
+
+// DATATABLE CUSTOMIZED - END
+
+/* width */
+::-webkit-scrollbar {
+  height: 4px;
+  width: 4px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 6px rgba(255, 255, 255, 0.7);
+  -webkit-box-shadow: inset 0 0 6px rgba(255, 255, 255, 0.7);
+  -webkit-border-radius: 10px;
+  border-radius: 10px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background: rgba(17, 17, 17, 0.2);
+  box-shadow: inset 0 0 6px rgba(0,0,0,0.5);
+  -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);
+    -webkit-border-radius: 10px;
+  }
+
+  /* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(17, 17, 17, 0.5);
+}
+
+:root{
+  scrollbar-color: rgb(210,210,210) rgb(46,54,69) !important;
+  scrollbar-width: thin !important;
+}

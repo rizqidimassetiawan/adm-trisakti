@@ -1,0 +1,174 @@
+<!-- <p>Exam Detail Data Management works!</p> -->
+<div class="row">
+  <div class="col-sm-12">
+    <app-card cardTitle="{{ 'MENU.exam-detail-data' | translate }}" cardClass="card-datatable" headerClass="text-center text-md-left" [hidHeader]="false" [options]="false" [loading]="loadtableExamDetailData">
+      <form class="md-float-material form-material" action="javascript:">
+        <!-- <app-card [options]="false" [blockClass]="'pt-0 pr-2 pb-2 pl-2'" [hidHeader]="true"> -->
+          <div class="row">
+            <div class="col-md-3">
+              <div class="form-group mb-0">
+                <ng-select name="active_status" [allowClear]="false" [placeholder]="'CONTENT.active-status' | translate" [ngClass]="'custom bg-white'"[notFoundMsg]="'ROOT.no_data_found'|translate" [(ngModel)]="activeStatus" (deselected)="onDeselected('activeStatus')"  [options]="listActiveStatusFilters" (selected)="loadExamDEtailDataFilters(activeStatus)"></ng-select>
+              </div>
+            </div>
+            <div class="col-9 text-center text-md-right">
+              <button class="btn btn-success btn-sm btn-round has-ripple btn-sm mt-1 p-2" (click)="openformDetailExamDetailData(null, 'input')">
+                <i class="icofont icofont-plus"></i> {{'CONTENT.add-data' | translate}}
+              </button>
+            </div>
+          </div>
+        <!-- </app-card> -->
+      </form>
+      <br>
+      <div class="table-responsive pb-1">
+        <table datatable class="table table-hover" [dtOptions]="dtOptions[0]" [dtTrigger]="dtTrigger">
+          <thead class="thead-light">
+            <tr>
+              <th scope="col" class="number">{{ 'CONTENT.no' | translate}}</th>
+              <th scope="col" class="school-width">{{ 'CONTENT.exam-location' | translate}}</th>
+              <th scope="col" class="city-width" >{{ 'CONTENT.city' | translate}}</th>
+              <th scope="col" class="address-width">{{ 'CONTENT.address' | translate}}</th>
+              <th scope="col" class="center-table status-width">{{ 'CONTENT.active-status' | translate}}</th>
+              <th scope="col" class="center-table action-width">{{ 'CONTENT.action' | translate}}</th>
+            </tr>
+          </thead>
+          <tbody *ngIf="tableData?.length != 0">
+            <tr *ngFor="let data of tableData; let i = index;">
+              <th scope="row" class="number">{{ i+1 }}</th>
+              <td>{{ data.location }}</td>
+              <td>{{ data.city }}</td>
+              <td>{{ data.address }}</td>
+              <td class="center-table">
+                <span
+                class="badge badge-{{ data.active_status === '1' ? 'success' : 'danger' }}">{{
+                data.active_status === '1' ? ('ROOT.active' | translate) : ('ROOT.nonactive' | translate)
+                }}
+              </span></td>
+              <td class="center-table">
+                <button class="btn btn-warning btn-sm btn-round has-ripple" [placement]="'top'" ngbTooltip="{{'ROOT.edit' | translate}}" (click)="openformDetailExamDetailData(data, 'edit');">
+                  <i class="icofont icofont-ui-edit"></i> <span class="d-sm-none"> {{'ROOT.edit' | translate}}</span>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </app-card>
+  </div>
+</div>
+
+<!-- Forms Modal -->
+<app-ui-modal #myPersistenceModal [containerClick]="false" [dialogClass]="'modal-lg'" [loading]="loading" [hideFooter]="true">
+  <div class="app-modal-header">
+    <h5 class="modal-title">{{
+      formType === "input"
+        ? ("ROOT.add" | translate)
+        : ("ROOT.edit" | translate)
+    }} {{ 'CONTENT.exam-location' | translate }}</h5>
+    <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close" (click)="myPersistenceModal.hide();"><span aria-hidden="true">&times;</span></button>
+  </div>
+  <div class="app-modal-body">
+    <form [formGroup] = "examDetailDataForm" (ngSubmit)= "createExamDetailData()" class="md-float-material form-material" action="javascript:">
+      <div class="row">
+        <div class="col-sm-12">
+          <div class="form-group mb-2">
+            <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.choose-city-location' | translate }}</label>
+            <ng-select [placeholder]="'CONTENT.city'|translate" [ngClass]="'custom bg-white'" formControlName="city" [notFoundMsg]="'ROOT.no_data_found'|translate" [(ngModel)]="city" (deselected)="onDeselected('city')"  [options]="listCity"></ng-select>
+            <!-- <ng-select required name="selectedZone" [(ngModel)]="selectedZone" [allowClear]="true" [options]="listZone" [placeholder]="'SDM.select_zone' | translate" [ngClass]="'custom bg-white'"[notFoundMsg]="'ROOT.no_data_found'|translate"></ng-select> -->
+            <label id="validation-email-error" class="error jquery-validation-error small form-text invalid-feedback">{{ 'CONTENT.please-choose' | translate }}{{ 'CONTENT.city' | translate }}</label>
+          </div>
+          <div class="form-group mb-2">
+            <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.exam-location' | translate }}</label>
+            <input type="text" class="form-control" name="location" required formControlName="location">
+            <label id="validation-email-error" class="error jquery-validation-error small form-text invalid-feedback">{{ 'CONTENT.please-input' | translate }}{{ 'CONTENT.exam-location' | translate }}</label>
+          </div>
+          <div class="form-group mb-2">
+              <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.address' | translate }}</label>
+              <input type="text" class="form-control" name="address" required formControlName="address" >
+              <label id="validation-email-error" class="error jquery-validation-error small form-text invalid-feedback">{{ 'CONTENT.please-input' | translate }}{{ 'CONTENT.address' | translate }}</label>
+          </div>
+          <div class="form-group mb-2">
+            <h6 class="form-label m-b-0 f-w-600">{{ 'CONTENT.active-status'| translate}}</h6> <br>
+            <div class="custom-control custom-radio custom-control-inline">
+              <input type="radio" id="active_status1" name="active_status" class="custom-control-input" value="1" formControlName="active_status">
+              <label class="custom-control-label " for="active_status1">{{ 'ROOT.yes' | translate }}</label>
+            </div>
+            <div class="custom-control custom-radio custom-control-inline">
+              <input type="radio" id="active_status2"  name="active_status" class="custom-control-input" value="0" [checked]="true" formControlName="active_status">
+              <label class="custom-control-label" for="active_status2">{{ 'ROOT.no' | translate }}</label>
+            </div>
+          </div>
+          <div class="form-group mb-0 mt-4 text-right">
+            <div class="btn-group">
+              <button *ngIf="edit == 'input'" type="button" (click)="myPersistenceModal.hide()" class="btn btn-secondary btn-sm">
+                <i class="icofont icofont-logout"></i> {{ 'ROOT.cancel' | translate }}
+              </button>
+              <button type="submit" class="btn btn-primary btn-sm" (click)="myPersistenceModal.hide()" [disabled] ="!examDetailDataForm.valid">
+                <i class="ti-save"></i> {{ 'ROOT.save' | translate }}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+    </div>
+    <div class="app-modal-footer">
+    </div>
+</app-ui-modal>
+
+<!-- <app-ui-modal #myPersistenceModal [containerClick]="false" [dialogClass]="'modal-lg'" [loading]="loading" [hideFooter]="true">
+    <div class="app-modal-header">
+      <h5 class="modal-title">{{ 'CONTENT.add-exam-location' | translate }}</h5>
+      <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close" (click)="myPersistenceModal.hide(); reset()"><span aria-hidden="true">&times;</span></button>
+    </div>
+    <div class="app-modal-body">
+      <form class="md-float-material form-material" action="javascript:">
+        <div class="row" >
+          <div class="col-sm-12">
+            <div class="form-group mb-2">
+                <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.choose-city-location' | translate }}</label>
+                <ng-select [placeholder]="'CONTENT.city'|translate" [ngClass]="'custom bg-white'" [notFoundMsg]="'ROOT.no_data_found'|translate"></ng-select>
+                <label id="validation-email-error" class="error jquery-validation-error small form-text invalid-feedback">{{ 'CONTENT.please-choose' | translate }}{{ 'CONTENT.city' | translate }}</label>
+            </div>
+            <div class="form-group mb-2">
+                <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.exam-location' | translate }}</label>
+                <input type="text" class="form-control" name="programDescription" required >
+                <label id="validation-email-error" class="error jquery-validation-error small form-text invalid-feedback">{{ 'CONTENT.please-input' | translate }}{{ 'CONTENT.exam-location' | translate }}</label>
+            </div>
+            <div class="form-group mb-2">
+                <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.address' | translate }}</label>
+                <input type="text" class="form-control" name="programDescription" required >
+                <label id="validation-email-error" class="error jquery-validation-error small form-text invalid-feedback">{{ 'CONTENT.please-input' | translate }}{{ 'CONTENT.address' | translate }}</label>
+            </div>
+            <div class="form-group mb-2">
+                <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.active-status' | translate }}</label>
+                <div class="custom-control custom-switch">
+                    <input type="checkbox" class="custom-control-input" id="customSwitches">
+                    <label class="custom-control-label" for="customSwitches">Toggle this switch element</label>
+                  </div>
+            </div>
+
+            <div class="form-group mb-0 mt-4 text-right">
+              <div class="btn-group">
+                <button *ngIf="edit == 'input'" type="button" (click)="myPersistenceModal.hide()" class="btn btn-secondary btn-sm">
+                  <i class="icofont icofont-logout"></i> {{ 'ROOT.exit' | translate }}
+                </button>
+                <button type="submit" class="btn btn-primary btn-sm" (click)="myPersistenceModal.hide()">
+                  <i class="ti-save"></i> {{ 'ROOT.save' | translate }}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+      </div>
+      <div class="app-modal-footer">
+      </div>
+  </app-ui-modal> -->
+
+<ng-template #showLoading>
+<div class="d-flex justify-content-center">
+  <div class="spinner-border text-primary" role="status">
+    <span class="sr-only">Loading...</span>
+  </div>
+</div>
+</ng-template>

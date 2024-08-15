@@ -1,0 +1,276 @@
+<!-- <p>Payment Data Management works!</p> -->
+
+<div class="row">
+  <div class="col-sm-12">
+    <app-card cardTitle="{{ 'MENU.payment-data' | translate }}" cardClass="card-datatable"
+      headerClass="text-center text-md-left" [hidHeader]="true" [options]="false" [loading]="loadtablePaymentData">
+      <div class="align-items-center m-1">
+        <button class="btn btn-secondary btn-sm btn-round has-ripple ml-0" *ngIf="filterClick"
+          (click)="filterClick = !filterClick" [attr.aria-expanded]="!filterClick" aria-controls="collapseExample">
+          {{ 'CONTENT.button-filter' | translate }} <i class="feather icon-chevron-down"></i>
+        </button>
+        <app-filter-container [loading]="false">
+          <div class="col-12 col-md-3">
+            <ng-select name="selection" [allowClear]="false"
+              [placeholder]="'CONTENT.selection-path-choosing' | translate" [ngClass]="'filter'"
+              [notFoundMsg]="'ROOT.no_data_found'|translate" [(ngModel)]="selectionPath" [options]="listSelectionPath"
+              (ngModelChange)="changeYear(selectionPath)"></ng-select>
+          </div>
+          <div class="col-12 col-md-2">
+            <ng-select name="year" [allowClear]="false" [placeholder]="'CONTENT.selection-year-choosing' | translate"
+              [ngClass]="'filter'" [notFoundMsg]="'ROOT.no_data_found'|translate" [(ngModel)]="selectionYear"
+              [disabled]="!selectionPath" [options]="listSelectionYear"
+              (selected)="changePaymentMethod($event)"></ng-select>
+          </div>
+          <div class="col-12 col-md-3">
+            <ng-select name="payment-method" [allowClear]="false" [placeholder]="'CONTENT.payment-method' | translate"
+              [ngClass]="'filter'" [notFoundMsg]="'ROOT.no_data_found'|translate" [(ngModel)]="paymentMethod"
+              [disabled]="!selectionYear" [options]="listPaymentMethod"></ng-select>
+          </div>
+          <div class="col-12 col-md-3">
+            <ng-select name="payment-method" [allowClear]="false"
+              [placeholder]="'CONTENT.choose-verification-transaction' | translate" [ngClass]="'filter'"
+              [notFoundMsg]="'ROOT.no_data_found'|translate" [(ngModel)]="selectionVerification"
+              [options]="listVerificationTr"></ng-select>
+          </div>
+          <div class="col-filter-header">
+            <div>
+            </div>
+          </div>
+          <div class="col-12 col-md-7">
+          </div>
+          <div class="col-12 col-md-4">
+            <div class="row pl-3 pr-3 pt-1">
+              <div class="col-6">
+                <button type="button" class="btn btn-outline-warning btn-sm btn-block" (click)="resetFilters()">
+                  <i class="icofont icofont-refresh"></i> {{ 'CONTENT.reset-filter' | translate }}
+                </button>
+              </div>
+              <div class="col-6">
+                <button type="button" class="btn btn-outline-info btn-sm btn-block"
+                  [disabled]="!selectionPath || !selectionYear || !paymentMethod"
+                  (click)="applyFilters()">
+                  <i class="icofont icofont-filter"></i> {{ 'CONTENT.apply-filter' | translate }}
+                </button>
+              </div>
+            </div>
+          </div>
+        </app-filter-container>
+        <div *ngIf="isApplyFilter" class="row">
+          <div class="col-12 col-md-8 text-left text-md-left mt-2">
+            <button *ngIf="!hiddenDownloadPayment" class="btn btn-outline-success btn-round has-ripple col-12 col-md-4 mt-0"
+            (click)="downloadExcelData(selectionVerification)" [disabled]="loadDownloadData">
+            <span *ngIf="this.loadDownloadData" class="spinner-grow spinner-grow-sm" role="status"></span>
+            <span *ngIf="this.loadDownloadData" class="load-text"> {{'ROOT.loading' | translate}}...</span>
+            <i class="fas fa-cloud-download-alt" *ngIf="!this.loadDownloadData"></i>
+            <span *ngIf="!this.loadDownloadData" class="btn-text">
+              {{ 'ROOT.download' | translate }} {{ 'MENU.payment-data' | translate }}
+            </span>
+          </button>
+          </div>
+          <div class="col-12 col-md-4 text-right text-md-right mt-2">
+              <div class="input-group">
+                <input type="search" class="form-control"
+                  [placeholder]="'CONTENT.placeholder-registration-number'| translate" [(ngModel)]="searching"
+                  [ngModelOptions]="{standalone: true}" (keyup.enter)="applyFilters()">
+                <div class="input-group-append">
+                  <button style="z-index: auto;" class="btn btn-outline-primary" type="button"
+                    (click)="applyFilters()"><i class="fas fa-search"></i></button>
+                </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div *ngIf="isApplyFilter" class="table-responsive pb-1">
+        <table class="table table-boder-radius dataTable">
+          <thead class="thead-light">
+            <tr>
+              <th scope="col" style="padding-left: 10px">{{ 'CONTENT.no' | translate}}</th>
+              <th scope="col" class="center-table">{{ 'CONTENT.registration-number' | translate}}</th>
+              <th scope="col" class="center-table">{{ 'CONTENT.selection-path' | translate}}</th>
+              <th scope="col" class="center-table">{{ 'CONTENT.amount-of-bill' | translate}}</th>
+              <th scope="col" class="center-table">{{ 'CONTENT.payment-method' | translate}}</th>
+              <th scope="col" class="center-table">{{ 'CONTENT.verification-transaction' | translate}}</th>
+              <th scope="col" class="center-table">{{ 'CONTENT.payment-status' | translate}}</th>
+              <th scope="col" class="center-table">{{ 'CONTENT.action' | translate}}</th>
+            </tr>
+          </thead>
+          <tbody *ngIf="dataPayment?.length != 0">
+            <tr *ngFor="let data of dataPayment | slice: (currentPage-1) * pageSize; let i = index">
+              <th scope="row" style="padding-left: 10px">{{ i+from }}</th>
+              <td class="center-table">{{ data.registration_number }}</td>
+              <td class="center-table">{{ data.selection_path_name ? data.selection_path_name : '-' }}</td>
+              <td class="center-table">
+                <div *ngIf="data.price === null">
+                  <p>-</p>
+                </div>
+                <div *ngIf="data.price !== null">
+                  <p>
+                    {{ data.price | currency:'Rp':'symbol':'1.0-0'}}
+                  </p>
+                </div>
+              </td>
+              <td class="center-table">{{ data.payment_method_name ? data.payment_method_name : '-' }}</td>
+              <td class="text-center">
+                <div *ngIf="data.payment_status_name === 'Lunas'">
+                  <span class="badge badge-light-secondary">{{'CONTENT.verification-not-needed' | translate}}</span>
+                </div>
+                <div *ngIf="data.payment_status_name === 'Belum Lunas'">
+                  <span class="badge badge-light-secondary"
+                    *ngIf="data.payment_url !== null && data.payment_approval_date !== null">{{'CONTENT.verification-not-needed'
+                    | translate}}</span>
+                  <span class="badge badge-light-secondary"
+                    *ngIf="data.payment_url === null && data.payment_approval_date === null">{{'CONTENT.verification-not-needed'
+                    | translate}}</span>
+                  <span class="badge badge-light-primary"
+                    *ngIf="data.payment_url !== null && data.payment_approval_date === null">{{'CONTENT.need-verification'
+                    | translate}}</span>
+                </div>
+              </td>
+              <td class="text-center">
+                <span class="badge badge-light-success" *ngIf="data.payment_status == '1'">{{'CONTENT.paid-off' |
+                  translate}}</span>
+                <span class="badge badge-light-danger" *ngIf="data.payment_status == '2'">
+                  {{'CONTENT.not-paid' | translate}}</span>
+                <span class="badge badge-light-warning"
+                  *ngIf="data.payment_status === 'null'">{{'CONTENT.waiting-confirmation' | translate}}</span>
+              </td>
+              <td class="center-table">
+                <button class="btn btn-warning btn-sm btn-round has-ripple" (click)="loadDetailPaymentData(data)">
+                  <i class="icofont icofont-ui-edit"></i> <span class="d-sm-none"> {{'ROOT.edit' | translate}}</span>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+          <tbody *ngIf="dataPayment.length == 0 && !loadtablePaymentData">
+            <tr>
+              <td colspan="8" class="no-data-available text-center">
+                <app-no-data-found message="{{ 'ROOT.no_data_found' | translate }}"></app-no-data-found>
+              </td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+            </tr>
+          </tbody>
+          <tbody *ngIf="dataPayment.length == 0  && loadtablePaymentData">
+            <tr>
+              <td colspan="8" class="no-data-available text-center">
+                <app-no-data-found message="{{ 'ROOT.loading' | translate }}"></app-no-data-found>
+              </td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+            </tr>
+          </tbody>
+        </table>
+        <ngb-pagination class="d-flex justify-content-center mt-2" [pageSize]="pageSize" [collectionSize]="collectionSize" [boundaryLinks]="true" [maxSize]="5"
+              [(page)]="currentPage" (pageChange)="changePage($event)" [maxSize]="3" [boundaryLinks]="true">
+            </ngb-pagination>
+      </div>
+      <div *ngIf="!isApplyFilter" class="text-center">
+        <div class="col-12 text-center pt-3 pb-1">
+          <app-no-data-found message="Silakan memilih filter terlebih dahulu"></app-no-data-found>
+        </div>
+      </div>
+    </app-card>
+  </div>
+</div>
+
+<!-- Forms Modal -->
+<app-ui-modal #myPersistenceModal [containerClick]="false" dialogClass="modal-dialog modal-dialog-centered modal-l" [loading]="loading"
+  [hideFooter]="true">
+  <div class="app-modal-header">
+    <h5 class="modal-title">{{ 'MENU.payment-data' | translate }}</h5>
+    <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close"
+      (click)="myPersistenceModal.hide();"><span aria-hidden="true">&times;</span></button>
+  </div>
+  <div class="app-modal-body">
+    <form class="md-float-material form-material" action="javascript:" [formGroup]="paymentDataForm"
+      (ngSubmit)="createDetailSelectionStepData()">
+      <div class="row">
+        <div class="col-sm-12" >
+          <div class="form-group mb-2">
+            <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.registration-number' | translate }}</label>
+            <input type="text" readonly class="form-control" name="name" required formControlName="registration_number">
+            <label id="validation-email-error" class="error jquery-validation-error small form-text invalid-feedback">{{
+              'CONTENT.please-input' | translate }}{{ 'CONTENT.program-name' | translate }}</label>
+          </div>
+          <div class="form-group mb-2">
+            <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.selection-path' | translate }}</label>
+            <input type="text" readonly class="form-control" name="name" required formControlName="selection_path_name">
+            <label id="validation-email-error" class="error jquery-validation-error small form-text invalid-feedback">{{
+              'CONTENT.please-choose' | translate }}{{ 'CONTENT.selection-path' | translate }}</label>
+          </div>
+          <div class="form-group mb-2">
+            <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.payment-method' | translate }}</label>
+            <input type="text" class="form-control" name="payment_method" readonly formControlName="payment_method">
+          </div>
+          <div class="form-group mb-2">
+            <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.amount-of-bill' | translate }}</label>
+            <input type="text" class="form-control" name="name" readonly formControlName="price">
+          </div>
+          <div class="form-group mb-2">
+            <label class="form-label m-b-1 f-w-600">{{ 'CONTENT.payment-evidence' | translate }}</label>
+            <div class="card text-left mb-3">
+              <div class="card-body p-2" *ngIf="paymentUrl != null">
+                <a [href]="paymentUrl" target="_blank" class=" d-flex flex-row" [title]="'ROOT.download' | translate">
+                  <i class="icofont icofont-file-document f-40 ml-0"></i>
+                  <p class="card-text pl-1 mb-0">
+                    {{ 'CONTENT.payment-evidence' | translate }}
+                  </p>
+                </a>
+              </div>
+              <div class="card-body p-2" *ngIf="paymentUrl == null">
+                <p class="card-text pl-1 mb-0 mt-1 text-center">
+                  {{ 'ROOT.no_data_found' | translate }}
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="form-group mb-0 mt-4 text-right">
+            <!-- <div class="btn-group"> -->
+              <!-- <button type="button" (click)="myPersistenceModal.hide()" class="btn btn-secondary btn-sm">
+                <i class="icofont icofont-logout"></i> {{ 'ROOT.cancel' | translate }}
+              </button>
+              <button type="submit" class="btn btn-primary btn-sm" (click)="myPersistenceModal.hide()"
+                [disabled]="!paymentMethod || paymentDataForm.invalid || haveNoEvidence">
+                <i class="ti-save"></i> {{ 'ROOT.save' | translate }}
+              </button> -->
+            <!-- </div> -->
+            <!-- <button *ngIf="!haveNoEvidence" type="button" class="btn btn-outline-danger btn-sm"
+            [disabled]="this.loading" (click)="submitRejectPayment()">
+            <span *ngIf="this.loading" class="spinner-border spinner-border-sm" role="status"></span>
+            <span *ngIf="this.loading" class="load-text"> Loading...</span>
+            <span *ngIf="!this.loading" class="btn-text"><i class="icofont icofont-close-circled"></i> {{
+              'CONTENT.tolak' | translate }} </span>
+          </button> -->
+          <button *ngIf="!haveNoEvidence" type="button" class="btn btn-outline-success btn-sm m-1"
+            [disabled]="this.loading" (click)="submitApprovePayment()">
+            <span *ngIf="this.loading" class="spinner-border spinner-border-sm" role="status"></span>
+            <span *ngIf="this.loading" class="load-text"> Loading...</span>
+            <span *ngIf="!this.loading" class="btn-text"><i class="icofont icofont-check-circled"></i> {{
+              'CONTENT.setujui' | translate }} Pembayaran</span>
+              </button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="app-modal-footer"></div>
+</app-ui-modal>
+
+<ng-template #showLoading>
+  <div class="d-flex justify-content-center">
+    <div class="spinner-border text-primary" role="status">
+      <span class="sr-only">Loading...</span>
+    </div>
+  </div>
+</ng-template>

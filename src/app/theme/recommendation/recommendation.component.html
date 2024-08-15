@@ -1,0 +1,183 @@
+<div class="row bg-color">
+  <div class="container">
+    <div class="col-md-12">
+      <div class="col-md-12 text-center">
+        <img class="center-block mt-3" src="assets/images/telkom_university.png" style="max-width: 15%;" />
+        <h4 class="mt-2">Rekomendasi Pascasarjana Telkom University</h4>
+        <p class="mt-2 text-size">Berikut adalah formulir pemberian Rekomendasi Calon Mahasiswa Program Pascasarjana
+          Telkom University.</p>
+      </div>
+    </div>
+    <div class="col-md-12">
+      <form class="md-float-material form-material" action="javascript:" [formGroup]="recommendationForm" (ngSubmit)="updateDocumentRecommendation()">
+        <div class="col-md-12">
+          <div class="form-group mb-2">
+            <label class="form-label m-b-0 f-w-600">Nama Calon Mahasiswa</label>
+            <input type="text" class="form-control" formControlName="studentName" readonly>
+          </div>
+        </div>
+        <div class="col-md-12">
+          <div class="form-group mb-2">
+            <label class="form-label m-b-0 f-w-600">Nama Pemberi Rekomendasi</label>
+            <input type="text" class="form-control" formControlName="recommendationName" readonly>
+          </div>
+        </div>
+        <div class="col-md-12">
+          <div class="form-group mb-2">
+            <label class="form-label m-b-0 f-w-600">No Handphone</label>
+            <input type="text" class="form-control" formControlName="phoneNumber" readonly>
+          </div>
+        </div>
+        <div class="col-md-12">
+          <div class="form-group mb-2">
+            <label class="form-label m-b-0 f-w-600">Email</label>
+            <input type="text" class="form-control" formControlName="email" readonly>
+          </div>
+        </div>
+        <div class="col-md-12">
+          <div class="form-group mb-2">
+            <label class="form-label m-b-0 f-w-600">Jabatan / Posisi Pemberi Rekomendasi <span
+              class="required">*</span></label>
+            <input type="text" class="form-control" formControlName="position" required>
+            <label
+              *ngIf="recommendationForm.controls.position.errors && recommendationForm.controls.position.errors.required && (recommendationForm.controls.position.touched || recommendationForm.controls.position.dirty)"
+              class="error text-danger small form-text">{{ 'ROOT.required' | translate }}</label>
+          </div>
+        </div>
+        <div class="col-md-12">
+          <div class="form-group mb-2">
+            <label class="form-label m-b-0 f-w-600">Lembaga / Perusahaan Pemberi Rekomendasi <span
+              class="required">*</span></label>
+            <input type="text" class="form-control" formControlName="instantion" placeholder="Lembaga / Perusahaan Pemberi Rekomendasi">
+            <label
+              *ngIf="recommendationForm.controls.instantion.errors && recommendationForm.controls.instantion.errors.required && (recommendationForm.controls.instantion.touched || recommendationForm.controls.instantion.dirty)"
+              class="error text-danger small form-text">{{ 'ROOT.required' | translate }}</label>
+          </div>
+        </div>
+        <div class="col-md-12">
+          <div class="form-group mb-2">
+            <label class="form-label m-b-0 f-w-600">Berapa lama dan dalam kapasitas apa saudara mengenal calon mahasiswa
+              ? <span
+              class="required">*</span></label>
+            <input type="text" class="form-control" formControlName="rangeTime" required placeholder="Contoh. 1 tahun">
+            <label
+              *ngIf="recommendationForm.controls.rangeTime.errors && recommendationForm.controls.rangeTime.errors.required && (recommendationForm.controls.rangeTime.touched || recommendationForm.controls.rangeTime.dirty)"
+              class="error text-danger small form-text">{{ 'ROOT.required' | translate }}</label>
+          </div>
+        </div>
+        <br>
+        <hr>
+        <br>
+        <h4 class="col-md-12">Penilaian Saudara Terhadap Calon Mahasiswa</h4>
+        <div class="col-md-12 mt-3">
+          <div class="form-group mb-2">
+            <label class="form-label m-b-0 f-w-600">1. Pengetahuan Dalam Bidang Studi yang diminati <span
+              class="required">*</span></label>
+            <ng-select name="knowledge" [ngModelOptions]="{standalone: true}"
+              [placeholder]="'ROOT.choose'|translate" [ngClass]="'custom bg-white'"
+              [notFoundMsg]="'ROOT.no_data_found'|translate" [(ngModel)]="selectedKnowledge" [options]="categoryList">
+            </ng-select>
+            <label *ngIf="!selectedKnowledge" class="error jquery-validation-error small form-text invalid-feedback">{{ 'ROOT.required' | translate }}</label>
+          </div>
+        </div>
+        <div class="col-md-12 mt-2">
+          <div class="form-group mb-2">
+            <label class="form-label m-b-0 f-w-600">2. Kemampuan intelektual <span
+              class="required">*</span></label>
+            <ng-select name="intelektual" [ngModelOptions]="{standalone: true}"
+            [placeholder]="'ROOT.choose'|translate" [ngClass]="'custom bg-white'"
+            [notFoundMsg]="'ROOT.no_data_found'|translate" [(ngModel)]="selectedIntelektual" [options]="categoryList">
+          </ng-select>
+          <label *ngIf="!selectedIntelektual" class="error jquery-validation-error small form-text invalid-feedback">{{ 'ROOT.required' | translate }}</label>
+        </div>
+        </div>
+        <div class="col-md-12 mt-2">
+          <div class="form-group mb-2">
+            <label class="form-label m-b-0 f-w-600">3. Kemampuan mengekspresikan diri secara lisan <span
+              class="required">*</span></label>
+            <ng-select name="lisanEkspression" [ngModelOptions]="{standalone: true}"
+            [placeholder]="'ROOT.choose'|translate" [ngClass]="'custom bg-white'"
+            [notFoundMsg]="'ROOT.no_data_found'|translate" [(ngModel)]="selectedLisanEkspression" [options]="categoryList">
+          </ng-select>
+          <label *ngIf="!selectedLisanEkspression" class="error jquery-validation-error small form-text invalid-feedback">{{ 'ROOT.required' | translate }}</label>
+        </div>
+        </div>
+        <div class="col-md-12 mt-2">
+          <div class="form-group mb-2">
+            <label class="form-label m-b-0 f-w-600">4. Kemampuan mengekspresikan diri secara tertulis <span
+              class="required">*</span></label>
+            <ng-select name="nonLisanEkspression" [ngModelOptions]="{standalone: true}"
+            [placeholder]="'ROOT.choose'|translate" [ngClass]="'custom bg-white'"
+            [notFoundMsg]="'ROOT.no_data_found'|translate" [(ngModel)]="selectedNonLisanEkspression" [options]="categoryList">
+          </ng-select>
+          <label *ngIf="!selectedNonLisanEkspression" class="error jquery-validation-error small form-text invalid-feedback">{{ 'ROOT.required' | translate }}</label>
+        </div>
+        </div>
+        <div class="col-md-12 mt-2">
+          <div class="form-group mb-2">
+            <label class="form-label m-b-0 f-w-600">5. Kemampuan bekerja secara mandiri <span
+              class="required">*</span></label>
+            <ng-select name="independent" [ngModelOptions]="{standalone: true}"
+            [placeholder]="'ROOT.choose'|translate" [ngClass]="'custom bg-white'"
+            [notFoundMsg]="'ROOT.no_data_found'|translate" [(ngModel)]="selectedIndependent" [options]="categoryList">
+          </ng-select>
+          <label *ngIf="!selectedIndependent" class="error jquery-validation-error small form-text invalid-feedback">{{ 'ROOT.required' | translate }}</label>
+        </div>
+      </div>
+      <div class="col-md-12 mt-2">
+        <div class="form-group mb-2">
+          <label class="form-label m-b-0 f-w-600">6. Kemampuan bekerjasama <span
+            class="required">*</span></label>
+          <ng-select name="teamwork" [ngModelOptions]="{standalone: true}"
+          [placeholder]="'ROOT.choose'|translate" [ngClass]="'custom bg-white'"
+          [notFoundMsg]="'ROOT.no_data_found'|translate" [(ngModel)]="selectedTeamwork" [options]="categoryList">
+        </ng-select>
+        <label *ngIf="!selectedTeamwork" class="error jquery-validation-error small form-text invalid-feedback">{{ 'ROOT.required' | translate }}</label>
+      </div>
+    </div>
+    <div class="col-md-12 mt-2">
+      <div class="form-group mb-2">
+        <label class="form-label m-b-0 f-w-600">7. Kedewasaan (maturity) <span
+          class="required">*</span></label>
+        <ng-select name="maturity" [ngModelOptions]="{standalone: true}"
+        [placeholder]="'ROOT.choose'|translate" [ngClass]="'custom bg-white'"
+        [notFoundMsg]="'ROOT.no_data_found'|translate" [(ngModel)]="selectedMaturity" [options]="categoryList">
+      </ng-select>
+      <label *ngIf="!selectedMaturity" class="error jquery-validation-error small form-text invalid-feedback">{{ 'ROOT.required' | translate }}</label>
+    </div>
+  </div>
+  <div class="col-md-12 mt-2">
+    <div class="form-group mb-2">
+      <label class="form-label m-b-0 f-w-600">Berikan rekomendasi Saudara mengenai Calon Mahasiswa untuk mengikuti
+        Program Pascasarjana <span
+        class="required">*</span></label>
+        <ng-select name="isRecommendation" [ngModelOptions]="{standalone: true}"
+        [placeholder]="'ROOT.choose'|translate" [ngClass]="'custom bg-white'"
+        [notFoundMsg]="'ROOT.no_data_found'|translate" [(ngModel)]="selectedRecommendation" [options]="categoryList">
+      </ng-select>
+      <label *ngIf="!selectedRecommendation" class="error jquery-validation-error small form-text invalid-feedback">{{ 'ROOT.required' | translate }}</label>
+          </div>
+        </div>
+        <div class="col-md-12 mt-2">
+          <div class="form-group mb-2">
+            <label class="form-label m-b-0 f-w-600">Berikan opini dan keterangan tambahan mengenai kekuatan dan
+              kelemahan Calon Mahasiswa pada kolom berikut (sangat disarankan) <span
+              class="required">*</span></label>
+              <textarea class="mt-2" formControlName="opinion" placeholder="Ketik disini ..."></textarea>
+              <label
+              *ngIf="recommendationForm.controls.opinion.errors && recommendationForm.controls.opinion.errors.required && (recommendationForm.controls.opinion.touched || recommendationForm.controls.opinion.dirty)"
+              class="error text-danger small form-text">{{ 'ROOT.required' | translate }}</label>
+          </div>
+        </div>
+        <div class="col-md-12 mt-4 mb-4 text-center">
+          <button type="submit" class="btn btn-primary col-md-12"
+            [disabled]="recommendationForm.invalid || !selectedKnowledge || !selectedIntelektual || !selectedLisanEkspression || !selectedNonLisanEkspression || !selectedIndependent || !selectedTeamwork || !selectedMaturity || !selectedRecommendation || this.loading">
+            <span *ngIf="this.loading" class="spinner-border spinner-border-sm" role="status"></span>
+            <span *ngIf="this.loading" class="load-text"> Loading...</span>
+            <span *ngIf="!this.loading" class="btn-text"><i class="ti-save"></i> Submit</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

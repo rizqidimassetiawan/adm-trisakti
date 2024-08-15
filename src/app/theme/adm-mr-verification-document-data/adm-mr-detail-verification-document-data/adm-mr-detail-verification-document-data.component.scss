@@ -1,0 +1,33 @@
+td{
+  table-layout:fixed;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+}
+th{
+  table-layout:fixed;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+}
+.center-table{
+ text-align: center;
+}
+.width{
+  max-width: 370px;
+  text-align: justify;
+}
+textarea {
+  width: 100%;
+  height: 70px;
+  padding: 5px 5px;
+  padding-top: 2px;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: transparent;
+  font-size: 13px;
+  color:grey;
+  resize: none;
+}
+a {
+  cursor: pointer;
+}

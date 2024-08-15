@@ -1,0 +1,145 @@
+<div class="page-header">
+  <div autoscroll="true" class="page-block" style="overflow-y: auto; height: 100%;">
+    <div class="text-md-left">
+      <div class="page-header-title">
+        <h5>{{ 'CONTENT.form_payment'| translate}}</h5>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <!-- <div padding  class="col-md-12"> -->
+    <!-- <app-card hidHeader="false"> -->
+      <div class="row" >
+        <div padding class="col-md-12">
+          <app-card  cardTitle="{{'CONTENT.form_payment' | translate}}" headerClass="text-center text-md-left" [options]="false" [loading]="loading">
+            <div class="app-body">
+              <!-- <br> -->
+              <form  [formGroup]="registrationDataForm" class="md-float-material form-material" action="javascript:">
+                <div class="form-group">
+                  <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.registration-number' | translate }}</label>
+                  <input type="text" class="form-control" readonly name="order_number" formControlName="registration_number">
+                </div>
+                <div class="form-group">
+                  <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.program' | translate }}</label>
+                  <input type="text" class="form-control" readonly name="name" formControlName="program">
+                  <!-- <label id="validation-email-error" class="error jquery-validation-error small form-text invalid-feedback">{{ 'CONTENT.please-input' | translate }}{{ 'CONTENT.program-name' | translate }}</label> -->
+                </div>
+                <div class="form-group">
+                  <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.selection-path' | translate }}</label>
+                  <input type="text" class="form-control" readonly name="name" formControlName="selection_path">
+                  <!-- <label id="validation-email-error" class="error jquery-validation-error small form-text invalid-feedback">{{ 'CONTENT.please-input' | translate }}{{ 'CONTENT.program-name' | translate }}</label> -->
+                </div>
+                <div class="form-group">
+                  <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.pin-price' | translate }}</label>
+                  <input type="text" class="form-control" readonly name="registration_fee" formControlName="registration_fee">
+                  <!-- <label id="validation-email-error" class="error jquery-validation-error small form-text invalid-feedback">{{ 'CONTENT.please-input' | translate }}{{ 'CONTENT.program-name' | translate }}</label> -->
+                </div>
+                <div class="form-group">
+                  <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.payment-method' | translate }}</label>
+                  <ng-select class="index-up" name="payment-method"  [allowClear]="false" formControlName="payment_method" [placeholder]="'CONTENT.payment-method' | translate" [ngClass]="'custom bg-white'" [notFoundMsg]="'ROOT.no_data_found'|translate" [(ngModel)]="paymentMethod" (deselected)="onDeselected('paymentMethod')"  [options]="listPaymentMethod"></ng-select>
+                  <div *ngIf="!paymentMethod" class="invalid-feedback">{{ 'CONTENT.please-input' | translate }}{{ 'CONTENT.program-name' | translate }}</div>
+                  <!-- <label id="validation-email-error" class="error jquery-validation-error small form-text invalid-feedback">{{ 'CONTENT.please-input' | translate }}{{ 'CONTENT.program-name' | translate }}</label> -->
+                </div>
+                <p style="color:blue" (click)="modalPaymentMethodDetail.show();"><em>{{ 'CONTENT.sentence_payment' | translate }}</em></p>
+                <!-- <br> -->
+                <div class="div-merah1 col-12 col-md-12">
+                  <!-- <div class="row">
+                    <div class="col-sm-2"></div>
+                    <div class="col-sm-8"> -->
+                      <div class="form-group form-check">
+                        <input class="form-check-input ml-2" type="checkbox" [(ngModel)]="checklist"
+                          [ngModelOptions]="{standalone: true}" name="checklist">
+                        <h6 class="text-light text-setting ml-3 pt-3">{{ 'CONTENT.sentence_tac_newreg' | translate }}</h6>
+                        <div *ngIf="!checklist" class="invalid-feedback">Mohon diceklis</div>
+
+                      </div>
+                    <!-- </div>
+                    <div class="col-sm-2"></div> -->
+                  <!-- </div> -->
+                </div>
+                <br>
+                <div class="form-group mb-0 mt-4 text-right">
+                  <div class="btn-group">
+                    <button type="submit" class="btn btn-primary btn-sm" (click)="modalOrderForm.show();createPaymentRegistrationData();" [disabled]="registrationDataForm.invalid || !paymentMethod || !checklist">
+                      {{ isPaymentMethodNotNull === false ? ('CONTENT.order_form_request' | translate ) : ('CONTENT.update_form_request' | translate ) }}
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </app-card>
+        </div>
+      </div>
+    <!-- </app-card> -->
+  <!-- </div> -->
+</div>
+
+<app-ui-modal #modalOrderForm [dialogClass]="'modal-lg btn-page'" [containerClick]="false">
+  <div class="app-modal-header">
+    <h5 style="text-align:center">{{ 'CONTENT.info' | translate }}</h5>
+    <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close" (click)="modalOrderForm.hide()"><span aria-hidden="true">&times;</span></button>
+  </div>
+  <div class="app-modal-body">
+    <form class="md-float-material form-material" action="javascript:" [formGroup]="registrationDataForm">
+      <h6 style="text-align:center">{{ 'CONTENT.sentence_form_order' | translate }}</h6>
+      <div class="form-group row">
+        <label for="fullname" class="col-sm-4 col-form-label">{{'CONTENT.fullname' | translate}} : </label>
+        <div class="col-sm-8">
+          <input type="fullname" class="form-control" id="fullname" formControlName="fullname" readonly>
+        </div>
+      </div>
+      <div class="form-group row">
+        <label for="NIK" class="col-sm-4 col-form-label">{{'CONTENT.NIK' | translate}} : </label>
+        <div class="col-sm-8">
+          <input type="NIK" class="form-control" id="NIK" formControlName="NIK" readonly>
+        </div>
+      </div>
+      <div class="form-group row">
+        <label for="registration-number" class="col-sm-4 col-form-label"><b>{{'CONTENT.registration-number' | translate}} : </b></label>
+        <div class="col-sm-8">
+          <input type="NIK" class="form-control" id="NIK" readonly formControlName="registration_number">
+        </div>
+      </div>
+      <div class="form-group row">
+        <label for="payment-method" class="col-sm-4 col-form-label"><b>{{'CONTENT.payment-method' | translate}} : </b></label>
+        <div class="col-sm-8">
+          <input type="payment-method" class="form-control" id="payment-method" formControlName="payment_method" readonly>
+        </div>
+      </div>
+      <div class="form-group row">
+        <label for="registration-fee" class="col-sm-4 col-form-label"><b>{{'CONTENT.registration-fee' | translate}} : </b></label>
+        <div class="col-sm-8">
+          <input type="pregistration-fee" class="form-control" id="registration-fee" formControlName="registration_fee" readonly>
+        </div>
+      </div>
+      <h6 style="text-align:center">{{ 'CONTENT.sentence_form_order' | translate }}</h6>
+      <div class = "row">
+        <div class="col-sm-12 text-center">
+          <div class="btn-group">
+            <a class="btn btn-primary m-t-20 m-b-20 m-l-10" routerLink="/registration-history"  href="javascript:">{{ 'ROOT.ok' | translate }}</a>
+            <!-- <button class="btn btn-primary m-t-20 m-b-20 m-l-10   js-programmatic-enable" (click)="goToRegistrationHistory()">{{ 'ROOT.ok' | translate }}</button> -->
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</app-ui-modal>
+
+<app-ui-modal #modalPaymentMethodDetail [dialogClass]="'modal-lg btn-page'" [containerClick]="false">
+  <div class="app-modal-header">
+    <h5 style="text-align:center">{{ 'CONTENT.sentence_payment_2' | translate }}</h5>
+    <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close" (click)="modalPaymentMethodDetail.hide()"><span aria-hidden="true">&times;</span></button>
+  </div>
+  <div class="app-modal-body">
+    <h5 style="text-align:left">{{ 'CONTENT.atm' | translate }}</h5>
+    <hr>
+    <p>Tes</p>
+    <h5 style="text-align:left">{{ 'CONTENT.m-banking' | translate }}</h5>
+    <hr>
+    <p>Tes</p>
+    <h5 style="text-align:left">{{ 'CONTENT.e-banking' | translate }}</h5>
+    <hr>
+    <p>Tes</p>
+  </div>
+</app-ui-modal>

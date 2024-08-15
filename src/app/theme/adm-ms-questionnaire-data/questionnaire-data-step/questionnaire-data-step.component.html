@@ -1,0 +1,277 @@
+<div class="page-header">
+  <div class="page-block">
+    <div class="text-md-left">
+      <div class="page-header-title">
+        <h5>{{ 'CONTENT.question-data'| translate}}</h5>
+      </div>
+    </div>
+  </div>
+</div>
+<app-card cardTitle="{{ 'CONTENT.question-data' | translate }}" headerClass="text-center text-md-left" [hidHeader]="true" [options]="false" [loading]="loadtableQuestionData">
+  <div class="row align-items-center p-2">
+    <div class="col-6 text-left text-md-left">
+      <button class="btn btn-secondary btn-sm btn-round has-ripple" routerLink="/adm-ms-questionnaire-data">
+          <i class="feather icon-chevron-left"></i> {{'ROOT.back' | translate}}
+      </button>
+    </div>
+    <div class="col-6 text-center text-md-right">
+      <button class="btn btn-success btn-sm btn-round has-ripple" (click)="openformDetailQuestionData(null, 'input')">
+          <i class="icofont icofont-plus"></i> {{'CONTENT.add-question' | translate}}
+      </button>
+    </div>
+  </div>
+  <form class="md-float-material form-material" action="javascript:">
+    <div class="row pl-2 pr-2">
+      <div class="col-md-3 mt-2">
+        <div class="form-group mb-2">
+          <ng-select name="activeStatusFilter" [allowClear]="false" [placeholder]="'CONTENT.active-status' | translate"
+            [ngClass]="'custom bg-white'" [notFoundMsg]="'ROOT.no_data_found'|translate" [(ngModel)]="activeStatusFilter"
+            (deselected)="onDeselected('activeStatusFilter')" [options]="listActiveStatusFilters"
+            (selected)="applyFilter(activeStatusFilter)"></ng-select>
+        </div>
+      </div>
+    </div>
+  </form>
+  <div class="table-responsive pb-1">
+    <table datatable class="table table-bordered table-hover" [dtOptions]="dtOptions[0]" [dtTrigger]="dtTrigger">
+      <thead class="thead-light">
+        <tr>
+          <th scope="col" style="padding-left: 10px">{{ 'CONTENT.no' | translate}}</th>
+          <th scope="col" class="center-table question-width">{{ 'CONTENT.question' | translate}}</th>
+          <th scope="col" class="center-table">{{ 'CONTENT.question-type' | translate}}</th>
+          <th scope="col" class="center-table">{{ 'CONTENT.answer-options' | translate}}</th>
+          <th scope="col" class="center-table status-width">{{ 'CONTENT.active-status' | translate}}</th>
+          <th scope="col" class="center-table">{{ 'CONTENT.action' | translate}}</th>
+        </tr>
+      </thead>
+      <tbody *ngIf="questionData?.length != 0">
+        <tr *ngFor="let data of questionData; let i = index;">
+          <th scope="row" style="padding-left: 10px">{{ i+1 }}. </th>
+          <td><strong>{{ data.detail}}</strong></td>
+          <td class="center-table"><strong>{{ data.question_type_name}}</strong></td>
+          <td>
+            <table *ngIf="data.answer_options?.length != 0" >
+              <div [hidden]="data.question_type_id === 1 || data.question_type_id === 2 || data.question_type_id === 6 || data.question_type_id === 7 || data.question_type_id === 8 || data.question_type_id === 9" >
+              <tbody *ngFor="let datax of data.answer_options; let j=index;">
+                <td>
+                  <!-- MULTIPLE CHOICE -->
+                  <tr *ngIf="data.question_type_id== 3">
+                    <td ><strong><input type="radio">
+                        {{datax.value}}
+                    </strong></td>
+                  </tr>
+                  <!-- CHECKBOX -->
+                  <tr *ngIf="data.question_type_id== 4">
+                    <td><strong><input type="checkbox">
+                        {{datax.value}}
+                    </strong></td>
+                  </tr>
+                  <!-- DROPDOWN -->
+                  <tr *ngIf="data.question_type_id== 5">
+                    <td><strong>
+                      <!-- <input type="checkbox"> DROPDOWN-->
+                      {{datax.value}}
+                    </strong></td>
+                  </tr>
+                </td>
+                <td class="center-table">
+                  <button class="btn btn-warning btn-sm btn-round has-ripple" (click)="openformDetailAsnwerOptionData(data.id,datax.id, 'edit')">
+                  <!-- <button class="btn btn-warning btn-sm btn-round has-ripple" (click)="loadDetailAnswerOptionData(data.id,datax.id)"> -->
+                    <i class="icofont icofont-ui-edit"></i> <span class="d-sm-none"> {{'ROOT.edit' | translate}} {{'CONTENT.option' | translate}}</span>
+                  </button>
+                </td>
+              </tbody>
+            </div>
+            </table>
+            <table *ngIf="data.answer_options?.length == 0">
+              <tbody>
+                <!-- SHORT ANSWER -->
+                <tr *ngIf="data.question_type_id== 1;"></tr>
+                <!-- PARAGRAPH -->
+                <tr *ngIf="data.question_type_id== 2"></tr>
+                <!-- FILE UPLOAD -->
+                <tr *ngIf="data.question_type_id== 6"></tr>
+                <!-- LINEAR SCALE -->
+                <tr *ngIf="data.question_type_id== 7"></tr>
+                <!-- DATE -->
+                <tr *ngIf="data.question_type_id== 8"></tr>
+                <!-- TIME -->
+                <tr *ngIf="data.question_type_id== 9"></tr>
+              </tbody>
+            </table>
+          </td>
+          <td class="center-table status-width">
+            <span
+              class="badge badge-{{ data.active_status === true ? 'success' : 'danger' }}">{{
+              data.active_status === true ? ('ROOT.active' | translate) : ('ROOT.nonactive' | translate)
+              }}
+            </span>
+          </td>
+          <td class="center-table">
+            <button class="btn btn-warning btn-sm btn-round has-ripple"  (click)="openformDetailQuestionData(data.id, 'edit');">
+              <i class="icofont icofont-ui-edit"></i> <span class="d-sm-none"> {{'ROOT.edit' | translate}}</span>
+            </button>
+            <button *ngIf="data.question_type_id==3 || data.question_type_id==4 || data.question_type_id==5" class="btn btn-primary btn-sm btn-round has-ripple m-1" (click)="openformDetailAsnwerOptionData(data.id, null, 'input')">
+              <i class="icofont icofont-plus"></i> <span class="d-sm-none"> {{'ROOT.add' | translate}} {{'CONTENT.option' | translate}}</span>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+      <tbody *ngIf="questionData?.length == 0 && !loadtableQuestionnaireData">
+        <tr>
+          <td colspan="6" class="no-data-available text-center">Data tidak ditemukan!</td>
+          <td class="hidden"></td>
+          <td class="hidden"></td>
+          <td class="hidden"></td>
+          <td class="hidden"></td>
+          <td class="hidden"></td>
+      </tbody>
+      <tbody *ngIf="questionData?.length == 0 && loadtableQuestionnaireData">
+        <tr>
+          <td colspan="6" class="no-data-available text-center">Loading Data....</td>
+          <td class="hidden"></td>
+          <td class="hidden"></td>
+          <td class="hidden"></td>
+          <td class="hidden"></td>
+          <td class="hidden"></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</app-card>
+
+<!-- Forms Modal -->
+<app-ui-modal #questionDataModal [containerClick]="false" [dialogClass]="'modal-lg'" [loading]="loading" [hideFooter]="true">
+  <div class="app-modal-header">
+    <h5 class="modal-title">{{
+      formType === "input"
+        ? ("ROOT.add" | translate)
+        : ("ROOT.edit" | translate)
+    }} {{ 'CONTENT.question' | translate }}</h5>
+    <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close" (click)="questionDataModal.hide();"><span aria-hidden="true">&times;</span></button>
+  </div>
+  <div class="app-modal-body">
+    <form class="md-float-material form-material" action="javascript:" [formGroup] = "questionForm" (ngSubmit)= "createQuestionData()">
+      <!-- <div class="row"> -->
+        <app-card [hidHeader]="true" [loading]="loadingModal">
+        <div class="col-sm-12">
+          <div class="form-group mb-2">
+            <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.question' | translate }}</label>
+            <input type="text" class="form-control" name="pinPrice" required  formControlName="detail">
+            <label id="validation-email-error" class="error jquery-validation-error small form-text invalid-feedback">{{ 'ROOT.please_input' | translate }} {{ 'CONTENT.question' | translate }}</label>
+          </div>
+          <!-- <div class="form-group mb-2">
+            <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.ordering' | translate }}</label>
+            <input type="number" class="form-control" name="pinPrice" required>
+            <label id="validation-email-error" class="error jquery-validation-error small form-text invalid-feedback">{{ 'ROOT.please_input' | translate }} {{ 'CONTENT.ordering' | translate }}</label>
+          </div> -->
+          <div class="form-group mb-2">
+            <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.option-type' | translate }}</label>
+            <ng-select [placeholder]="'CONTENT.option-type'|translate" [ngClass]="'custom bg-white'" required  formControlName="question_type_id" [(ngModel)]="questionType" (deselected)="onDeselected('questionType')"  [options]="listSelectionQuestionType"></ng-select>
+            <label id="validation-email-error" class="error jquery-validation-error small form-text invalid-feedback">{{ 'CONTENT.please-choose' | translate }}{{ 'CONTENT.option-type' | translate }}</label>
+          </div>
+          <div class="form-group mb-2">
+            <h6 class="form-label m-b-0 f-w-600">{{ 'CONTENT.active-status'| translate}}</h6> <br>
+            <div class="custom-control custom-radio custom-control-inline">
+              <input type="radio" id="active_status1" name="active_status" class="custom-control-input" value="1" required formControlName="active_status">
+              <label class="custom-control-label " for="active_status1">{{ 'ROOT.yes' | translate }}</label>
+            </div>
+            <div class="custom-control custom-radio custom-control-inline">
+              <input type="radio" id="active_status2"  name="active_status" class="custom-control-input" value="0" required [checked]="true"  formControlName="active_status">
+              <label class="custom-control-label" for="active_status2">{{ 'ROOT.no' | translate }}</label>
+            </div>
+          </div>
+          <!-- <div class="form-group mb-2" *ngIf="questionType==3 || questionType==4 || questionType==5">
+            <label class="form-label m-b-0 f-w-600">{{ 'ROOT.add' | translate }} {{ 'CONTENT.option' | translate }}</label>
+            <div class="form-row">
+              <div class="form-group col-md-11">
+                <input type="text" class="form-control" name="option" required >
+              </div>
+              <div class="form-group col-md-1">
+                <button class="btn btn-primary btn-sm btn-round has-ripple" (click)="optionDataModal.show()">
+                  <i class="icofont icofont-plus"></i> <span class="d-sm-none"> {{'ROOT.add' | translate}}</span>
+                </button>
+              </div>
+            </div>
+            <div class="table-responsive pb-1">
+              <table datatable class="table table-bordered table-hover">
+                <thead class="thead-light">
+                  <tr>
+                    <th scope="col" style="padding-left: 10px">{{ 'CONTENT.no' | translate}}</th>
+                    <th scope="col" class="center-table">{{ 'CONTENT.option' | translate}}</th>
+                    <th scope="col" class="center-table">{{ 'CONTENT.ordering' | translate}}</th>
+                    <th scope="col" class="center-table">{{ 'CONTENT.action' | translate}}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <th scope="row" style="padding-left: 10px"></th>
+                    <td></td>
+                    <td></td>
+                    <td class="center-table">
+                      <button class="btn btn-warning btn-sm btn-round has-ripple" >
+                        <i class="icofont icofont-ui-edit"></i> <span class="d-sm-none"> {{'ROOT.edit' | translate}}</span>
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div> -->
+          <div class="form-group mb-0 mt-4 text-right">
+            <div class="btn-group">
+              <button *ngIf="edit == 'input'" type="button" (click)="questionDataModal.hide()" class="btn btn-secondary btn-sm">
+                <i class="icofont icofont-logout"></i> {{ 'ROOT.exit' | translate }}
+              </button>
+              <button type="submit" class="btn btn-primary btn-sm" (click)="questionDataModal.hide()" [disabled]="questionForm.invalid">
+                <i class="ti-save"></i> {{ 'ROOT.save' | translate }}
+              </button>
+            </div>
+          </div>
+        </div>
+      </app-card>
+      <!-- </div> -->
+    </form>
+  </div>
+  <div class="app-modal-footer"></div>
+</app-ui-modal>
+
+<!-- Forms Modal -->
+<app-ui-modal #optionDataModal [containerClick]="false" [dialogClass]="'modal-lg'" [loading]="loading" [hideFooter]="true">
+  <div class="app-modal-header">
+    <h5 class="modal-title">{{ formType === 'input' ? ('ROOT.add' | translate) : ('ROOT.edit' | translate) }} {{ 'CONTENT.option' | translate }}</h5>
+    <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close" (click)="optionDataModal.hide();"><span aria-hidden="true">&times;</span></button>
+  </div>
+  <div class="app-modal-body">
+    <form [formGroup] = "answerOptionForm" (ngSubmit)= "createAnswerOptionData()" class="md-float-material form-material" action="javascript:">
+      <!-- <div class="row" [ngSwitch]="edit"> -->
+        <app-card [hidHeader]="true" [loading]="loadingModal">
+        <div class="col-sm-12">
+          <div class="form-group mb-2">
+            <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.option' | translate }}</label>
+            <input type="text" class="form-control" name="option" required formControlName="option">
+            <label id="validation-email-error" class="error jquery-validation-error small form-text invalid-feedback">{{ 'ROOT.please_input' | translate }} {{ 'CONTENT.questionnaire-name' | translate }}</label>
+          </div>
+          <div class="form-group mb-2">
+            <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.ordering' | translate }}</label>
+            <input type="number" class="form-control" name="ordering" required formControlName="ordering">
+            <label id="validation-email-error" class="error jquery-validation-error small form-text invalid-feedback">{{ 'ROOT.please_input' | translate }} {{ 'CONTENT.questionnaire-description' | translate }}</label>
+          </div>
+          <div class="form-group mb-0 mt-4 text-right">
+            <div class="btn-group">
+              <button *ngIf="edit == 'input'" type="button" (click)="optionDataModal.hide()" class="btn btn-secondary btn-sm">
+                <i class="icofont icofont-logout"></i> {{ 'ROOT.exit' | translate }}
+              </button>
+              <button type="submit" class="btn btn-primary btn-sm" (click)="optionDataModal.hide()"  [disabled] ="!answerOptionForm.valid">
+                <i class="ti-save"></i> {{ 'ROOT.save' | translate }}
+              </button>
+            </div>
+          </div>
+        </div>
+      </app-card>
+
+      <!-- </div> -->
+    </form>
+  </div>
+  <div class="app-modal-footer"></div>
+</app-ui-modal>

@@ -1,0 +1,82 @@
+<!-- <p>Approval Data Management works!</p> -->
+
+<div class="row">
+  <div class="col-sm-12">
+    <app-card cardTitle="{{ 'MENU.approval-data' | translate }}" cardClass="card-datatable"
+      headerClass="text-center text-md-left" [hidHeader]="false" [options]="false" [loading]="loadtableApprovalData">
+      <form class="md-float-material form-material" action="javascript:">
+        <!-- <div class="col-12 col-md-4 ml-auto text-right">
+          <div class="row">
+            <div class="col-1"></div>
+            <div class="col-4" [ngSwitch]="loadDownloadData">
+                <button type="button" (click)="downloadExcelData()" [disabled]="loadDownloadData"
+                  class="btn btn-outline-primary btn-sm btn-round has-ripple">
+                  <i *ngSwitchCase="false" class="ti-download"></i>
+                  <span *ngSwitchCase="true" class="spinner-grow spinner-grow-sm" role="status"></span>
+                  <span *ngSwitchCase="false"> {{ 'CONTENT.unduh-data-kelulusan' | translate }}</span>
+                  <span *ngSwitchCase="true"> {{ 'ROOT.loading' | translate }}</span>
+                </button>
+            </div>
+        </div>
+        </div> -->
+        <!-- <app-filter-container [loading]="false">
+          <div class="col-12 col-md-4">
+            <div class="form-group mb-0">
+              <ng-select name="selection" [allowClear]="true" [placeholder]="'CONTENT.selection-path' | translate"
+                [ngClass]="'filter'" [notFoundMsg]="'ROOT.no_data_found'|translate" [(ngModel)]="selectionPath"
+                [options]="listSelectionPath"></ng-select>
+            </div>
+          </div>
+          
+          </app-filter-container> -->
+      </form>
+      <div class="table-responsive pb-1">
+        <table datatable class="table table-hover" [dtOptions]="dtOptions" [dtTrigger]="dtTrigger">
+          <thead class="thead-light">
+            <tr>
+              <th scope="col" style="padding-left: 10px">{{ 'CONTENT.no' | translate}}</th>
+              <th scope="col">{{ 'CONTENT.selection-path' | translate}}</th>
+              <th scope="col" class="center-table">{{ 'CONTENT.total-participant' | translate}}</th>
+              <th scope="col" class="center-table">{{ 'CONTENT.action' | translate}}</th>
+            </tr>
+          </thead>
+          <tbody *ngIf="tableData?.length != 0">
+            <tr *ngFor="let data of tableData; let i = index;">
+              <th scope="row" style="padding-left: 10px">{{ i+1 }}</th>
+              <td>{{ data.selection_path_name }}</td>
+              <td class="center-table">{{ data.total_participant }}</td>
+              <td class="center-table">
+                <button class="btn btn-warning btn-sm btn-round has-ripple"
+                  routerLink="/adm-mp-approval-data/approval-data-detail/{{data.selection_path_id}}">
+                  <i class="icofont icofont-ui-edit"></i> <span class="d-sm-none"> {{'ROOT.edit' | translate}}</span>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+          <tbody *ngIf="tableData?.length == 0 && !loadtableApprovalData">
+            <tr>
+              <td colspan="4" class="no-data-available text-center">Data tidak ditemukan!</td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+            </tr>
+          </tbody>
+          <tbody *ngIf="tableData?.length == 0 && loadtableApprovalData">
+            <tr>
+              <td colspan="4" class="no-data-available text-center">Loading Data....</td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </app-card>
+  </div>
+  <ng-template #showLoading>
+    <div class="d-flex justify-content-center">
+      <div class="spinner-border text-primary" role="status">
+        <span class="sr-only">Loading...</span>
+      </div>
+    </div>
+  </ng-template>

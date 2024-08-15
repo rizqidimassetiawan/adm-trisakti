@@ -1,0 +1,529 @@
+<div class="page-header">
+  <div class="page-block">
+    <div class="text-md-left">
+      <div class="page-header-title">
+        <h5>{{ "MENU.verification-detail-document" | translate }}</h5>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-md-12">
+    <app-card cardTitle="{{ 'MENU.participant-data' | translate }}" cardClass="card-datatable"
+      headerClass="text-center text-md-left" [options]="false" [loading]="loading" [hidHeader]="true">
+      <div class="col-sm-12">
+        <ngb-tabset [activeId]="selectedTab" (tabChange)="changeTab($event.nextId)">
+          <ngb-tab id="tabBiodata" title="Data Diri">
+            <ng-template ngbTabContent>
+              <div class="row m-1">
+                <div class="user-profile user-card mt-2 p-2 mb-0 col-md-12 text-left">
+                  <div class="card-body py-0">
+                    <div class="user-about-block m-0">
+                      <div class="row">
+                        <div class="col-md-12 text-left">
+                          <div class="change-profile text-left m-3">
+                                <div class="profile-dp">
+                                  <div class="position-fit d-inline-block">
+                                    <img class="img-radius align-top m-r-15 wid-100 img-cover-fit"
+                                      [src]="dataBiodatas.photo_url ? dataBiodatas.photo_url : 'https://cdndata.telkomuniversity.ac.id/situ-round.png'"
+                                      alt="User image">
+                                  </div>
+                                </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <h4 class="col-md-12 mt-3 mb-3 font-family-custom">Data Pribadi</h4>
+                <div class="form-group mb-2 col-md-6">
+                  <label class="mb-1">{{ 'CONTENT.fullname' | translate }}</label> <br>
+                  <label class="form-label f-w-600">{{ dataBiodatas.fullname}}</label>
+                </div>
+                <div class="form-group mb-2 col-md-6">
+                  <label class="mb-1">{{ 'CONTENT.gender' | translate }}</label> <br>
+                  <label class="form-label f-w-600">{{ dataBiodatas.gender_name == 'FEMALE' ? 'Wanita' :
+                    'Pria'}}</label>
+                </div>
+                <div class="form-group mb-2 col-md-6">
+                  <label class="mb-1">{{ 'CONTENT.religion' | translate }}</label> <br>
+                  <label class="form-label f-w-600">{{ dataBiodatas.religion_name}}</label>
+                </div>
+                <div class="form-group mb-2 col-md-6">
+                  <label class="mb-1">{{ 'CONTENT.country_birth' | translate }}</label><br>
+                  <label class="form-label f-w-600">{{ dataBiodatas.birth_country_name}}</label>
+                </div>
+                <div class="form-group mb-2 col-md-6">
+                  <label class="mb-1">{{ 'CONTENT.province_birth' | translate }}</label><br>
+                  <label class="form-label f-w-600">{{ dataBiodatas.birth_province_name}}</label>
+                </div>
+                <div class="form-group mb-2 col-md-6">
+                  <label class="mb-1">{{ 'CONTENT.city_birth' | translate }}</label><br>
+                  <label class="form-label f-w-600">{{ dataBiodatas.birth_city_name}}</label>
+                </div>
+                <div class="form-group mb-2 col-md-6">
+                  <label class="mb-1">{{ 'CONTENT.birthdate' | translate }}</label><br>
+                  <label class="form-label f-w-600">{{ dataBiodatas.birth_date | date:'dd/MM/yyyy'}}</label>
+                </div>
+                <div class="form-group mb-2 col-md-6">
+                  <label class="mb-1">{{ 'CONTENT.country_origin' | translate }}</label><br>
+                  <label class="form-label f-w-600">{{ dataBiodatas.origin_country_name}}</label>
+                </div>
+                <div class="form-group mb-2 col-md-6">
+                  <label class="mb-1">{{ 'CONTENT.nationality' | translate }}</label><br>
+                  <label class="form-label f-w-600">{{ dataBiodatas.nationality_name}}</label>
+                </div>
+                <div [hidden]="!isIndonesianNationality" class="form-group mb-2 col-md-12">
+                  <label class="mb-1">{{ 'CONTENT.NIK' | translate }}</label><br>
+                  <label class="form-label f-w-600">{{ dataBiodatas.identify_number}}</label>
+                </div>
+                <div [hidden]="isIndonesianNationality" class="form-group mb-2 col-md-3">
+                  <label class="mb-1">{{ 'CONTENT.passport_number' | translate }}</label><br>
+                  <label class="form-label f-w-600">{{ dataBiodatas.passport_number }}</label>
+                </div>
+                <div [hidden]="isIndonesianNationality" class="form-group mb-2 col-md-3">
+                  <label class="fmb-1">{{ 'CONTENT.passport_expired_date' | translate }}</label><br>
+                  <label class="form-label f-w-600">{{ dataBiodatas.passport_expiry_date != '-' ?
+                    (dataBiodatas.passport_expiry_date | date:'dd/MM/yyyy') : '-'}}</label>
+                </div>
+                <div class="form-group mb-2 col-md-6">
+                  <label class="mb-1">{{ 'CONTENT.color-blind' | translate }}</label><br>
+                  <label class="form-label f-w-600">{{ dataBiodatas.color_blind}}</label>
+                </div>
+                <div class="form-group mb-2 col-md-6">
+                  <label class="mb-1">{{ 'CONTENT.special-needs' | translate }}</label><br>
+                  <label class="form-label f-w-600">{{ dataBiodatas.special_needs !== null ?
+                    dataBiodatas.special_needs : 'Tidak'}}</label>
+                </div>
+                <div class="form-group mb-2 col-md-6">
+                  <label class="mb-1">{{ 'CONTENT.phone_number' | translate }}</label> <br>
+                  <label class="form-label f-w-600">{{ dataBiodatas.mobile_phone_number}}</label>
+                </div>
+                <div class="form-group mb-2 col-md-6">
+                  <label class="mb-1">{{ 'CONTENT.email' | translate }}</label> <br>
+                  <label class="form-label f-w-600">{{ dataBiodatas.username}}</label>
+                </div>
+                <div class="col-md-12">
+                  <hr>
+                </div>
+                <h4 class="col-md-12 mt-3 mb-3 font-family-custom">{{'CONTENT.education-data' | translate}}</h4>
+                <div class="form-group mb-2 col-md-6">
+                  <label class="mb-1">{{ 'CONTENT.ijazah-number' | translate }}</label><br>
+                  <label class="form-label f-w-600">{{ dataBiodatas.diploma_number ? dataBiodatas.diploma_number : '-' }}</label>
+                </div>
+                <div class="form-group mb-2 col-md-3">
+                  <label class="mb-1">{{ 'CONTENT.nis' | translate }}</label><br>
+                  <label class="form-label f-w-600">{{ dataBiodatas.nis ? dataBiodatas.nis : '-' }}</label>
+                </div>
+                <div class="form-group mb-2 col-md-3">
+                  <label class="mb-1">{{ 'CONTENT.nisn' | translate }}</label><br>
+                  <label class="form-label f-w-600">{{ dataBiodatas.nisn ? dataBiodatas.nisn : '-' }}</label>
+                </div>
+                <div class="col-md-12">
+                  <hr>
+                </div>
+                <h4 class="col-md-12 mt-3 mb-3 font-family-custom">Data Alamat</h4>
+                <div class="form-group mb-2 col-md-6">
+                  <label class="mb-1">{{ 'CONTENT.country' | translate }}</label><br>
+                  <label class="form-label f-w-600">{{ dataBiodatas.address_country_name }}</label>
+                </div>
+                <div *ngIf="!hiddenAddressDetail" class="form-group mb-2 col-md-6">
+                  <label class="mb-1">{{ 'CONTENT.province' | translate }}</label><br>
+                  <label class="form-label f-w-600">{{ dataBiodatas.address_province_name }}</label>
+                </div>
+                <div *ngIf="!hiddenAddressDetail" class="form-group mb-2 col-md-6">
+                  <label class="mb-1">{{ 'CONTENT.city' | translate }}</label><br>
+                  <label class="form-label f-w-600">{{ dataBiodatas.address_city_name }}</label>
+                </div>
+                <div *ngIf="!hiddenAddressDetail" class="form-group mb-2 col-md-6">
+                  <label class="mb-1">{{ 'CONTENT.district' | translate }}</label><br>
+                  <label class="form-label f-w-600">{{ dataBiodatas.address_disctrict_name }}</label>
+                </div>
+                <div class="form-group mb-2 col-md-6">
+                  <label class="mb-1">{{ 'CONTENT.address' | translate }}</label><br>
+                  <label class="form-label f-w-600 text-wrap">{{ dataBiodatas.address_detail }}</label>
+                </div>
+                <div *ngIf="!hiddenAddressDetail" class="form-group mb-2 col-md-3">
+                  <label class="mb-1">{{ 'CONTENT.zipcode' | translate }}</label><br>
+                  <label class="form-label f-w-600">{{ dataBiodatas.address_postal_code }}</label>
+                </div>
+                <div *ngIf="!hiddenAddressDetail" class="form-group mb-2 col-md-3">
+                  <label class="mb-1">{{ 'CONTENT.home_number' | translate }}</label><br>
+                  <label class="form-label f-w-600">{{ dataBiodatas.house_phone_number ?
+                    dataBiodatas.house_phone_number : '-' }}</label>
+                </div>
+              </div>
+            </ng-template>
+          </ngb-tab>
+          <ngb-tab id="tabParent" title="Data Orang Tua">
+            <ng-template ngbTabContent>
+              <div class="row m-1">
+                <div class="col-12 col-md-6" *ngIf="haveParents">
+                  <app-card cardTitle="{{'CONTENT.father' | translate}}" headerClass="text-center text-md-left" [loading]="loadingParent"
+                    [options]="false">
+                    <div class="col-md-12">
+                      <div class="row">
+                        <div class="form-group mb-2 col-md-12">
+                          <label class="mb-1">{{ 'CONTENT.fathers-name' | translate }}</label> <br>
+                          <label class="form-label f-w-600">{{ dataParents.father_name}}</label>
+                        </div>
+                        <div class="form-group mb-2 col-md-6">
+                          <label class="mb-1">{{ 'CONTENT.handphone' | translate }}</label> <br>
+                          <label class="form-label f-w-600">{{ dataParents.father_mobile_phone_number}}</label>
+                        </div>
+                        <div class="form-group mb-2 col-md-6">
+                          <label class="mb-1">{{ 'CONTENT.nik-father' | translate }}</label> <br>
+                          <label class="form-label f-w-600">{{ dataParents.father_identify_number}}</label>
+                        </div>
+                      </div>
+                    </div>
+                  </app-card>
+                </div>
+                <div class="col-12 col-md-6" *ngIf="haveParents">
+                  <app-card cardTitle="{{'CONTENT.mother' | translate}}" headerClass="text-center text-md-left" [loading]="loadingParent"
+                    [options]="false">
+                    <div class="col-md-12">
+                      <div class="row">
+                        <div class="form-group mb-2 col-md-12">
+                          <label class="mb-1">{{ 'CONTENT.mothers-name' | translate }}</label> <br>
+                          <label class="form-label f-w-600">{{ dataParents.mother_name}}</label>
+                        </div>
+                        <div class="form-group mb-2 col-md-6">
+                          <label class="mb-1">{{ 'CONTENT.handphone' | translate }}</label> <br>
+                          <label class="form-label f-w-600">{{ dataParents.mother_mobile_phone_number}}</label>
+                        </div>
+                        <div class="form-group mb-2 col-md-6">
+                          <label class="mb-1">{{ 'CONTENT.nik-mother' | translate }}</label> <br>
+                          <label class="form-label f-w-600">{{ dataParents.mother_identify_number}}</label>
+                        </div>
+                      </div>
+                    </div>
+                  </app-card>
+                </div>
+                <div class="col-12 col-md-12" *ngIf="!haveParents">
+                  <app-card cardTitle="{{'CONTENT.male-relatives' | translate}}" headerClass="text-center text-md-left" [loading]="loadingParent"
+                    [options]="false">
+                    <div class="col-md-12">
+                      <div class="row">
+                        <div class="form-group mb-2 col-md-12">
+                          <label class="mb-1">{{ 'CONTENT.fullname' | translate }}</label> <br>
+                          <label class="form-label f-w-600">{{ dataParents.guardian_name}}</label>
+                        </div>
+                        <div class="form-group mb-2 col-md-6">
+                          <label class="mb-1">{{ 'CONTENT.handphone' | translate }}</label> <br>
+                          <label class="form-label f-w-600">{{ dataParents.guardian_mobile_phone_number}}</label>
+                        </div>
+                        <div class="form-group mb-2 col-md-6">
+                          <label class="mb-1">{{ 'CONTENT.NIK' | translate }}</label> <br>
+                          <label class="form-label f-w-600">{{ dataParents.guardian_identify_number}}</label>
+                        </div>
+                      </div>
+                    </div>
+                  </app-card>
+                </div>
+              </div>
+            </ng-template>
+          </ngb-tab>
+          <ngb-tab id="tabDocument" title="Dokumen">
+            <ng-template ngbTabContent>
+              <div class="col-md-12 mt-2">
+                <app-card headerClass="text-center text-md-left" [hidHeader]="true" [options]="false"
+                  [loading]="loadTableDocument">
+                  <div class="table-responsive pb-1 mt-2">
+                    <table class="table table-striped mb-0 table-sm dataTable">
+                      <thead>
+                        <tr>
+                          <th scope="col" class="text-center">{{ 'CONTENT.no' | translate }}</th>
+                          <th scope="col">{{ 'CONTENT.document-name' | translate }}</th>
+                          <th scope="col" class="text-center">{{ 'CONTENT.status-document' | translate }}</th>
+                          <th scope="col" class="text-center col-width filter-dropdown-style">{{
+                            'CONTENT.status-approved' |
+                            translate }}</th>
+                          <th scope="col" class="text-center">{{ 'CONTENT.approved' | translate}}</th>
+                          <th scope="col" class="text-center">{{ 'CONTENT.action' | translate }}</th>
+                        </tr>
+                      </thead>
+                      <tbody *ngIf="tableDocument?.length != 0">
+                        <tr *ngFor="let data of tableDocument | slice: (pageDocumentTable-1) * 10 : pageDocumentTable * 10; let i = index;">
+                          <td class="text-center pl-1 pr-1">{{ (pageDocumentTable-1) * 10 + (i + 1) }}.</td>
+                          <td>
+                            {{data.new_student_document_type}}
+                          </td>
+                          <td class="text-center">
+                            <span *ngIf="data.document != null &&  data.document_type_id !== 7"
+                              [class]="data.document.url == null ? 'badge badge-light-danger' : 'badge badge-light-success'">
+                              <i
+                                [class]="data.document.url == null ? 'icofont icofont-error' : 'icofont icofont-tick-mark'"></i>
+                              {{ data.document.url == null ? ('CONTENT.not-complete' | translate) : ('CONTENT.complete'
+                              | translate) }}
+                            </span>
+                            <span *ngIf="data.document == [] && data.document_type_id !== 7"
+                              [class]="'badge badge-light-danger'">
+                              <i [class]="'icofont icofont-error'"></i> {{ 'CONTENT.not-complete' | translate }}
+                            </span>
+                            <span *ngIf="data.document == null && data.document_type_id !== 7"
+                              class="badge badge-light-danger">
+                              <i [class]="'icofont icofont-error'"></i> {{ 'CONTENT.not-complete' | translate }}
+                            </span>
+                          </td>
+                          <td class="center-table font-styling">
+                            <div *ngIf="data.document != null && data.document_type_id != 7">
+                              <span *ngIf="data.document.approval_final_status == true" class="badge badge-success">{{ 'CONTENT.approve' |
+                                translate }}</span>
+                              <span *ngIf="data.document.approval_final_status == false" class="badge badge-danger">{{
+                                'ROOT.rejected' | translate }}</span>
+                              <span *ngIf="data.document.approval_final_status == null" class="badge badge-secondary">{{
+                                'CONTENT.not-specified' | translate }}</span>
+                              </div>
+                              <div *ngIf="data.document == null && data.document_type_id != 7">
+                                <span class="badge badge-secondary">{{
+                                  'CONTENT.not-specified' | translate }}</span>
+                                </div>
+                          </td>
+                          <td class="text-center">
+                            <div *ngIf="data.document != null">
+                              <a *ngIf="data.document_type_id != 7" class="mr-2 pointer-custom" [placement]="'left'" [ngbTooltip]="'CONTENT.setujui' | translate"
+                                (click)="submitDocumentApproval(data)"><i
+                                  class="icofont icofont-check-circled f-w-600 f-16 text-c-green"></i></a>
+                              <a *ngIf="data.document_type_id != 7" class="mr-2 pointer-custom" [placement]="'left'" [ngbTooltip]="'CONTENT.tolak' | translate"
+                                (click)="showRejected(data)"><i
+                                  class="icofont icofont-close-circled f-w-600 f-16 text-c-red"></i></a>
+                              <a *ngIf="data.document != null && data.document_type_id != 7 && data.document.approval_final_status == false" class="mr-2 pointer-custom" [placement]="'left'" [ngbTooltip]="'CONTENT.rejected-info' | translate"
+                                (click)="revisedData(data.document)"><i
+                                  class="icofont icofont-info-circle f-w-600 f-16 text-warning"></i></a>
+                            </div>
+                          </td>
+                          <td class="text-center">
+                            <a *ngIf="data.document != null && data.document_type_id != 7" class="mr-2 pointer-custom" [placement]="'left'" [ngbTooltip]="'ROOT.download' | translate"
+                            (click)="downloadDocument(data)"><i
+                              class="fas fa-cloud-download-alt f-w-600 f-16 text-primary"></i></a>
+                            <a *ngIf="data.document != null && data.document_type_id == 7" class="mr-2 pointer-custom" [placement]="'left'" [ngbTooltip]="'ROOT.detail' | translate"
+                            (click)="showTableDocument(data)"><i
+                              class="fas fa-eye f-w-600 f-16 text-info"></i></a>
+                          </td>
+                        </tr>
+                      </tbody>
+                      <tbody *ngIf="tableDocument?.length == 0 && !loadTableDocument">
+                        <tr>
+                          <td colspan="5" class="no-data-available text-center">
+                            <app-no-data-found message="{{ 'ROOT.no_data_found' | translate }}"></app-no-data-found>
+                          </td>
+                          <td class="hidden"></td>
+                          <td class="hidden"></td>
+                          <td class="hidden"></td>
+                          <td class="hidden"></td>
+                        </tr>
+                      </tbody>
+                      <tbody *ngIf="tableDocument?.length == 0 && loadTableDocument">
+                        <tr>
+                          <td colspan="5" class="no-data-available text-center">
+                            <app-no-data-found message="{{ 'ROOT.loading' | translate }}"></app-no-data-found>
+                          </td>
+                          <td class="hidden"></td>
+                          <td class="hidden"></td>
+                          <td class="hidden"></td>
+                          <td class="hidden"></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <ngb-pagination class="d-flex justify-content-center" [(page)]="pageDocumentTable" [pageSize]="10"
+                      [collectionSize]="tableDocument.length" [maxSize]="3" [boundaryLinks]="true">
+                    </ngb-pagination>
+                  </div>
+                </app-card>
+              </div>
+            </ng-template>
+          </ngb-tab>
+          <ngb-tab id="tabNim" title="Generate Nim">
+            <ng-template ngbTabContent>
+            <div class="row m-1">
+              <div class="form-group mt-2 mb-2 col-md-12 text-right">
+                <button class="btn btn-success btn-sm btn-round has-ripple btn-sm " (click)="generateNimEmail()" [disabled]="loading">
+                  <span *ngIf="loading" class="spinner-border spinner-border-sm" role="status"></span>
+                  <span *ngIf="loading" class="load-text"> Loading...</span>
+                  <span *ngIf="!loading" class="btn-text">
+                  <i class="fas fa-paper-plane"></i>  {{'CONTENT.generate-email-nim' | translate}}
+                  </span>
+                </button>
+              </div>
+              <h4 class="col-md-12 mb-3 font-family-custom">Data Mahasiswa</h4>
+              <div class="form-group mb-2 col-md-6">
+                <label class="mb-1">{{ 'CONTENT.fullname' | translate }}</label> <br>
+                <label class="form-label f-w-600">{{ dataEmailNim.account_name}}</label>
+              </div>
+              <div class="form-group mb-2 col-md-6">
+                <label class="mb-1">{{ 'CONTENT.registration-number' | translate }}</label> <br>
+                <label class="form-label f-w-600">{{ dataEmailNim.registration_number }}</label>
+              </div>
+              <div class="form-group mb-2 col-md-6">
+                <label class="mb-1">{{ 'CONTENT.selection-path' | translate }}</label> <br>
+                <label class="form-label f-w-600">{{ dataEmailNim.selection_path_name}}</label>
+              </div>
+              <div class="form-group mb-2 col-md-6">
+                <label class="mb-1">{{ 'CONTENT.study-program' | translate }}</label> <br>
+                <label class="form-label f-w-600">{{ dataEmailNim.study_program_branding_name }}</label>
+              </div>
+              <div class="form-group mb-2 col-md-6">
+                <label class="mb-1">{{ 'CONTENT.nim-institusi' | translate }}</label> <br>
+                <label class="form-label f-w-600">{{ dataEmailNim.student_id  ? dataEmailNim.student_id : '-' }}</label>
+              </div>
+              <div class="form-group mb-2 col-md-6">
+                <label class="mb-1">{{ 'CONTENT.email-institusi' | translate }}</label> <br>
+                <label class="form-label f-w-600">{{ dataEmailNim.university_email ? dataEmailNim.university_email : '-' }}</label>
+              </div>
+            </div>
+            </ng-template>
+          </ngb-tab>
+        </ngb-tabset>
+      </div>
+    </app-card>
+
+  </div>
+</div>
+
+<app-ui-modal #showTableDoc [containerClick]="false" dialogClass="modal-dialog-centered modal-lg" [hideFooter]="true"
+  [loading]="loadTableRaport">
+  <div class="app-modal-header">
+    <h5 class="modal-title">{{ 'CONTENT.raport-document-info' | translate }}</h5>
+    <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close"
+      (click)="showTableDocClose()"><span aria-hidden="true">&times;</span></button>
+  </div>
+  <div class="app-modal-body">
+    <div class="table-responsive pb-1">
+      <table class="table table-borderless table-sm table-boder-radius dataTable">
+        <thead class="thead-light">
+          <tr>
+            <th scope="col" class="custom-no">{{ 'CONTENT.no' | translate}}</th>
+            <th scope="col" style="text-align:center">{{ 'CONTENT.semester' | translate}}</th>
+            <th scope="col" class="text-center">{{ 'CONTENT.status-document' | translate }}</th>
+            <th scope="col" class="text-center">{{
+              'CONTENT.status-approved' | translate}}
+            </th>
+            <th scope="col" class="text-center">{{ 'CONTENT.approved' | translate}}</th>
+            <th scope="col" style="text-align:center">{{ 'CONTENT.action' | translate}}</th>
+            </tr>
+        </thead>
+        <tbody *ngIf="tableRaport?.length != 0">
+          <tr *ngFor="let data of tableRaport; let i = index">
+            <th scope="row" class="custom-no">{{ i+1 }}</th>
+            <td class="text-center">Semester {{ data.semester_id }} </td>
+            <td class="text-center">
+              <span [class]="data.url == null ? 'badge badge-light-danger' : 'badge badge-light-success'">
+                <i [class]="data.url == null ? 'icofont icofont-error' : 'icofont icofont-tick-mark'"></i>
+                {{ data.url == null ? ('CONTENT.not-complete' | translate) : ('CONTENT.complete' | translate) }}
+              </span>
+            </td>
+            <td class="center-table font-styling">
+              <div *ngIf="data.document_id != null">
+                <span *ngIf="data.approval_final_status == true" class="badge badge-success">{{ 'CONTENT.approve' |
+                  translate }}</span>
+                <span *ngIf="data.approval_final_status == false" class="badge badge-danger">{{
+                  'ROOT.rejected' | translate }}</span>
+                <span *ngIf="data.approval_final_status == null" class="badge badge-secondary">{{
+                  'CONTENT.not-specified' | translate }}</span>
+                </div>
+            </td>
+            <td class="text-center">
+              <div *ngIf="data.document_id != null">
+                <a class="mr-2 pointer-custom" [placement]="'left'" [ngbTooltip]="'CONTENT.setujui' | translate"
+                  (click)="submitDocumentApprovalRaport(data)"><i
+                    class="icofont icofont-check-circled f-w-600 f-16 text-c-green"></i></a>
+                <a class="mr-2 pointer-custom" [placement]="'left'" [ngbTooltip]="'CONTENT.tolak' | translate"
+                  (click)="showRejectedReport(data)"><i
+                    class="icofont icofont-close-circled f-w-600 f-16 text-c-red"></i></a>
+                <a *ngIf="data.approval_final_status == false" class="mr-2 pointer-custom" [placement]="'left'" [ngbTooltip]="'CONTENT.rejected-info' | translate"
+                  (click)="revisedDataReport(data)"><i
+                    class="icofont icofont-info-circle f-w-600 f-16 text-warning"></i></a>
+              </div>
+            </td>
+            <td class="text-center">
+              <a *ngIf="data.document_id != null" class="mr-2 pointer-custom" [placement]="'left'" [ngbTooltip]="'ROOT.download' | translate"
+              (click)="downloadDocumentRaport(data)"><i
+                class="fas fa-cloud-download-alt f-w-600 f-16 text-primary"></i></a>
+            </td>
+          </tr>
+        </tbody>
+        <tbody *ngIf="tableRaport?.length == 0 && !loadTableRaport">
+          <tr>
+            <td colspan="4" class="no-data-available text-center">
+              <app-no-data-found message="{{ 'ROOT.no_data_found' | translate }}"></app-no-data-found>
+            </td>
+            <td class="hidden"></td>
+            <td class="hidden"></td>
+            <td class="hidden"></td>
+          </tr>
+        </tbody>
+        <tbody *ngIf="tableRaport?.length == 0 && loadTableRaport">
+          <tr>
+            <td colspan="4" class="no-data-available text-center">
+              <app-no-data-found message="{{ 'ROOT.loading' | translate }}"></app-no-data-found>
+            </td>
+            <td class="hidden"></td>
+            <td class="hidden"></td>
+            <td class="hidden"></td>
+          </tr>
+        </tbody>
+      </table>
+      <ngb-pagination *ngIf="tableRaport.length == 0" class="d-flex justify-content-center" [(page)]="pageDocument"
+        [pageSize]="10" [collectionSize]="tableRaport.length" [maxSize]="3" [boundaryLinks]="true">
+      </ngb-pagination>
+    </div>
+  </div>
+</app-ui-modal>
+
+
+<app-ui-modal #revisedModals [containerClick]="false" dialogClass="modal-dialog-centered modal-l" [hideFooter]="true">
+  <div class="app-modal-header">
+    <h5 class="modal-title">{{ 'ROOT.add' | translate }} {{ 'CONTENT.revised' | translate }}</h5>
+    <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close"
+      (click)="closeRevisedModals()"><span aria-hidden="true">&times;</span></button>
+  </div>
+  <div class="app-modal-body">
+    <form class="md-float-material form-material" action="javascript:" [formGroup]="rejectedForm">
+      <div class="row mt-0">
+        <div class="col-sm-12">
+          <!-- <div class="form-group mb-2">
+            <label class="form-label mb-0 f-w-600">{{ 'CONTENT.status-approved' | translate }} </label> <br>
+            <span class="badge badge-light-danger">{{ 'ROOT.rejected' | translate}}</span>
+          </div> -->
+          <div class="form-group mb-2">
+            <!-- <label class="form-label mb-1 f-w-600">{{ 'CONTENT.notes' | translate }} </label> -->
+            <textarea class="form-control" formControlName="desc_rejected" placeholder="{{'CONTENT.rejected-placeholder' | translate}}" maxlength="150" required>
+            </textarea>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12 mb-0 mt-0 text-right">
+          <button type="submit" class="btn btn-success btn-sm" (click)="submitDocumentRejected()"
+            [disabled]="rejectedForm.invalid || this.loading">
+            <span *ngIf="this.loading" class="spinner-border spinner-border-sm" role="status"></span>
+            <span *ngIf="this.loading" class="load-text"> Loading...</span>
+            <span *ngIf="!this.loading" class="btn-text">
+              <i class="icofont icofont-location-arrow"></i> {{ 'ROOT.submit' | translate }}</span>
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</app-ui-modal>
+
+<app-ui-modal #revisedModalsInfo [containerClick]="false" dialogClass="modal-dialog-centered modal-l" [hideFooter]="true">
+  <div class="app-modal-header">
+    <h5 class="modal-title">{{ 'CONTENT.revised-title' | translate }}</h5>
+    <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close"
+      (click)="closeRevisedInfoModals()"><span aria-hidden="true">&times;</span></button>
+  </div>
+  <div class="app-modal-body">
+    <form class="md-float-material form-material" action="javascript:">
+      <div class="row">
+        <div class="col-sm-12">
+          <div class="form-group mb-2">
+            <label class="mb-1">{{ 'CONTENT.notes' | translate }} </label> <br>
+            <label class="form-label f-w-600">{{ dataApproval.approval_final_comment }}</label>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</app-ui-modal>

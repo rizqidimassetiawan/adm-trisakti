@@ -1,0 +1,92 @@
+<div class="row">
+    <div class="col-sm-12">
+        <app-card cardTitle="{{'CONTENT.questionnaire' | translate}}" cardClass="card-datatable" headerClass="text-center text-md-left" [hidHeader]="false" [options]="false" [loading]="loadtableQuestionData">
+            <div class="row">
+                <div class="col-sm-12 mt-2 text-center" *ngIf="questionnaireDesc?.length != 0 || questionnaireName?.length != 0">
+                    <h5><strong>{{questionnaireName}}</strong></h5>
+                </div>
+            </div>
+            <form [formGroup]="form">
+                <fieldset *ngFor="let question of questionData; let i = index;">
+                    <h6 class="mb-1 mt-2"><strong>{{ i+1 }}. {{question.detail}} <span class="required">*</span></strong></h6>
+                    <div class="col-md-12" *ngIf="question.question_type_id== 1">
+                        <fieldset>
+                            <input required id="{{question.id}}_answer5" type="text" (change)="onText(question.id,$event);" name="answerSelected{{question.id}}">
+                        </fieldset>
+                    </div>
+                    <div class="col-md-12" *ngIf="question.question_type_id== 2">
+                        <fieldset>
+                            <textarea name="answerSelected{{question.id}}" id="{{question.id}}_answer6" (change)="onParagraphText( question.id,$event);"></textarea>
+                        </fieldset>
+                    </div>
+                    <div class="col-md-12" *ngIf="question.answer_options?.length != 0 && question.question_type_id== 3">
+                        <fieldset class="custom-control custom-radio" *ngFor="let x of question.answer_options; let j = index;">
+                          <input type="radio" id="answer{{x.id}}" (change)="onRadioButtonChange(x, $event)" name="answerSelected{{question.id}}"
+                           class="custom-control-input" [value]="x.id" required>
+                           <label class="custom-control-label" for="answer{{x.id}}">{{x.value}}</label>
+                        </fieldset>
+                    </div>
+                    <div class="col-md-12" *ngIf="question.answer_options?.length != 0 && question.question_type_id== 4">
+                        <fieldset class="custom-control custom-checkbox" *ngFor="let x of question.answer_options; let j = index;">
+                            <input class="custom-control-input" id="answer{{x.id}}" alt="{{question.id}}" type="checkbox" name="answerSelected{{question.id}}" [value]="x.id" (change)="onCheckboxChange(x, $event)" required>
+                            <label class="custom-control-label" for="answer{{x.id}}">{{x.value}}</label>
+                        </fieldset>
+                    </div>
+                    <div class="col-md-12" *ngIf="question.answer_options?.length != 0 && question.question_type_id== 5">
+                        <fieldset>
+                            <select class="form-control" id="sel1" (change)="onDropdownSelected($event, question.answer_options)" name="answerSelected{{question.id}}">
+                              <option selected style="display: none;">Pilih Salah Satu</option>
+                                <option *ngFor="let x of question.answer_options; let j=index;" [value]="x.id"  [label]="x.value" ></option>
+                            </select>
+                        </fieldset>
+                    </div>
+                    <div class="col-md-12" *ngIf="question.question_type_id== 6">
+                        <fieldset>
+                            <input id="{{question.id}}_answer1" type="file">
+                        </fieldset>
+                    </div>
+                    <div class="col-md-6" *ngIf="question.question_type_id== 7">
+                        <fieldset>
+                            <input id="{{question.id}}_answer2" type="range" class="custom-range" min="0" max="5" step="0.5" (change)="changeLinear(question.id, $event)">
+                        </fieldset>
+                    </div>
+                    <div class="col-md-6" *ngIf="question.question_type_id== 8">
+                        <fieldset>
+                            <input id="{{question.id}}_answer3" type="date" (change)="onDate( question.id, $event);">
+                        </fieldset>
+                    </div>
+                    <div class="col-md-6" *ngIf="question.question_type_id== 9">
+                        <fieldset>
+                            <input id="{{question.id}}_answer4" type="time" (change)="onTime( question.id, $event);">
+                        </fieldset>
+                    </div>
+                </fieldset>
+            </form>
+            <div [hidden]="loadtableQuestionData" class="form-group mb-0 mt-4 text-center">
+                  <button type="submit" class="btn btn-primary btn-sm" (click)="sendQuistionnaire()" [disabled]="loadingQuestion">
+                    <span *ngIf="this.loadingQuestion" class="spinner-border spinner-border-sm" role="status"></span>
+                    <span *ngIf="this.loadingQuestion" class="load-text"> Loading...</span>
+                    <span *ngIf="!this.loadingQuestion" class="btn-text"><i class="ti-save"></i> {{ 'CONTENT.submit-questionnaire' | translate }}</span>
+                  </button>
+            </div>
+        </app-card>
+    </div>
+</div>
+
+<!-- Forms Modal -->
+<app-ui-modal #submitModal [containerClick]="false" [dialogClass]="'modal-md'" [hideFooter]="true">
+    <div class="app-modal-header">
+      <h5 class="modal-title">{{ 'CONTENT.questionnaire-submitted' | translate }}</h5>
+    </div>
+    <div class="app-modal-body">
+        <p class="modal-title text-center">{{ 'CONTENT.questionnaire-submitted-success' | translate }}</p>
+        <br>
+        <div class="form-group mb-0 mt-3 text-center">
+            <div class="btn-group">
+                <button type="submit" class="btn btn-primary btn-sm" (click)="gotoRegistration();">
+                    OK
+                </button>
+            </div>
+        </div>
+    </div>
+</app-ui-modal>

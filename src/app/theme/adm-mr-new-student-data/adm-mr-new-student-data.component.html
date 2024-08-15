@@ -1,0 +1,139 @@
+<div class="row">
+  <div class="col-md-12">
+    <app-card [hidHeader]="true" cardTitle="{{ 'MENU.program-data' | translate }}" cardClass="card-datatable"
+      headerClass="text-center text-md-left" [hidHeader]="false" [options]="false" [loading]="loadtableProgramData">
+      <form class="md-float-material form-material" action="javascript:">
+        <app-filter-container [loading]="false">
+          <div class="col-12 col-md-3">
+            <ng-select name="year" [allowClear]="false" [placeholder]="'CONTENT.selection-path-choosing' | translate"
+              [ngClass]="'filter'" [notFoundMsg]="'ROOT.no_data_found'|translate" [(ngModel)]="selectionPathSelected"
+              [options]="listSelectionPath" (selected)="applyFilter($event)" [ngModelOptions]="{standalone: true}">
+            </ng-select>
+          </div>
+          <!-- <div class="col-12 col-md-3 ml-auto">
+          <div class="row pl-3 pr-3">
+            <div class="col-6">
+              <button type="button" class="btn btn-outline-warning btn-sm btn-block" [disabled]="!selectionPathSelected || !mappingPathYearSelected" (click)="resetFilters()">
+                <i class="icofont icofont-refresh"></i> {{ 'CONTENT.reset-filter' | translate }}
+              </button>
+            </div>
+            <div class="col-6">
+              <button type="button" class="btn btn-outline-info btn-sm btn-block" [disabled]="!selectionPathSelected || !mappingPathYearSelected" (click)="applyFilters(activeStatusPassingGradeSelected, mappingPathYearSelected)">
+                <i class="icofont icofont-filter"></i> {{ 'CONTENT.apply-filter' | translate }}
+              </button>
+            </div>
+          </div>
+        </div> -->
+        </app-filter-container>
+        <div *ngIf="isApplyFilter" class="col-md-12">
+        <div class="row">
+          <div class="col-12 col-md-3"></div>
+          <div class="col-12 col-md-9 text-center text-md-right">
+            <button class="btn btn-outline-success btn-sm btn-round has-ripple btn-sm"
+              (click)="showModalDocument()">
+              <i class="icofont icofont-plus"></i>
+              {{ "CONTENT.add-data" | translate }}
+            </button>
+          </div>
+        </div>
+        </div>
+      </form>
+      <br />
+      <div *ngIf="isApplyFilter" class="table-responsive pb-1">
+        <table datatable class="table table-hover" [dtOptions]="dtOptions" [dtTrigger]="dtTrigger">
+          <thead class="thead-light">
+            <tr>
+              <th scope="col" style="padding-left: 10px; text-align: center">
+                {{ "CONTENT.no" | translate }}
+              </th>
+              <th scope="col">{{ "CONTENT.document-requirement" | translate }}</th>
+              <th scope="col" class="center-table">
+                {{ "CONTENT.action" | translate }}
+              </th>
+            </tr>
+          </thead>
+          <tbody *ngIf="tableData?.length != 0">
+            <tr *ngFor="let data of tableData; let i = index">
+              <th scope="row" style="padding-left: 10px; text-align: center">
+                {{ i + 1 }}
+              </th>
+              <td>{{ data.new_student_document_type }}</td>
+              <td class="center-table">
+                <button class="btn btn-outline-danger btn-sm btn-round has-ripple" (click)="deleteDocumentData(data)" [placement]="'left'"  ngbTooltip="{{'CONTENT.delete-requirement-doc' | translate}}">
+                  <i class="icofont icofont-ui-delete"></i>
+                  <span class="d-sm-none">
+                    {{ "ROOT.delete" | translate }}</span>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+          <tbody *ngIf="tableData?.length == 0 && !loadtableProgramData">
+            <tr>
+              <td colspan="3" class="no-data-available text-center">
+                <app-no-data-found message="{{ 'ROOT.no_data_found' | translate }}"></app-no-data-found>
+              </td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+            </tr>
+          </tbody>
+          <tbody *ngIf="tableData?.length == 0 && loadtableProgramData">
+            <tr>
+              <td colspan="3" class="no-data-available text-center">
+                Loading Data....
+              </td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div *ngIf="!isApplyFilter" class="text-center">
+        <div class="col-12 text-center pt-3 pb-1">
+          <app-no-data-found message="{{ 'CONTENT.choose_approval_filter' | translate }}"></app-no-data-found>
+        </div>
+      </div>
+    </app-card>
+  </div>
+</div>
+
+<!-- Forms Modal -->
+<app-ui-modal #myPersistenceModal [containerClick]="false" dialogClass="modal-dialog-centered modal-l"
+  [loading]="loading" [hideFooter]="true">
+  <div class="app-modal-header">
+    <h5 class="modal-title">
+      {{ "ROOT.add" | translate}} {{ "MENU.document-new-student" | translate }}
+    </h5>
+    <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close"
+      (click)="closeModalDocument()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="app-modal-body">
+    <form [formGroup]="documentForm" (ngSubmit)="createDocumentData()" class="md-float-material form-material"
+      action="javascript:">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="form-group col-md-12">
+            <label class="form-label m-b-0 f-w-600">{{ "CONTENT.document-requirement" | translate
+              }}<span style="color: red">*</span></label>
+              <ng-select [placeholder]="'CONTENT.document-requirement'|translate" formControlName="docname"
+              [(ngModel)]="documentSelected" [ngClass]="!documentSelected?'filter-dropdown is-invalid':(documentSelected?'filter-dropdown is-valid':'filter-dropdown')"
+              [notFoundMsg]="'CONTENT.document-name'|translate" name="student_foreign" [options]="listDocuments">
+            </ng-select>
+            <label *ngIf="!documentSelected" class="error text-danger small form-text">{{ 'ROOT.required' |
+              translate }}</label>
+          </div>
+          <div class="form-group mb-0 mt-2 text-right">
+              <button type="submit" class="btn btn-success btn-sm m-1" [disabled]="!documentForm.valid || loading">
+                <span *ngIf="this.loading" class="spinner-border spinner-border-sm" role="status"></span>
+                <span *ngIf="this.loading" class="load-text"> Loading...</span>
+                <span *ngIf="!this.loading" class="btn-text">{{ 'ROOT.submit' | translate }} <i
+                  class="icofont icofont-location-arrow"></i></span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="app-modal-footer"></div>
+</app-ui-modal>

@@ -1,0 +1,187 @@
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="div-merah col-12 col-md-12 mb-4">
+      <div class="row">
+        <img src="assets/images/vector/information.svg" alt="user image" class="align-top m-r-15 wid-40 img-cover-fit"
+          style="width:150px; height:150px; margin-left:40px; margin-right:15px;">
+        <div class="text-justify p-3 mt-3 middle-content">
+          <h6 class="font-weight-bold p-color">{{'CONTENT.information' | translate}}<br>
+            {{'CONTENT.sentence_of_reghistory2' | translate}}</h6>
+        </div>
+      </div>
+    </div>
+    <div></div>
+    <app-card cardTitle="{{'CONTENT.order_form' | translate}}" headerClass="text-center text-md-left"  [options]="false" [loading]="loading" [hidHeader]="false">
+      <div class="app-body">
+        <form class="md-float-material form-material" action="javascript:" [formGroup]="registrationDataForm"
+          (ngSubmit)="checkParticipantWithSelectionPath();">
+          <div class="form-group" >
+            <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.selection-path' | translate }}</label>
+            <!-- <ng-select *ngIf="!selectionProgram" [disabled]="!selectionProgram" [placeholder]="'CONTENT.selection-path-placeholder'|translate" [ngClass]="'custom bg-white'"></ng-select> -->
+            <ng-select name="selectionPath" formControlName="selection_path_id"
+              [placeholder]="'CONTENT.selection-path'|translate" required
+              [(ngModel)]="selectionPath" [options]="listSelectionPath"
+              (selected)="changeSelectionPath($event)"
+              [ngClass]="!selectionPath?'custom is-invalid':(selectionPath?'custom is-valid':'custom')"></ng-select>
+            <label *ngIf="!selectionPath" class="error jquery-validation-error small form-text invalid-feedback">{{
+              'CONTENT.please-choose' | translate }}{{ 'CONTENT.selection-path' | translate }}</label>
+          </div>
+          <div class="form-group" [hidden]="!selectionPath">
+            <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.description' | translate }}</label>
+            <input type="text" class="form-control" formControlName="notes"  readonly>
+           </div>
+          <div class="div-merah1 col-12 col-md-12 mt-2">
+            <div class="form-group form-check">
+              <input class="form-check-input ml-2" style="z-index: auto;" type="checkbox" [(ngModel)]="checklist"
+                [ngModelOptions]="{standalone: true}" name="checklist">
+              <h6 class="text-light text-setting ml-3 pt-3">{{ 'CONTENT.sentence_tac_newreg' | translate }}</h6>
+              <div *ngIf="!checklist" class="invalid-feedback">Mohon diceklis</div>
+            </div>
+          </div>
+
+          <div class="form-group mb-0 mt-4 text-right">
+              <button type="submit" class="btn btn-success btn-sm"
+              [disabled]="registrationDataForm.invalid || !selectionPath || !checklist  || this.loading">
+                <span *ngIf="this.loading" class="spinner-border spinner-border-sm" role="status"></span>
+                <span *ngIf="this.loading" class="load-text"> Loading...</span>
+                <span *ngIf="!this.loading" class="btn-text">{{ 'ROOT.submit' | translate }}  <i class="icofont icofont-location-arrow"></i> </span>
+              </button>
+              <br>
+          </div>
+        </form>
+      </div>
+    </app-card>
+  </div>
+</div>
+
+<app-ui-modal #modalStudent [dialogClass]="'modal-xl btn-page'">
+  <div class="app-modal-header">
+    <h5 class="modal-title text-primary text-center">{{ 'CONTENT.info' | translate }}</h5>
+    <!-- <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close" (click)="modalStudent.hide()"><span aria-hidden="true">&times;</span></button> -->
+  </div>
+  <div class="app-modal-body">
+    <h6>{{ 'CONTENT.sentence_form_order' | translate }}</h6>
+    <h6>{{ 'CONTENT.fullname' | translate }} : </h6>
+    <h6>{{ 'CONTENT.NIK' | translate }} : </h6>
+    <h6>{{ 'CONTENT.order_number' | translate }} : </h6>
+    <h6>{{ 'CONTENT.save_orderform' | translate }}</h6>
+    <br>
+    <h6>{{ 'CONTENT.nextstep' | translate }} </h6>
+    <!--Harusnya Collapse-->
+    <div>
+      <div>
+        <div class="card-header">
+          <label>{{ 'CONTENT.complete_reg_data' | translate }}</label>
+        </div>
+        <div>
+          <p class="mb-0">{{ 'CONTENT.sentence_complete_regdata' | translate }}</p>
+        </div>
+      </div>
+      <div>
+        <div class="card-header">
+          <label>{{ 'CONTENT.from_reg_payment' | translate }}</label>
+        </div>
+        <div>
+          <p class="mb-0">{{ 'CONTENT.sentence_reg_payment' | translate }}</p>
+          <br>
+          <div class="col-sm-6 text-right">
+            <button class="btn btn-primary btn-sm btn-round has-ripple" (click)="goToStudentProfile()">{{
+              'CONTENT.complete_reg_data' | translate }}</button>
+            <button class="btn btn-primary btn-sm btn-round has-ripple" (click)="goToRegistrationHistory()"> {{
+              'CONTENT.complete_reg_payment' | translate }}</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</app-ui-modal>
+
+<app-ui-modal #modalOrderForm  [loading]="loadingCard" [dialogClass]="'modal-lg'" [containerClick]="false" [hideFooter]="true" [hideHeader]="true">
+  <div class="app-modal-header">
+    <h5 style="text-align:center">{{ 'CONTENT.info' | translate }}</h5>
+  </div>
+  <div class="app-modal-body">
+          <form [formGroup]="registrationParticipantDataForm" class="md-float-material form-material" action="javascript:">
+        <h6 style="text-align:center" class="mt-1">
+          <i class="icofont icofont-check-circled text-success"></i>
+           {{ 'CONTENT.sentence_form_order' | translate }}
+        </h6>
+        <div class="form-group row mt-1">
+          <label for="fullname" class="col-sm-4 col-form-label">{{'CONTENT.fullname' | translate}}</label>
+          <div class="col-sm-8">
+            <input type="text" class="form-control" id="fullname" formControlName="fullname">
+          </div>
+        </div>
+        <div class="form-group row">
+          <label *ngIf="!showPassport" for="NIK" class="col-sm-4 col-form-label">{{'CONTENT.NIK' | translate}}</label>
+          <label *ngIf="showPassport" for="NIK" class="col-sm-4 col-form-label">{{'CONTENT.passport_number' | translate}}</label>
+          <div class="col-sm-8">
+            <input type="text" class="form-control" id="NIK" formControlName="NIK" >
+          </div>
+        </div>
+        <div class="form-group row">
+          <label for="registration_number" class="col-sm-4 col-form-label"><b>{{'CONTENT.registration-number' | translate}} </b></label>
+          <div class="col-sm-8">
+            <input type="text" class="form-control" id="registration_number" formControlName="registration_number" >
+            <h6 style="color:red">{{ 'CONTENT.save_orderform' | translate }}</h6>
+          </div>
+        </div>
+        <div class="form-group row">
+          <label for="payment_methodd" class="col-sm-4 col-form-label">{{'CONTENT.payment-method' | translate}} </label>
+          <div class="col-sm-8">
+            <input type="text" class="form-control" id="payment_methodd" formControlName="payment_methodd" >
+          </div>
+        </div>
+        <div  [hidden]="!isNotFinpay" class="form-group row">
+          <label for="payment_code" class="col-sm-4 col-form-label"> <b>{{'CONTENT.payment-code' | translate}}</b></label>
+          <div class="col-sm-8">
+            <input type="text" class="form-control" id="payment_code" formControlName="payment_code" >
+          </div>
+        </div>
+        <!-- <div class="col-12 col-sm-12 text-center">
+          <button class="btn btn-primary btn-sm btn-round has-ripple col-12 col-md-4 mb-2">{{
+          'MENU.registration_history' | translate }}</button>
+      </div> -->
+        <!-- <h6 style="text-align:center">{{ 'CONTENT.nextstep' | translate }} </h6> -->
+      </form>
+    <div [hidden]="!isNotFinpay" class="row mt-3">
+      <div class="col-sm-12">
+        <app-card [hidHeader]="true">
+          <a href="javascript:" *ngIf="isCollapseReg" class="text-dark" (click)="isCollapseReg = !isCollapseReg"
+            [attr.aria-expanded]="!isCollapseReg" aria-controls="collapseExample">
+            <h6>
+              <b>{{ 'CONTENT.panduan-pembayaran' | translate }}
+                <i class="feather icon-chevron-down"></i>
+              </b>
+            </h6>
+          </a>
+          <div id="collapseExample" [ngbCollapse]="isCollapseReg">
+            <a href="javascript:" class="text-dark" *ngIf="!isCollapseReg" (click)="isCollapseReg = !isCollapseReg"
+              [attr.aria-expanded]="!isCollapseReg" aria-controls="collapseExample">
+              <h6>
+                <b>{{ 'CONTENT.panduan-pembayaran' | translate }}
+                  <i class="feather icon-chevron-up"></i>
+                </b>
+              </h6>
+            </a>
+            <hr>
+            <p class="font">{{ 'CONTENT.cara-bayar' | translate }}</p>
+            <div style="text-align: center;">
+              <a href="https://smb.telkomuniversity.ac.id/wp-content/uploads/2020/11/PANDUAN-PEMBAYARAN-PIN-PENDAFTARAN.pdf" target="_blank" type="button" class="btn btn-sm btn-primary text-center col-12 col-sm-5 col-md-5 button-margin-top button-margin rounded"
+                ><i class="icofont icofont-bank"></i> {{'CONTENT.panduan-pembayaran' |
+                translate}}</a>
+            </div>
+          </div>
+        </app-card>
+      </div>
+    </div>
+    <!-- <div class="row"> -->
+      <div class="text-right">
+          <a class="btn btn-primary btn-sm btn-round has-ripple col-12 col-md-3 mt-1 mb-2"
+          href="/admission/registration-history">{{
+          'MENU.registration_history' | translate }}</a>
+      </div>
+    <!-- </div> -->
+  </div>
+</app-ui-modal>

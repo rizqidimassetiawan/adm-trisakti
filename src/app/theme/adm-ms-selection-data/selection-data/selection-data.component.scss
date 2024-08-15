@@ -1,0 +1,25 @@
+td{
+  table-layout:fixed;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+}
+th{
+  table-layout:fixed;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+}
+.center-table{
+  text-align: center;
+ }
+.width-mapping-table {
+  max-width: 200px;
+}
+.width-mapping-table-quota {
+  max-width: 100px;
+}
+.index-up {
+  z-index: 2 !important;
+}
+.required {
+  color: red;
+}

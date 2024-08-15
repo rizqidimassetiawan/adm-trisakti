@@ -1,0 +1,44 @@
+input[type=text], select {
+  width: 100%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.div-merah{
+  background: #1d4ea5;
+  margin-bottom: auto;
+  border-radius: 5px;
+  display: inline-block;
+}
+.p-color{
+  color: white;
+}
+.div-merah1{
+  background: linear-gradient(to right, #153374 0%, #4680ff 100%) !important;
+  border-radius: 5px;
+  display: inline-block;
+}
+.text-setting{
+  font-size: 10pt;
+}
+
+.index-up4 {
+  z-index: 4;
+}
+.index-up3 {
+  z-index: 3;
+}
+.index-up {
+  z-index: 1;
+}
+.font {
+  font-size: 10pt;
+}
+.middle-content {
+  display: flex;
+  align-items: center;
+}

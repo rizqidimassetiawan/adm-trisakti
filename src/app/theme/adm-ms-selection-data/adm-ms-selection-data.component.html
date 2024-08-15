@@ -1,0 +1,80 @@
+<!-- <p>Selection Data Management works!</p> -->
+<div class="row">
+    <div class="col-sm-12">
+      <app-card cardClass="card-datatable" headerClass="text-center text-md-left" [hidHeader]="true" [options]="false" [loading]="loadtableSelectionData">
+        <form class="md-float-material form-material" action="javascript:">
+            <div class="row mt-1 pl-2 pr-2">
+              <div class="col-md-3">
+                <div class="form-group mb-0">
+                  <ng-select name="active_status" [allowClear]="false" [placeholder]="'CONTENT.active-status' | translate" [ngClass]="'custom bg-white'"[notFoundMsg]="'ROOT.no_data_found'|translate" [(ngModel)]="activeStatus" (deselected)="onDeselected('activeStatus')"  [options]="listActiveStatusFilters" (selected)="applyFilter(activeStatus)"></ng-select>
+                </div>
+              </div>
+              <div class="col-9 text-center text-md-right">
+                <button class="btn btn-outline-success btn-sm btn-round has-ripple btn-sm " routerLink="/adm-ms-selection-data/selection-data">
+                  <i class="icofont icofont-plus"></i> {{'CONTENT.add-data' | translate}}
+                </button>
+              </div>
+            </div>
+        </form>
+        <br>
+        <div class="table-responsive pb-1">
+          <table datatable class="table table-hover" [dtOptions]="dtOptions" [dtTrigger]="dtTrigger">
+            <thead class="thead-light">
+              <tr>
+                <th scope="col" style="padding-left: 10px">{{ 'CONTENT.no' | translate}}</th>
+                <th scope="col" >{{ 'CONTENT.selection-name' | translate}}</th>
+                <th scope="col" class="center-table">{{ 'CONTENT.category-test-type' | translate}}</th>
+                <th scope="col" class="center-table">{{ 'CONTENT.active-status' | translate}}</th>
+                <th scope="col" class="center-table">{{ 'CONTENT.action' | translate}}</th>
+              </tr>
+            </thead>
+            <tbody *ngIf="tableData?.length != 0">
+              <tr *ngFor="let data of tableData; let i = index;">
+                <th scope="row" style="padding-left: 10px">{{ i+1 }}</th>
+                <td>{{ data.name }}</td>
+                <td class="text-center">{{ data.exam_status }}</td>
+                <td class="center-table">
+                  <span
+                  class="badge badge-{{ data.active_status_name === 'Aktif' ? 'success' : 'danger' }}">{{
+                  data.active_status_name === 'Aktif' ? ('ROOT.active' | translate) : ('ROOT.nonactive' | translate)
+                  | translate}}
+                </span>
+              </td>
+                <td class="center-table">
+                  <button class="btn btn-outline-warning btn-sm btn-round has-ripple" routerLink="/adm-ms-selection-data/selection-data/{{data.selection_path_id}}/{{data.active_status}}">
+                    <i class="icofont icofont-ui-edit"></i> <span class="d-sm-none"> {{'ROOT.edit' | translate}}</span>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+            <tbody *ngIf="tableData?.length == 0 && !loadtableSelectionData">
+              <tr>
+                <td colspan="5" class="no-data-available text-center">Data tidak ditemukan!</td>
+                <td class="hidden"></td>
+                <td class="hidden"></td>
+                <td class="hidden"></td>
+                <td class="hidden"></td>
+              </tr>
+            </tbody>
+            <tbody *ngIf="tableData?.length == 0 && loadtableSelectionData">
+              <tr>
+                <td colspan="5" class="no-data-available text-center">Loading Data....</td>
+                <td class="hidden"></td>
+                <td class="hidden"></td>
+                <td class="hidden"></td>
+                <td class="hidden"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </app-card>
+    </div>
+
+
+    <ng-template #showLoading>
+    <div class="d-flex justify-content-center">
+      <div class="spinner-border text-primary" role="status">
+        <span class="sr-only">Loading...</span>
+      </div>
+    </div>
+    </ng-template>

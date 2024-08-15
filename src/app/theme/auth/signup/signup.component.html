@@ -1,0 +1,104 @@
+<div class="auth-wrapper align-items-stretch aut-bg-img">
+  <app-card cardTitle="{{'CONTENT.personal_document' | translate}}" headerClass="text-center text-lg-left"
+    class="col-12 col-md-6 center-cards align-self-center" [hidHeader]="true">
+    <div class="row">
+      <div class="col-12 col-md-12 col-lg-5 p-4 text-center middle-content ">
+        <img src="assets/images/auth/signup-vector.svg" class="center d-none d-xl-block d-lg-block" alt="">
+      </div>
+      <div class="col-12 col-md-12 col-lg-7 p-4 text-left middle-content">
+        <span class="head-home">
+          <div class="row">
+            <div class="col-sm-2 col-md-2 text-center">
+              <img src="assets/images/auth/trisakti-blue.png" alt="" style="width: 65px; margin-left: auto; margin-right: auto;">
+            </div>
+            <div class="col-sm-10 col-md-10 text-left">
+              <h5 class="text-center text-primary m-0 pt-3">
+                {{ 'CONTENT.new-student-registration' | translate }} UNIVERSITAS TRISAKTI
+              </h5>
+            </div>
+          </div>
+          <hr class="head">
+          <form class="md-float-material form-material" action="javascript:" [formGroup]="registerDataForm"
+            (ngSubmit)="createSelectionData()">
+            <div class="row" [ngSwitch]="edit">
+              <div class="col-12 col-md-12" *ngSwitchDefault>
+                <div class="form-group mb-2">
+                  <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.fullname' | translate }}</label>
+                  <input type="text" class="form-control" required [placeholder]="'CONTENT.fullname' | translate"
+                    formControlName="name" maxLength="250" minlength="3">
+                  <label
+                    *ngIf="registerDataForm.controls.name.errors && registerDataForm.controls.name.errors.required && (registerDataForm.controls.name.touched || registerDataForm.controls.name.dirty)"
+                    class="error text-danger small form-text">{{ 'ROOT.required' | translate }}</label>
+                  <label
+                    *ngIf="registerDataForm.controls.name.errors && registerDataForm.controls.name.errors.minlength && (registerDataForm.controls.name.touched || registerDataForm.controls.name.dirty)"
+                    class="error text-danger small form-text">Tidak valid! Nama lengkap paling sedikit berisikan 3 huruf!</label>
+                  <label
+                    *ngIf="registerDataForm.controls.name.errors && registerDataForm.controls.name.errors.pattern && (registerDataForm.controls.name.touched || registerDataForm.controls.name.dirty)"
+                    class="error text-danger small form-text">Tidak valid! Nama lengkap hanya boleh berisikan huruf!</label>
+  
+                </div>
+                <div class="form-group mb-2">
+                  <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.phone_number' | translate }}</label>
+                  <input type="text" class="form-control" required
+                    [placeholder]="'CONTENT.placeholder-number' | translate" formControlName="phonenumber"
+                    maxlength="13" minlength="11">
+                  <label
+                    *ngIf="registerDataForm.controls.phonenumber.errors && registerDataForm.controls.phonenumber.errors.required && (registerDataForm.controls.phonenumber.touched || registerDataForm.controls.phonenumber.dirty)"
+                    class="error text-danger small form-text">{{ 'ROOT.required' | translate }}</label>
+                  <label
+                    *ngIf="registerDataForm.controls.phonenumber.errors && registerDataForm.controls.phonenumber.errors.pattern && (registerDataForm.controls.phonenumber.touched || registerDataForm.controls.phonenumber.dirty)"
+                    class="error text-danger small form-text">{{ 'CONTENT.number-only' | translate }}</label>
+                  <label
+                    *ngIf="registerDataForm.controls.phonenumber.errors && registerDataForm.controls.phonenumber.errors.minlength && (registerDataForm.controls.phonenumber.touched || registerDataForm.controls.phonenumber.dirty)"
+                    class="error text-danger small form-text">{{ 'CONTENT.min-length' | translate }}</label>
+                </div>
+                <div class="form-group mb-2">
+                  <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.email' | translate }}</label>
+                  <input type="email" class="form-control"
+                    pattern="^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)+$"
+                    oninput="setCustomValidity('')" required [placeholder]="'CONTENT.email' | translate"
+                    formControlName="email" maxLength="100"
+                    [ngClass]="registerDataForm.controls.email.invalid && (registerDataForm.controls.email.dirty || registerDataForm.controls.email.touched)?'is-invalid':(registerDataForm.controls.email.valid?'is-valid':'')">
+                  <label
+                    *ngIf="registerDataForm.controls.email.invalid && (registerDataForm.controls.email.dirty || registerDataForm.controls.email.touched )"
+                    id="validation-email-error"
+                    class="error jquery-validation-error small form-text invalid-feedback">{{
+                    'CONTENT.email-match' | translate}}</label>
+                </div>
+                <div class="form-group mb-0">
+                  <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.password' | translate }}</label>
+                  <input type="password" maxLength="12" class="form-control form-control-sm" id="password"
+                    formControlName="password" [placeholder]="'CONTENT.password' | translate" />
+                  <app-password-strength [passwordToCheck]="registerDataForm.value.password"
+                    (passwordStrength)="passwordValid($event)"></app-password-strength>
+                </div>
+                <div class="form-group mb-2">
+                  <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.confirm-password' | translate }}</label>
+                  <input type="password" (input)="checkPasswordRepeat($event)" class="form-control form-control-sm"
+                    maxLength="12" id="passwordRepeat" formControlName="passwordRepeat"
+                    placeholder="Ulangi pengisian kata sandi" />
+                  <div *ngIf="registerDataForm.controls.passwordRepeat.touched">
+                    <label *ngIf="!passwordRepeatIsValid" class="small form-text text-danger"
+                      id="validation-passwordRepeat-error">{{ 'CONTENT.password-match' | translate}}</label>
+                  </div>
+                </div>
+                <div class="form-group mb-0 mt-4 text-center">
+                  <button type="submit" class="btn btn-primary btn-sm btn-block"
+                    [disabled]="!(registerDataForm.valid && passwordIsValid && passwordRepeatIsValid) || loadingSignup">
+                    <span *ngIf="this.loadingSignup" class="spinner-border spinner-border-sm" role="status"></span>
+                    <span *ngIf="this.loadingSignup" class="load-text"> Loading...</span>
+                    <span *ngIf="!this.loadingSignup" class="btn-text">{{ 'CONTENT.register' |
+                      translate }} <i class="icofont icofont-location-arrow"></i></span>
+                  </button>
+                  <h6 class="mt-3 text-inverse f-w-400">Sudah memiliki akun?
+                    <a [routerLink]="['/auth/login']" style="color: cornflowerblue;"> Login</a>
+                  </h6>
+                </div>
+              </div>
+            </div>
+          </form>
+        </span>
+      </div>
+    </div>
+  </app-card>
+</div>

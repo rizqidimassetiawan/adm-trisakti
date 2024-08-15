@@ -1,0 +1,723 @@
+<!-- <p>Approval Data Management works!</p> -->
+<div class="page-header">
+  <div class="page-block">
+    <div class="text-md-left">
+      <div class="page-header-title">
+        <h5>{{ 'MENU.approval-data'| translate}}</h5>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-sm-12">
+    <app-card cardTitle="{{ 'MENU.approval-data' | translate }}" cardClass="card-datatable"
+      headerClass="text-center text-md-left" [hidHeader]="false" [options]="false" [loading]="loadtableApprovalData">
+      <div class="row align-items-center mb-2">
+        <div class="col-12 col-md-6 text-left text-md-left">
+          <button class="btn btn-secondary btn-sm btn-round has-ripple col-md-3" routerLink="/adm-mp-approval-data">
+            <i class="feather icon-chevron-left"></i> {{'ROOT.back' | translate}}
+          </button>
+        </div>
+        <!-- pascasarjana -->
+        <div class="col-12 col-md-6 text-right text-md-right">
+          <button [hidden]="!isPasca" class="btn btn-success btn-sm btn-round has-ripple col-md-5 button-margin-top"
+            (click)="exportPostGraduateExcel()" [disabled]="loadExportReg || !selectionYear">
+            <span *ngIf="loadExportReg" class="spinner-grow spinner-grow-sm" role="status"></span>
+            <span *ngIf="loadExportReg" class="load-text"> Loading...</span>
+            <span *ngIf="!loadExportReg" class="btn-text"><i class="ti-download"></i>
+              {{'CONTENT.export-approval-data-excel' | translate}}
+            </span>
+          </button>
+          <!-- non pascasarjana -->
+          <button [hidden]="isPasca" class="btn btn-success btn-sm btn-round has-ripple col-md-5 button-margin-top"
+            (click)="exportParticipantRegistration()" [disabled]="loadExportReg">
+            <span *ngIf="loadExportReg" class="spinner-grow spinner-grow-sm" role="status"></span>
+            <span *ngIf="loadExportReg" class="load-text"> Loading...</span>
+            <span *ngIf="!loadExportReg" class="btn-text">
+              <i class="ti-upload"></i>
+              {{'CONTENT.export-approval-data-excel' | translate}}
+            </span>
+          </button>
+          <button [disabled]="!selectionYear" class="btn btn-primary btn-sm btn-round has-ripple col-md-6 button-margin button-margin-top "
+            (click)="importExcelApprovalData()"> <i class="ti-download"></i>
+             {{'CONTENT.import-approval-data-excel' | translate}}
+          </button>
+        </div>
+        <div class="col-12 col-md-8 mt-2 mb-2 text-left text-md-left">
+          <form class="md-float-material form-material" action="javascript:">
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group mb-0 pl-2">
+                  <ng-select name="year" [allowClear]="true"
+                    [placeholder]="'CONTENT.selection-year-choosing' | translate" [ngClass]="'custom'"
+                    [notFoundMsg]="'ROOT.no_data_found'|translate" [(ngModel)]="selectionYear"
+                    [options]="listSelectionYear" (selected)="mappingPathYearChanged($event)"></ng-select>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div [hidden]="!isApplyFilter" class="col-12 col-md-4 text-right text-md-right mt-2">
+          <form class="md-float-material form-material" action="javascript:">
+            <div class="row">
+              <div class="col-md-12">
+                <div class="input-group">
+                  <input type="search" class="form-control"
+                    [placeholder]="'CONTENT.placeholder-registration-number'| translate" [(ngModel)]="searching"
+                    [ngModelOptions]="{standalone: true}" (keyup.enter)="searchData(searching)">
+                  <div class="input-group-append">
+                    <button class="btn color-searching" type="button" (click)="searchData(searching)"><i
+                        class="fas fa-search"></i></button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div [hidden]="!isApplyFilter" class="table-responsive pb-1">
+        <table class="table table-hover">
+          <thead class="thead-dark">
+            <tr>
+              <th scope="col" style="padding-left: 10px">{{ 'CONTENT.no' | translate}}</th>
+              <th scope="col">{{ 'CONTENT.registration-number' | translate}}</th>
+              <th scope="col" class="center-table">{{ 'CONTENT.selection-path' | translate}}</th>
+              <th scope="col" class="center-table">{{ 'CONTENT.study-program' | translate}}</th>
+              <th scope="col" class="center-table">{{ 'CONTENT.study-program-transfer' | translate}}</th>
+              <th scope="col" class="center-table">{{ 'CONTENT.total-score' | translate}}</th>
+              <th scope="col" class="center-table">{{ 'CONTENT.approval-status' | translate}}</th>
+              <th scope="col" class="center-table">{{ 'CONTENT.action' | translate}}</th>
+            </tr>
+          </thead>
+          <tbody *ngIf="dataResult?.length != 0">
+            <tr *ngFor="let data of dataResult | slice: (currentPage-currentPage) * pageSize; let i = index">
+              <th scope="row" style="padding-left: 10px">{{ i+from }}</th>
+              <td>{{ data.registration_number }}</td>
+              <td>{{ data.selection_path_name }}</td>
+              <td class="center-table">{{ data.study_program_name ? data.study_program_name : '-' }}</td>
+              <td class="center-table">{{ data.transfer_program_study_name ? data.transfer_program_study_name : '-' }}</td>
+              <td class="center-table">{{ data.total_score ? data.total_score : '-' }}</td>
+              <td class="center-table">
+                <span
+                  class="badge badge-{{ data.pass_status == false ? 'danger' : (data.pass_status == 1 ? 'success' : 'secondary') }}">{{
+                  data.pass_status == false ? ('ROOT.not_pass' | translate) : (data.pass_status == 1 ? 'ROOT.pass' :
+                  'CONTENT.pending_pass')
+                  | translate}}
+                </span>
+              </td>
+              <td class="center-table">
+                <button class="btn btn-warning btn-sm btn-round has-ripple" (click)="loadDetailApprovalData(data)">
+                  <i class="icofont icofont-ui-edit"></i> <span class="d-sm-none"> {{'ROOT.edit' | translate}}</span>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+          <tbody *ngIf="dataResult.length == 0 && !loadtableApprovalData">
+            <tr>
+              <td colspan="9" class="no-data-available text-center">Data tidak ditemukan!</td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+            </tr>
+          </tbody>
+          <tbody *ngIf="dataResult.length == 0  && loadtableApprovalData">
+            <tr>
+              <td colspan="9" class="no-data-available text-center">Loading Data....</td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="horizontal-scroll">
+          <div class="row col-12">
+            <ngb-pagination [pageSize]="pageSize" [collectionSize]="collectionSize" [boundaryLinks]="true" [maxSize]="5"
+              [(page)]="currentPage" (pageChange)="changePage($event)">
+            </ngb-pagination>
+
+          </div>
+        </div>
+      </div>
+      <div [hidden]="isApplyFilter" class="text-center">
+        <img src="assets/images/maintenance/no-data-found.jpg" alt="" style="max-width: 30%;">
+        <h6 style="color: red; font-style: italic;">Silakan memilih filter terlebih dahulu</h6>
+      </div>
+    </app-card>
+  </div>
+</div>
+
+<app-ui-modal #importApprovalModal [containerClick]="false" dialogClass="modal-dialog-centered"
+  [hideFooter]="true">
+  <div class="app-modal-header">
+    <h5 class="modal-title">{{ 'CONTENT.import-approval-data-excel' | translate }}</h5>
+    <button type="button" class="close basic-close" data-dismiss="modal" (click)="hideExcelForm()"
+      aria-label="Close"><span aria-hidden="true">&times;</span></button>
+  </div>
+  <div class="app-modal-body">
+    <form class="md-float-material form-material" action="javascript:" [formGroup]="importDataForm"
+      (ngSubmit)="createImportDataExcel()">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="form-group mb-2">
+            <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.council-date' | translate }} <span
+                class="required">*</span></label> <br>
+                <input type="date" class="form-control" name="council_date" required
+                formControlName="council_date" required>
+            <label
+              *ngIf="fi.council_date.errors && fi.council_date.errors.required && (fi.council_date.touched || fi.council_date.dirty)"
+              class="error text-danger small form-text">{{ 'CONTENT.please-input' | translate }}{{
+              'CONTENT.council-date'
+              | translate }}
+            </label>
+          </div>
+          <div class="form-group mb-2">
+            <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.step-1-end-date' | translate }} <span
+                class="required">*</span></label> <br>
+            <input type="date" class="form-control" name="step_1_end_date" required
+              formControlName="step_1_end_date" required>
+            <label
+              *ngIf="fi.step_1_end_date.errors && fi.step_1_end_date.errors.required && (fi.step_1_end_date.touched || fi.step_1_end_date.dirty)"
+              class="error text-danger small form-text">{{ 'CONTENT.please-input' | translate }}{{
+              'CONTENT.step-1-end-date'
+              | translate }}
+            </label>
+          </div>
+          <div class="form-group mb-2">
+            <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.step-2-end-date' | translate }} <span
+                class="required">*</span></label> <br>
+            <input type="date" class="form-control" name="step_2_end_date" required formControlName="step_2_end_date"
+              required>
+            <label
+              *ngIf="fi.step_2_end_date.errors && fi.step_2_end_date.errors.required && (fi.step_2_end_date.touched || fi.step_2_end_date.dirty)"
+              class="error text-danger small form-text">{{ 'CONTENT.please-input' | translate }}{{
+              'CONTENT.step-2-end-date'
+              | translate }}
+            </label>
+          </div>
+          <div class="form-group mb-2">
+            <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.step-3-start-date' | translate }} <span
+                class="required">*</span></label> <br>
+            <input type="date" class="form-control" name="step_3_start_date" required formControlName="step_3_start_date"
+              required>
+            <label
+              *ngIf="fi.step_3_start_date.errors && fi.step_3_start_date.errors.required && (fi.step_3_start_date.touched || fi.step_3_start_date.dirty)"
+              class="error text-danger small form-text">{{ 'CONTENT.please-input' | translate }}{{
+              'CONTENT.step-3-start-date'
+              | translate }}
+            </label>
+          </div>
+          <div class="form-group mb-2">
+            <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.step-3-end-date' | translate }} <span
+                class="required">*</span></label> <br>
+            <input type="date" class="form-control" name="step_3_end_date" required formControlName="step_3_end_date"
+              required>
+            <label
+              *ngIf="fi.step_3_end_date.errors && fi.step_3_end_date.errors.required && (fi.step_3_end_date.touched || fi.step_3_end_date.dirty)"
+              class="error text-danger small form-text">{{ 'CONTENT.please-input' | translate }}{{
+              'CONTENT.step-3-end-date'
+              | translate }}
+            </label>
+          </div>
+          <div class="form-group mb-2">
+            <label class="form-label m-b-2 f-w-600">{{'CONTENT.upload-file' | translate}} <span
+              class="required">*</span></label>
+            <input class="form-control" id="url" type="file" name="url" formControlName="url" accept=".xlsx"
+              (change)="changeImportFile($event)" />
+            <div *ngIf="errSize" class="text-danger mt-4 ml-1">Max 2MB!</div>
+            <div *ngIf="errType" class="text-danger mt-4 ml-1">Error file!</div>
+            <label
+              *ngIf="importDataForm.controls.url.errors && importDataForm.controls.url.errors.required && (importDataForm.controls.url.touched || importDataForm.controls.url.dirty)"
+              class="error text-danger small form-text">{{ 'ROOT.required' | translate }}</label>
+          </div>
+        </div>
+      </div>
+      <div class="form-group mb-0 mt-4 text-right">
+        <div class="btn-group">
+          <button type="submit" class="btn btn-primary btn-sm" [disabled]="importDataForm.invalid || loadingImport">
+            <span *ngIf="loadingImport" class="spinner-border spinner-border-sm" role="status"></span>
+            <span *ngIf="loadingImport" class="load-text"> Loading...</span>
+            <span *ngIf="!loadingImport" class="btn-text">
+              <i class="ti-save"></i> {{ 'ROOT.save' | translate }} </span>
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</app-ui-modal>
+
+<!-- Forms Modal -->
+<app-ui-modal #myPersistenceModal [containerClick]="false" dialogClass="modal-dialog-centered modal-xl"
+  [hideFooter]="true" [loading]="loadingModals">
+  <div class="app-modal-header">
+    <h5 class="modal-title">{{ 'MENU.approval-data' | translate }}</h5>
+    <button type="button" class="close basic-close" data-dismiss="modal" (click)="myPersistenceModal.hide()"
+      aria-label="Close"><span aria-hidden="true">&times;</span></button>
+  </div>
+  <div class="app-modal-body">
+    <form class="md-float-material form-material" action="javascript:" [formGroup]="approvalDetailDataForm"
+      (ngSubmit)="createDetailSelectionStepData()">
+      <div class="row" [ngSwitch]="edit">
+        <div class="col-sm-12" *ngSwitchDefault>
+          <div class="col-12 shadow bg-white rounded p-3 mt-1">
+            <div class="row">
+              <div class="col-6 text-left pt-2">
+                <h6>{{ 'MENU.approval-data' | translate }}</h6>
+              </div>
+            </div>
+            <hr>
+            <span class="required mt-2 mb-2">* Wajib diisi</span>
+            <div class="row">
+              <div class="form-group mb-2 col-md-6">
+                <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.registration-number' | translate }}</label>
+                <input type="text" readonly class="form-control" name="name" formControlName="registration_number">
+                <label id="validation-email-error"
+                  class="error jquery-validation-error small form-text invalid-feedback">{{
+                  'CONTENT.please-input' | translate }}{{ 'CONTENT.registration-number' | translate }}</label>
+                </div>
+              <div class="form-group mb-2 col-md-6">
+                <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.selection-path' | translate }}</label>
+                <input type="text" readonly class="form-control" name="name" formControlName="selection_path_name">
+                <label id="validation-email-error"
+                  class="error jquery-validation-error small form-text invalid-feedback">{{
+                  'CONTENT.please-choose' | translate }}{{ 'CONTENT.selection-path' | translate }}</label>
+              </div>
+            </div>
+            <div class="row">
+              <div class="form-group mb-2 col-md-3">
+                <h6 class="form-label m-b-0 f-w-600">{{ 'CONTENT.approval-status'| translate}} <span
+                    class="required">*</span></h6> <br>
+                <div class="custom-control custom-radio custom-control-inline">
+                  <input type="radio" id="approval-status1" class="custom-control-input" value="1"
+                    formControlName="pass_status" [(ngModel)]="passStatus"
+                    (ngModelChange)="passStatusChange(passStatus)">
+                  <label class="custom-control-label " for="approval-status1">{{ 'CONTENT.pass' | translate }}</label>
+                </div>
+                <div class="custom-control custom-radio custom-control-inline">
+                  <input type="radio" id="approval-status2" class="custom-control-input" value="0"
+                    formControlName="pass_status" [(ngModel)]="passStatus"
+                    (ngModelChange)="passStatusChange(passStatus)">
+                  <label class="custom-control-label" for="approval-status2">{{ 'CONTENT.not-pass' | translate
+                    }}</label>
+                </div>
+              </div>
+              <div class="form-group mb-2 col-md-3">
+                <h6 class="form-label m-b-0 f-w-600">{{ 'CONTENT.transfer-status'| translate}} <span
+                    class="required">*</span></h6> <br>
+                <div class="custom-control custom-radio custom-control-inline">
+                  <input type="radio" id="transfer-status1" class="custom-control-input" value="1"
+                    formControlName="transfer_status"  [(ngModel)]="transferStatus"
+                    (ngModelChange)="passStatusCheck(transferStatus)">
+                  <label class="custom-control-label " for="transfer-status1">{{ 'ROOT.yes' | translate }}</label>
+                </div>
+                <div class="custom-control custom-radio custom-control-inline">
+                  <input type="radio" id="transfer-status2" class="custom-control-input" value="0"
+                    formControlName="transfer_status"  [(ngModel)]="transferStatus"
+                    (ngModelChange)="passStatusCheck(transferStatus)">
+                  <label class="custom-control-label" for="transfer-status2">{{ 'ROOT.no' | translate
+                    }}</label>
+                </div>
+              </div>
+              <div class="form-group mb-2 col-md-2">
+                <h6 class="form-label m-b-0 f-w-600">{{ 'CONTENT.publication-status'| translate}} <span
+                    class="required">*</span></h6> <br>
+                <div class="custom-control custom-radio custom-control-inline">
+                  <input type="radio" id="publication-status1" class="custom-control-input" value="1"
+                    formControlName="publication_status">
+                  <label class="custom-control-label " for="publication-status1">{{ 'ROOT.yes' | translate }}</label>
+                </div>
+                <div class="custom-control custom-radio custom-control-inline">
+                  <input type="radio" id="publication-status2" class="custom-control-input" value="0"
+                    formControlName="publication_status">
+                  <label class="custom-control-label" for="publication-status2">{{ 'ROOT.no' | translate
+                    }}</label>
+                </div>
+              </div>
+              <div class="form-group mb-2 col-md-2">
+                <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.publication-date' | translate }} <span
+                    class="required">*</span></label>
+                <input type="date" class="form-control" name="publication_date" required
+                  formControlName="publication_date" required>
+                <label
+                  *ngIf="fap.publication_date.errors && fap.publication_date.errors.required && (fap.publication_date.touched || fap.publication_date.dirty)"
+                  class="error text-danger small form-text">{{ 'CONTENT.please-input' | translate }}{{
+                  'CONTENT.publication-date'
+                  | translate }}
+                </label>
+              </div>
+              <div class="form-group mb-2 col-md-2">
+                <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.total-score' | translate }} <span
+                    class="required">*</span></label>
+                    <input type="text" class="form-control" name="total-score" [readonly]="!raportPath"
+                    [placeholder]="'CONTENT.placeholder-score' | translate" required formControlName="total_score">
+                    <span *ngIf="!raportPath && !loadingCbt" class="badge badge-primary cursor-custom" (click)="generateScoreCbt()"><i class="icofont icofont-refresh"></i> {{ 'CONTENT.generate-score' | translate}}</span>
+                    <span *ngIf="!raportPath && loadingCbt" class="badge badge-primary cursor-custom">Loading..</span>
+                <label
+                  *ngIf="fap.total_score.errors && fap.total_score.errors.required && (fap.total_score.touched || fap.total_score.dirty)"
+                  class="error text-danger small form-text">{{ 'CONTENT.please-input' | translate }}{{
+                  'CONTENT.total-score'
+                  | translate }}
+                </label>
+              </div>
+            </div>
+            <div *ngIf="showProgramStudy" class="row">
+              <div *ngIf="!isTransferStatus || isPassStatuTransferStatus " class="form-group mb-2 col-md-12">
+                <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.study-program' | translate }} <span
+                    class="required">*</span></label>
+                <ng-select [placeholder]="'CONTENT.study-program'|translate" [ngClass]="'custom bg-white'"
+                  [notFoundMsg]="'ROOT.no_data_found'|translate" formControlName="mapping_registration_program_study_id"
+                  [(ngModel)]="programStudy" [options]="listProgramStudy" (selected)="getSpecializationStudyProgram(programStudy)">
+                </ng-select>
+                <label *ngIf="!programStudy" class="error text-danger small form-text">{{ 'CONTENT.please-choose' |
+                  translate }}</label>
+              </div>
+              <div *ngIf="isTransferStatus" class="form-group mb-2 col-md-12">
+                <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.study-program-transfer' | translate }} <span
+                    class="required">*</span></label>
+                <ng-select [placeholder]="'CONTENT.study-program'|translate" [ngClass]="'custom bg-white'"
+                  [notFoundMsg]="'ROOT.no_data_found'|translate" formControlName="transfer_status_study_program_id"
+                  [(ngModel)]="programStudyTransfer" [options]="listProgramStudy" (selected)="getSpecializationStudyProgram(programStudyTransfer)">
+                </ng-select>
+                <label *ngIf="!programStudyTransfer" class="error text-danger small form-text">{{ 'CONTENT.please-choose' |
+                  translate }}</label>
+              </div>
+            </div>
+            <div [hidden]="!showProgramStudy" class="row">
+              <div class="form-group mb-2 col-md-12">
+                <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.specialization' | translate }} <span
+                    class="required">*</span></label> <br>
+                    <ng-select [placeholder]="'CONTENT.specialization'|translate" [ngClass]="'custom bg-white'"
+                    [notFoundMsg]="'ROOT.no_data_found'|translate" formControlName="specialization_id"
+                    [(ngModel)]="specialization" [options]="listSpecialization">
+                  </ng-select>
+                  <label *ngIf="!specialization" class="error text-danger small form-text">{{ 'CONTENT.please-choose' |
+                    translate }}</label>
+              </div>
+            </div>
+            <div [hidden]="!showProgramStudy" class="row">
+              <div class="form-group mb-2 col-md-3">
+                <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.school-year' | translate }} <span
+                    class="required">*</span></label> <br>
+                <input type="text" class="form-control" name="school_year"
+                  [placeholder]="'CONTENT.placeholder-school-year' | translate" formControlName="school_year" required>
+                <label
+                  *ngIf="fap.school_year.errors && fap.school_year.errors.required && (fap.school_year.touched || fap.school_year.dirty)"
+                  class="error text-danger small form-text">{{ 'CONTENT.please-input' | translate }}{{
+                  'CONTENT.school-year'
+                  | translate }}
+                </label>
+              </div>
+              <div class="form-group mb-2 col-md-3">
+                <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.council-date' | translate }} <span
+                    class="required">*</span></label> <br>
+                    <input type="date" class="form-control" name="council_date" required
+                    formControlName="council_date" required>
+                <label
+                  *ngIf="fap.council_date.errors && fap.council_date.errors.required && (fap.council_date.touched || fap.council_date.dirty)"
+                  class="error text-danger small form-text">{{ 'CONTENT.please-input' | translate }}{{
+                  'CONTENT.council-date'
+                  | translate }}
+                </label>
+              </div>
+              <div class="form-group mb-2 col-md-6">
+                <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.beasiswa-id' | translate }} <span
+                    class="required">*</span></label> <br>
+                <input type="text" class="form-control" name="beasiswa_id" formControlName="beasiswa_id" required>
+                <label
+                  *ngIf="fap.beasiswa_id.errors && fap.beasiswa_id.errors.required && (fap.beasiswa_id.touched || fap.beasiswa_id.dirty)"
+                  class="error text-danger small form-text">{{ 'CONTENT.please-input' | translate }}{{
+                  'CONTENT.beasiswa-id'
+                  | translate }}
+                </label>
+              </div>
+            </div>
+            <div [hidden]="!showProgramStudy" class="row">
+              <div class="form-group mb-2 col-md-6">
+                <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.reference-number' | translate }} <span
+                    class="required">*</span></label> <br>
+                <input type="text" class="form-control" name="reference_number"
+                  [placeholder]="'CONTENT.placeholder-ref-number' | translate" formControlName="reference_number"
+                  required>
+                <label
+                  *ngIf="fap.reference_number.errors && fap.reference_number.errors.required && (fap.reference_number.touched || fap.reference_number.dirty)"
+                  class="error text-danger small form-text">{{ 'CONTENT.please-input' | translate }}{{
+                  'CONTENT.reference-number'
+                  | translate }}
+                </label>
+              </div>
+              <div class="form-group mb-2 col-md-6">
+                <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.old-student-id' | translate }}</label> <br>
+                <input type="text" class="form-control" name="old_student_id"
+                  [placeholder]="'CONTENT.old-student-id'  | translate" formControlName="old_student_id">
+              </div>
+            </div>
+            <div [hidden]="!showProgramStudy" class="row">
+              <div class="form-group mb-2 col-md-12">
+                <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.semester' | translate }} </label><span
+                  class="required">*</span> <br>
+                <input type="text" class="form-control" name="semester"
+                  [placeholder]="'CONTENT.semesters-info' | translate" formControlName="semester" maxlength="1">
+              </div>
+            </div>
+          </div>
+          <!-- <div [hidden]="!showProgramStudy" class="col-12 shadow bg-white rounded p-3 mt-4">
+            <div class="row">
+              <div class="col-6 text-left pt-2">
+                <h6>{{ 'CONTENT.cost' | translate }}</h6>
+              </div>
+            </div>
+            <hr>
+            <div class="row">
+              <div class="form-group mb-2 col-md-3">
+                <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.up3-nominal' | translate }} <span
+                    class="required">*</span></label>
+                <input type="text" class="form-control" name="up3" required formControlName="up3"
+                  [placeholder]="'CONTENT.placeholder-biaya' | translate" currencyMask
+                  [options]="{prefix: 'Rp', allowZero: true, align: 'left', precision: 0 }">
+                <label *ngIf="fap.up3.errors && fap.up3.errors.required && (fap.up3.touched || fap.up3.dirty)"
+                  class="error text-danger small form-text">{{ 'CONTENT.please-input' | translate }}{{
+                  'CONTENT.up3-nominal'
+                  | translate }}
+                </label>
+              </div>
+              <div class="form-group mb-2 col-md-3">
+                <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.bpp-nominal' | translate }} <span
+                    class="required">*</span></label>
+                <input type="text" class="form-control" name="bpp" required formControlName="bpp"
+                  [placeholder]="'CONTENT.placeholder-biaya' | translate" currencyMask
+                  [options]="{prefix: 'Rp', allowZero: true, align: 'left', precision: 0 }">
+                <label *ngIf="fap.bpp.errors && fap.bpp.errors.required && (fap.bpp.touched || fap.bpp.dirty)"
+                  class="error text-danger small form-text">{{ 'CONTENT.please-input' | translate }}{{
+                  'CONTENT.bpp-nominal'
+                  | translate }}
+                </label>
+              </div>
+              <div class="form-group mb-2 col-md-3">
+                <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.sdp2-nominal' | translate }} <span
+                    class="required">*</span></label>
+                <input type="text" class="form-control" name="sdp2" formControlName="sdp2" required
+                  currencyMask [options]="{prefix: 'Rp', allowZero: true, align: 'left', precision: 0 }">
+                <label *ngIf="fap.sdp2.errors && fap.sdp2.errors.required && (fap.sdp2.touched || fap.sdp2.dirty)"
+                  class="error text-danger small form-text">{{ 'CONTENT.please-input' | translate }}{{
+                  'CONTENT.sdp2-nominal'
+                  | translate }}
+                </label>
+              </div>
+              <div class="form-group mb-2 col-md-3">
+                <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.dormitory-nominal' | translate }} <span
+                    class="required">*</span></label>
+                <input type="text" class="form-control" name="dormitory" required formControlName="dormitory"
+                  [placeholder]="'CONTENT.placeholder-biaya' | translate" required currencyMask
+                  [options]="{prefix: 'Rp', allowZero: true, align: 'left', precision: 0 }">
+                <label
+                  *ngIf="fap.dormitory.errors && fap.dormitory.errors.required && (fap.dormitory.touched || fap.dormitory.dirty)"
+                  class="error text-danger small form-text">{{ 'CONTENT.please-input' | translate }}{{
+                  'CONTENT.dormitory-nominal'
+                  | translate }}
+                </label>
+              </div>
+              <div class="form-group mb-2 col-md-3">
+                <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.up3-nominal-discount' | translate }} <span
+                    class="required">*</span></label>
+                <input type="text" class="form-control" name="up3_disc" required formControlName="up3_disc"
+                  [placeholder]="'CONTENT.placeholder-biaya' | translate" required currencyMask
+                  [options]="{prefix: 'Rp', allowZero: true, align: 'left', precision: 0 }">
+                <label
+                  *ngIf="fap.up3_disc.errors && fap.up3_disc.errors.required && (fap.up3_disc.touched || fap.up3_disc.dirty)"
+                  class="error text-danger small form-text">{{ 'CONTENT.please-input' | translate }}{{
+                  'CONTENT.up3-nominal-discount'
+                  | translate }}
+                </label>
+              </div>
+              <div class="form-group mb-2 col-md-3">
+                <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.bpp-nominal-discount' | translate }} <span
+                    class="required">*</span></label>
+                <input type="text" class="form-control" name="bpp_disc" required formControlName="bpp_disc"
+                  [placeholder]="'CONTENT.placeholder-biaya' | translate" required currencyMask
+                  [options]="{prefix: 'Rp', allowZero: true, align: 'left', precision: 0 }">
+                <label
+                  *ngIf="fap.bpp_disc.errors && fap.bpp_disc.errors.required && (fap.bpp_disc.touched || fap.bpp_disc.dirty)"
+                  class="error text-danger small form-text">{{ 'CONTENT.please-input' | translate }}{{
+                  'CONTENT.bpp-nominal-discount'
+                  | translate }}
+                </label>
+              </div>
+              <div class="form-group mb-2 col-md-3">
+                <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.sdp2-nominal-discount' | translate }} <span
+                    class="required">*</span></label>
+                <input type="text" class="form-control" name="sdp2_disc" required formControlName="sdp2_disc"
+                  [placeholder]="'CONTENT.placeholder-biaya' | translate" required currencyMask
+                  [options]="{prefix: 'Rp', allowZero: true, align: 'left', precision: 0 }">
+                <label
+                  *ngIf="fap.sdp2_disc.errors && fap.sdp2_disc.errors.required && (fap.sdp2_disc.touched || fap.sdp2_disc.dirty)"
+                  class="error text-danger small form-text">{{ 'CONTENT.please-input' | translate }}{{
+                  'CONTENT.sdp2-nominal-discount'
+                  | translate }}
+                </label>
+              </div>
+              <div class="form-group mb-2 col-md-3">
+                <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.dormitory-nominal-discount' | translate }} <span
+                    class="required">*</span></label>
+                <input type="text" class="form-control" name="dormitory_disc" required formControlName="dormitory_disc"
+                  [placeholder]="'CONTENT.placeholder-biaya' | translate" currencyMask
+                  [options]="{prefix: 'Rp', allowZero: true, align: 'left', precision: 0 }">
+                <label
+                  *ngIf="fap.dormitory_disc.errors && fap.dormitory_disc.errors.required && (fap.dormitory_disc.touched || fap.dormitory_disc.dirty)"
+                  class="error text-danger small form-text">{{ 'CONTENT.please-input' | translate }}{{
+                  'CONTENT.dormitory-nominal-discount'
+                  | translate }}
+                </label>
+              </div>
+              <div class="form-group mb-2 col-md-3">
+                <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.insurance' | translate }} <span
+                    class="required">*</span></label>
+                <input type="text" class="form-control" name="insurance" required formControlName="insurance"
+                  [placeholder]="'CONTENT.placeholder-biaya' | translate" currencyMask
+                  [options]="{prefix: 'Rp', allowZero: true, align: 'left', precision: 0 }">
+                <label
+                  *ngIf="fap.insurance.errors && fap.insurance.errors.required && (fap.insurance.touched || fap.insurance.dirty)"
+                  class="error text-danger small form-text">{{ 'CONTENT.please-input' | translate }}{{
+                  'CONTENT.insurance'
+                  | translate }}
+                </label>
+              </div>
+            </div>
+          </div> -->
+          <div [hidden]="!showProgramStudy" class="col-12 shadow bg-white rounded p-3 mt-4">
+            <div class="row">
+              <div class="col-6 text-left pt-2">
+                <h6>{{ 'CONTENT.payment-schedule' | translate }}</h6>
+              </div>
+            </div>
+            <hr>
+            <div class="col-md-12 mt-1 row">
+              <div class="col-md-6">
+                <h6 class="mb-2 text-center">{{ 'CONTENT.up3-payment-date' | translate }}</h6>
+                <hr>
+                <div class="row">
+                  <div class="form-group mb-2 col-md-6">
+                    <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.start-date' | translate }} <span
+                        class="required">*</span></label> <br>
+                    <input type="date" class="form-control" name="up3_start_date" required
+                      formControlName="up3_start_date" required>
+                    <label
+                      *ngIf="fap.up3_start_date.errors && fap.up3_start_date.errors.required && (fap.up3_start_date.touched || fap.up3_start_date.dirty)"
+                      class="error text-danger small form-text">{{ 'CONTENT.please-input' | translate }}{{
+                      'CONTENT.start-date'
+                      | translate }}
+                    </label>
+                  </div>
+                  <div class="form-group mb-2 col-md-6">
+                    <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.end-date' | translate }} <span
+                        class="required">*</span></label> <br>
+                    <input type="date" class="form-control" name="up3_end_date" required formControlName="up3_end_date"
+                      required>
+                    <label
+                      *ngIf="fap.up3_end_date.errors && fap.up3_end_date.errors.required && (fap.up3_end_date.touched || fap.up3_end_date.dirty)"
+                      class="error text-danger small form-text">{{ 'CONTENT.please-input' | translate }}{{
+                      'CONTENT.end-date'
+                      | translate }}
+                    </label>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <h6 class="mb-2 text-center">{{ 'CONTENT.bpp-payment-date' | translate }}</h6>
+                <hr>
+                <div class="row">
+                  <div class="form-group mb-2 col-md-6">
+                    <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.start-date' | translate }} <span
+                        class="required">*</span></label> <br>
+                    <input type="date" class="form-control" name="bpp_start_date" required
+                      formControlName="bpp_start_date" required>
+                    <label
+                      *ngIf="fap.up3_start_date.errors && fap.bpp_start_date.errors.required && (fap.bpp_start_date.touched || fap.bpp_start_date.dirty)"
+                      class="error text-danger small form-text">{{ 'CONTENT.please-input' | translate }}{{
+                      'CONTENT.start-date'
+                      | translate }}
+                    </label>
+                  </div>
+                  <div class="form-group mb-2 col-md-6">
+                    <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.end-date' | translate }} <span
+                        class="required">*</span></label> <br>
+                    <input type="date" class="form-control" name="bpp_end_date" required formControlName="bpp_end_date"
+                      required>
+                    <label
+                      *ngIf="fap.bpp_end_date.errors && fap.bpp_end_date.errors.required && (fap.bpp_end_date.touched || fap.bpp_end_date.dirty)"
+                      class="error text-danger small form-text">{{ 'CONTENT.please-input' | translate }}{{
+                      'CONTENT.end-date'
+                      | translate }}
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-12 row">
+              <div class="col-md-12">
+                <h6 class="mb-2 mt-1 text-center">{{ 'CONTENT.sdp2-payment-date' | translate }}</h6>
+                <hr>
+                <div class="row">
+                  <div class="form-group mb-2 col-md-6">
+                    <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.start-date' | translate }} <span
+                        class="required">*</span></label>
+                    <input type="date" class="form-control" name="bpp_start_date" required
+                      formControlName="sdp2_start_date" required>
+                    <label
+                      *ngIf="fap.sdp2_start_date.errors && fap.sdp2_start_date.errors.required && (fap.sdp2_start_date.touched || fap.sdp2_start_date.dirty)"
+                      class="error text-danger small form-text">{{ 'CONTENT.please-input' | translate }}{{
+                      'CONTENT.start-date'
+                      | translate }}
+                    </label>
+                  </div>
+                  <div class="form-group mb-2 col-md-6">
+                    <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.end-date' | translate }} <span
+                        class="required">*</span></label>
+                    <input type="date" class="form-control" name="sdp2_end_date" required
+                      formControlName="sdp2_end_date" required>
+                    <label
+                      *ngIf="fap.sdp2_end_date.errors && fap.sdp2_end_date.errors.required && (fap.sdp2_end_date.touched || fap.sdp2_end_date.dirty)"
+                      class="error text-danger small form-text">{{ 'CONTENT.please-input' | translate }}{{
+                      'CONTENT.end-date'
+                      | translate }}
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="form-group mb-0 mt-4 text-right">
+            <div class="btn-group">
+              <button *ngIf="edit == 'input'" type="button" (click)="myPersistenceModal.hide()"
+                class="btn btn-secondary btn-sm">
+                <i class="icofont icofont-logout"></i> {{ 'ROOT.exit' | translate }}
+              </button>
+              <button type="submit" class="btn btn-primary btn-sm" (click)="myPersistenceModal.hide()"
+                [disabled]=" approvalDetailDataForm.invalid">
+                <i class="ti-save"></i> {{ 'ROOT.save' | translate }}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="app-modal-footer"></div>
+</app-ui-modal>
+
+
+<ng-template #showLoading>
+  <div class="d-flex justify-content-center">
+    <div class="spinner-border text-primary" role="status">
+      <span class="sr-only">Loading...</span>
+    </div>
+  </div>
+</ng-template>

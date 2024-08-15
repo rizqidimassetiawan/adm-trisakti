@@ -1,0 +1,112 @@
+<div class="row">
+  <div class="col-md-12">
+    <app-card [hidHeader]="true" cardTitle="{{ 'MENU.program-data' | translate }}" cardClass="card-datatable"
+      headerClass="text-center text-md-left" [hidHeader]="false" [options]="false" [loading]="loadtableData">
+      <form class="md-float-material form-material" action="javascript:">
+        <app-filter-container [loading]="false">
+          <div class="col-12 col-md-3">
+            <ng-select name="year" [allowClear]="false" [placeholder]="'CONTENT.selection-path-choosing' | translate"
+              [ngClass]="'filter'" [notFoundMsg]="'ROOT.no_data_found'|translate" [(ngModel)]="selectionPathSelected"
+              [options]="listSelectionPath" (selected)="loadFiterMappingPath($event)" [ngModelOptions]="{standalone: true}">
+            </ng-select>
+          </div>
+          <div class="col-12 col-md-2">
+            <ng-select name="year" [disabled]="!selectionPathSelected" [allowClear]="false" [placeholder]="'CONTENT.selection-year-choosing' | translate"
+              [ngClass]="'filter'" [notFoundMsg]="'ROOT.no_data_found'|translate" [(ngModel)]="mappingPathYearSelected"
+              [options]="listSelectionYear" (selected)="loadMappingPathYearId($event)"></ng-select>
+          </div>
+          <div class="col-12 col-md-3 ml-auto">
+            <div class="row pl-3 pr-3">
+              <div class="col-6">
+                <button type="button" class="btn btn-outline-warning btn-sm btn-block" [disabled]="!mappingPathYearSelected" (click)="resetFilters()">
+                  <i class="icofont icofont-refresh"></i> {{ 'CONTENT.reset-filter' | translate }}
+                </button>
+              </div>
+              <div class="col-6">
+                <button type="button" class="btn btn-outline-info btn-sm btn-block" [disabled]="!mappingPathYearSelected" (click)="applyFilter(selectionPathSelected, mappingPathYearSelected)">
+                  <i class="icofont icofont-filter"></i> {{ 'CONTENT.apply-filter' | translate }}
+                </button>
+              </div>
+            </div>
+          </div>
+        </app-filter-container>
+      </form>
+      <br />
+      <div *ngIf="isApplyFilter" class="table-responsive pb-1">
+        <table datatable class="table table-hover" [dtOptions]="dtOptions" [dtTrigger]="dtTrigger">
+          <thead class="thead-light">
+            <tr>
+              <th scope="col" style="padding-left: 10px; text-align: center">
+                {{ "CONTENT.no" | translate }}
+              </th>
+              <th scope="col" class="center-table">{{ "CONTENT.registration-number" | translate }}</th>
+              <th scope="col">{{ "CONTENT.fullname" | translate }}</th>
+              <th scope="col">{{ "CONTENT.selection-path" | translate }}</th>
+              <th scope="col" class="center-table">{{ 'CONTENT.status-registration' | translate }}</th>
+              <th scope="col" class="center-table">{{ 'CONTENT.status-kelengkapan-data' | translate }}</th>
+              <th scope="col" class="center-table">
+                {{ "CONTENT.action" | translate }}
+              </th>
+            </tr>
+          </thead>
+          <tbody *ngIf="tableData?.length != 0">
+            <tr *ngFor="let data of tableData; let i = index">
+              <th scope="row" style="padding-left: 10px; text-align: center">
+                {{ i + 1 }}
+              </th>
+              <td class="center-table">{{ data.registration_number }}</td>
+              <td>{{ data.account_name }}</td>
+              <td>{{ data.selection_path_name }}</td>
+              <td class="text-center">
+                <span class="badge badge-light-success" *ngIf="data.status_registration_name === 'Lengkap'"><i class="icofont icofont-tick-mark"></i> {{ 'CONTENT.complete' | translate}}</span>
+                <span class="badge badge-light-danger" *ngIf="data.status_registration_name === 'Belum Lengkap'"><i class="icofont icofont-error"></i> {{ 'CONTENT.not-complete' | translate}}</span>
+                </td>
+              <td class="text-center">
+                <span class="badge badge-light-success" *ngIf="data.completeness_registration_name === 'Lengkap'"><i class="icofont icofont-tick-mark"></i> {{ 'CONTENT.complete' | translate}}</span>
+                <span class="badge badge-light-danger" *ngIf="data.completeness_registration_name === 'Belum Lengkap'"><i class="icofont icofont-error"></i> {{ 'CONTENT.not-complete' | translate}}</span>
+                </td>
+              <td class="center-table">
+                <button class="btn btn-outline-info btn-sm btn-round has-ripple" [placement]="'left'"  ngbTooltip="{{'ROOT.detail' | translate}}" routerLink="/adm-mr-verification-document-data/adm-mr-detail-verification-document-data/{{data.registration_number}}/{{data.participant_id}}/{{data.id}}">
+                  <i class="icofont icofont-info-circle"></i>
+                  <span class="d-sm-none">
+                    {{ "ROOT.detail" | translate }}</span>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+          <tbody *ngIf="tableData?.length == 0 && !loadtableData">
+            <tr>
+              <td colspan="7" class="no-data-available text-center">
+                <app-no-data-found message="{{ 'ROOT.no_data_found' | translate }}"></app-no-data-found>
+              </td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+            </tr>
+          </tbody>
+          <tbody *ngIf="tableData?.length == 0 && loadtableData">
+            <tr>
+              <td colspan="7" class="no-data-available text-center">
+                Loading Data....
+              </td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div *ngIf="!isApplyFilter" class="text-center">
+        <div class="col-12 text-center pt-3 pb-1">
+          <app-no-data-found message="{{ 'CONTENT.choose_approval_filter' | translate }}"></app-no-data-found>
+        </div>
+      </div>
+    </app-card>
+  </div>
+</div>

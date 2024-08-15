@@ -1,0 +1,1532 @@
+<div class="row">
+  <div class="col-sm-12">
+    <app-card cardTitle="{{'MENU.registration_history' | translate}}" headerClass="text-center text-md-left"
+      [hidHeader]="true" [options]="false" [loading]="loadtableRegistrationHistory">
+      <div class="row align-items-center mb-2 mt-3">
+        <div class="col-12 text-center text-md-right">
+          <button class="btn btn-outline-primary btn-sm btn-round has-ripple"
+            routerLink="/new-registration">
+            <i class="icofont icofont-ui-note"></i> {{'CONTENT.order_form' | translate}}
+          </button>
+          <button type="button" (click)="panduanPembayaran()" disabled
+            class="btn btn-sm btn-outline-secondary text-center m-1"><i class="icofont icofont-bank-transfer-alt"></i>
+            {{'CONTENT.panduan-pembayaran' |
+            translate}}</button>
+        </div>
+      </div>
+      <div class="table-responsive pb-1 mt-2">
+        <table datatable class="table table-striped mb-0" [dtOptions]="dtOptions[0]" [dtTrigger]="dtTrigger">
+          <thead>
+            <tr>
+              <th scope="col" style="text-align:center">{{ 'CONTENT.no' | translate }}</th>
+              <th scope="col">{{ 'CONTENT.detail-pemesanan' | translate }}</th>
+              <th scope="col" style="text-align:center">{{ 'CONTENT.payment-status' | translate }}</th>
+              <th scope="col" style="text-align:center">{{ 'CONTENT.payment-step' | translate }}</th>
+              <th scope="col" style="text-align:center">{{ 'CONTENT.selection-path-step' | translate }}</th>
+            </tr>
+          </thead>
+          <tbody *ngIf="tableData?.length != 0">
+            <tr *ngFor="let data of tableData; let i = index;">
+              <th scope="row" style="padding-left: 10px; text-align:center ">{{i+1}}</th>
+              <td>
+                <div class="d-inline-block">
+                  <p class="m-b-0"><b>{{ 'CONTENT.registration-number' | translate }}. {{data.registration_number}}</b>
+                  </p>
+                  <p class="m-b-0"><b>{{ 'CONTENT.payment-code' | translate }}. {{data.payment_code ? data.payment_code
+                      : '-' }}</b></p>
+                  <p class="text-muted m-b-0">{{ 'CONTENT.order-date' | translate }} {{data.created_at | date:
+                    'dd/MM/yyyy'}}</p>
+                  <p class="text-muted m-b-0">{{ 'CONTENT.selection-path' | translate }} {{data.selection_path ?
+                    data.selection_path : "-" }}</p>
+                  <p class="text-muted m-b-0">{{ 'CONTENT.pin-price' | translate }} Rp{{data.price ? data.price : "-" }}
+                  </p>
+                </div>
+              </td>
+              <td class="text-center">
+                <span class="badge badge-light-success" *ngIf="data.payment_receipt_status === 'Lunas'">{{ 'CONTENT.paid' | translate}}</span>
+                <span class="badge badge-light-danger" *ngIf="data.payment_receipt_status === 'Belum Lunas'">
+                  {{ 'CONTENT.unpaid' | translate}}</span>
+                <span class="badge badge-light-warning" *ngIf="data.payment_receipt_status === 'In Progress'">{{ 'CONTENT.inprogress' | translate}}</span>
+                <p class="text-muted m-b-0">{{ 'CONTENT.payment-method' | translate }} {{data.payment_method ?
+                  data.payment_method : "-" }}</p>
+              </td>
+              <td class="text-center">
+                  <button class="btn btn-outline-warning btn-sm btn-round has-ripple" [placement]="'top'"
+                    ngbTooltip="{{'CONTENT.pin_activation_info' | translate}}"
+                    [disabled]="data.payment_receipt_status  === 'Lunas'"
+                    (click)="openFormValidationPayment(data, 'edit')">
+                    <i class="icofont icofont-ui-clip-board"></i> {{'CONTENT.pin_activation' |
+                      translate}}
+                  </button> <br>
+                  <button class="btn btn-outline-primary btn-sm btn-round has-ripple m-1" [placement]="'top'"
+                    ngbTooltip="{{'CONTENT.payment_confirmation_info' | translate}}"
+                    [disabled]="data.payment_receipt_status  === 'Lunas'"
+                    (click)="openFormPaymentConfirmation(data, 'edit');">
+                    <i class="icofont icofont-pay"></i>
+                      {{'CONTENT.payment_confirmation' | translate}}
+                  </button>
+              </td>
+              <td class="text-center">
+                <div class="btn-group">
+                  <button class="btn btn-outline-success btn-sm btn-round has-ripple" [placement]="'top'"
+                    ngbTooltip="{{'CONTENT.complete_reg_info' | translate}}" (click)="paymentAccepted(data);">
+                    <i class="icofont icofont-sub-listing"></i> {{'CONTENT.complete_reg' |
+                      translate}}
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+          <tbody *ngIf="tableData?.length == 0 && !loadtableRegistrationHistory">
+            <tr>
+              <td colspan="5" class="no-data-available text-center">
+                <app-no-data-found message="{{ 'ROOT.no_data_found' | translate }}"></app-no-data-found>
+              </td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+            </tr>
+          </tbody>
+          <tbody *ngIf="tableData?.length == 0  && loadtableRegistrationHistory">
+            <tr>
+              <td colspan="5" class="no-data-available text-center">
+                <app-no-data-found message="{{ 'ROOT.loading' | translate }}"></app-no-data-found>
+              </td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </app-card>
+  </div>
+</div>
+
+<app-ui-modal #paymentConfirmation [containerClick]="false" dialogClass="modal-dialog-centered modal-l" [hideFooter]="true">
+  <div class="app-modal-header">
+    <h5 class="modal-title">{{ 'CONTENT.payment-file-url' | translate }}</h5>
+    <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close"
+      (click)="paymentConfirmation.hide();"><span aria-hidden="true">&times;</span></button>
+  </div>
+  <div class="app-modal-body">
+    <form class="md-float-material form-material" action="javascript:" [formGroup]="registrationDataForm"
+      (ngSubmit)="submitPaymentConfirmation()">
+      <div class="row">
+        <div class="col-sm-12">
+          <app-alert type="info" class="text-justify">{{'CONTENT.information' | translate }}! <br> {{ 'CONTENT.info-payment-upload' | translate}}</app-alert>
+          <div class="form-group">
+            <label class="form-label mb-1 f-w-600" for="registration-number"><b>{{'CONTENT.registration-number' |
+                translate}} </b></label>
+            <input type="text" class="form-control" id="NIK" formControlName="registration_number">
+          </div>
+          <div class="form-group">
+            <label for="payment-method" class="form-label mb-1 f-w-600"><b>{{'CONTENT.payment-method' | translate}}
+              </b></label>
+            <input type="text" class="form-control" id="payment-method" formControlName="payment_method">
+          </div>
+          <div class="form-group">
+            <label for="registration-fee" class="form-label mb-1 f-w-600"><b>{{'CONTENT.registration-fee' | translate}}
+              </b></label>
+            <input type="text" class="form-control" id="registration-fee" formControlName="registration_fee">
+          </div>
+            <div class="form-group">
+              <label for="payment-file-text" class="form-label mb-2 f-w-600"><b>{{'CONTENT.payment-file-url' |
+                  translate}} : </b></label>
+              <input id="payment_file" class="form-control" type="file" name="payment_file"
+                formControlName="payment_url" required
+                accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx,.ppt,.ppt,.pptx"
+                (change)="submitFilePaymentConfirmation($event)" />
+              <div *ngIf="errSize" class="text-danger mt-4 ml-1">Max 5MB!</div>
+              <div *ngIf="errType" class="text-danger mt-4 ml-1">Error file!</div>
+            </div>
+            <div *ngIf="formType === 'edit'" class="form-group">
+              <label class="form-label mb-1 f-w-600">{{ "CONTENT.dokumen" | translate }}
+              </label>
+              <div *ngIf="listDocumentPayment.length !== 0" class="row">
+                <div *ngFor="let e of listDocumentPayment" class="col-12 col-xs-12 col-md-12">
+                  <div *ngIf="e.payment_url === null">
+                    <div class="m-1"> Data Tidak Ditemukan!</div>
+                  </div>
+                  <div *ngIf="e.payment_url !== null">
+                    <div class="card text-left mb-3">
+                      <div class="card-body p-2">
+                        <a [href]="e.payment_url" target="_blank" class="d-flex flex-row" title="Download"><i
+                            class="icofont icofont-file-document f-40 ml-0"></i>
+                          <p class="card-text pl-1 mb-0"> Bukti Pembayaran
+                          </p>
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div *ngIf="listDocumentPayment.length == 0" class="row">
+                <div class="col-12 mt-3 row"> Data Tidak Ditemukan!
+                </div>
+              </div>
+          </div>
+          <div class="form-group mb-0 mt-4 text-right">
+              <button type="submit" class="btn btn-success btn-sm"
+                [disabled]="registrationDataForm.invalid || this.loading">
+                <span *ngIf="this.loading" class="spinner-border spinner-border-sm" role="status"></span>
+                <span *ngIf="this.loading" class="load-text"> Loading...</span>
+                <span *ngIf="!this.loading" class="btn-text">{{ 'ROOT.submit' | translate }} <i class="icofont icofont-location-arrow"></i></span>
+              </button>
+            </div>
+          </div>
+        </div>
+    </form>
+  </div>
+</app-ui-modal>
+
+<app-ui-modal #validationPaymentModal [containerClick]="false" [dialogClass]="'modal-lg'" [hideFooter]="true"
+  [loading]="loadPayment">
+  <div class="app-modal-header">
+    <h5 class="modal-title">{{ 'CONTENT.payment-validation' | translate }}</h5>
+    <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close"
+      (click)="hideFormValidationPayment();"><span aria-hidden="true">&times;</span></button>
+  </div>
+  <div class="app-modal-body">
+    <form class="md-float-material form-material" action="javascript:" [formGroup]="paymentValidation">
+      <div class="col-sm-12">
+        <div class="form-group row">
+          <label class="form-label mb-1 f-w-600" for="registration-number"><b>{{'CONTENT.registration-number' |
+              translate}} </b></label>
+          <input type="text" class="form-control" id="registration_number" formControlName="registration_number">
+        </div>
+        <div class="form-group row">
+          <label class="form-label mb-1 f-w-600" for="selection_path"><b>{{'CONTENT.selection-path' |
+              translate}} </b></label>
+          <input type="text" class="form-control" id="selection_path" formControlName="selection_path">
+        </div>
+        <div class="form-group row">
+          <label for="registration-fee" class="form-label mb-1 f-w-600"><b>{{'CONTENT.registration-fee' | translate}}
+            </b></label>
+          <input type="text" class="form-control" id="registration-fee" formControlName="registration_fee">
+        </div>
+        <div class="form-group row">
+          <label for="text" class="form-label mb-1 f-w-600"><b>{{'CONTENT.payment-method' | translate}}
+            </b></label>
+          <input type="text" class="form-control" id="payment_method" formControlName="payment_method">
+        </div>
+        <div [hidden]="!isVoucher" class="form-group row">
+          <label *ngIf="isPinOfflineorVoucher == 4" for="text"
+            class="form-label mb-1 f-w-600 col-md-12 row"><b>{{'CONTENT.voucher-code' | translate}}
+            </b></label>
+          <label *ngIf="isPinOfflineorVoucher == 5" for="text"
+            class="form-label mb-1 f-w-600 col-md-12 row"><b>{{'CONTENT.pin-offline-code' | translate}}
+            </b></label>
+          <input *ngIf="!isPaidOff" type="text" class="form-control col-md-9" id="voucher_code"
+            [placeholder]="isPinOfflineorVoucher == 4 ? ('CONTENT.voucher-code' | translate) : ('CONTENT.pin-offline-code' | translate)"
+            formControlName="voucher_code" style="text-transform: uppercase;" maxlength="8" minlength="8">
+          <!-- <button *ngIf="!isPaidOff" type="submit" class="btn btn-primary btn-sm col-md-3 button-margin-top" [disabled]="paymentValidation.invalid" (click)="voucherVerify()">
+            <i class="ti-check"></i> {{ isPinOfflineorVoucher == 4 ? ('CONTENT.voucher-verification' | translate) : ('CONTENT.pin-verification' | translate) }}
+          </button> -->
+          <button *ngIf="!isPaidOff" type="submit" class="btn btn-primary btn-sm col-md-3 button-margin-top"
+            (click)="voucherVerify()" [disabled]="paymentValidation.invalid || this.loadPayment">
+            <span *ngIf="this.loadPayment" class="spinner-border spinner-border-sm" role="status"></span>
+            <span *ngIf="this.loadPayment" class="load-text"> Loading...</span>
+            <span *ngIf="!this.loadPayment" class="btn-text">
+              <i class="ti-check"></i> {{ isPinOfflineorVoucher == 4 ? ('CONTENT.voucher-verification' | translate) :
+              ('CONTENT.pin-verification' | translate) }}
+            </span>
+          </button>
+          <label
+            *ngIf="!isPaidOff && paymentValidation.controls.voucher_code.errors && paymentValidation.controls.voucher_code.errors.minlength && (paymentValidation.controls.voucher_code.touched || paymentValidation.controls.voucher_code.dirty)"
+            class="error text-danger small form-text">
+            {{ isPinOfflineorVoucher == 4 ? ('CONTENT.min-length-voucher' | translate ) : ( 'CONTENT.min-length-pin' |
+            translate )}}
+          </label>
+          <input *ngIf="isPaidOff" type="text" class="form-control col-md-12"
+            [placeholder]="isPinOfflineorVoucher == 4 ? ('CONTENT.voucher-code' | translate) : ('CONTENT.pin-offline-code' | translate)"
+            formControlName="vcode">
+        </div>
+        <div [hidden]="!isFinpay" class="form-group row">
+          <div class="row">
+            <label class="form-label mb-1 f-w-600 col-md-12"><b>{{'CONTENT.payment-status' | translate}}
+              </b></label>
+            <app-alert type="primary" class="text-center col-md-12">
+              <span class="badge badge-success mt-2 row" *ngIf="isLunas">Lunas</span>
+              <span class="badge badge-danger mt-2 row" *ngIf="!isLunas">Belum Lunas</span>
+              <br>
+              <span class="badge badge-success mt-1" *ngIf="isLunas">{{dataStatusBayar}}</span>
+              <span class="badge badge-danger mt-1" *ngIf="!isLunas">{{dataStatusBayar}}</span>
+              <br><button class="btn btn-light rounded btn-sm mt-1" (click)="getPinTransactionCheck()"
+                [disabled]="isLunas">
+                <i class="icofont icofont-refresh"></i> {{ 'CONTENT.update_status_payment' | translate }}
+              </button>
+              <p class="mt-1 text-sm">{{ 'CONTENT.update_info_bayar' | translate}}</p>
+            </app-alert>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</app-ui-modal>
+
+<app-ui-modal #registrationDone [containerClick]="false" [dialogClass]="'modal-xl'" [hideFooter]="true"
+  [loading]="loadingCard">
+  <div class="app-modal-header">
+    <h5 class="modal-title">Information</h5>
+    <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close"
+      (click)="resetWizard()"><span aria-hidden="true">&times;</span></button>
+  </div>
+  <div class="app-modal-body">
+    <div class="row">
+      <div class="col-md-12">
+        <form class="md-float-material form-material" action="javascript:" [formGroup]="registrationDetail">
+          <wizard #wizard class="arc-wizard" navBarLayout="large-empty-symbols">
+            <wizard-step stepTitle="{{'CONTENT.participant-data' | translate}}" navigationSymbol="1">
+              <app-alert type="success">
+                <h6><i class="fas fa-check-circle"></i> {{ 'CONTENT.registration_complete_info' | translate}}</h6>
+                <div class="col-sm-12 text-center">
+                  <button type="button" class="btn btn-sm btn-success rounded text-center"
+                    (click)="cetakKartuPeserta()"><i class="fas fa-print"></i> {{'CONTENT.print-participant-cards' |
+                    translate}}</button>
+                </div>
+              </app-alert>
+              <app-card headerClass="text-center text-md-left" cardTitle="{{'MENU.participant-data' | translate}}"
+                headerClass="text-center text-md-left" [options]="false">
+                <div class="row">
+                  <div class="form-group col-12 col-md-6">
+                    <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.registration-number' | translate }}</label>
+                    <input type="text" class="form-control" name="registration_number" readonly
+                      formControlName="registration_number">
+                  </div>
+                  <div class="form-group col-12 col-md-6">
+                    <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.selection-path' | translate }}</label>
+                    <input type="text" class="form-control" name="selection-path" readonly
+                      formControlName="selection_path">
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="form-group col-12 col-md-6">
+                    <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.fullname' | translate }}</label>
+                    <input type="text" class="form-control" name="registration_number" readonly
+                      formControlName="fullname">
+                  </div>
+                  <div class="form-group col-12 col-md-6">
+                    <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.phone_number' | translate }}</label>
+                    <input type="text" class="form-control" name="phone_number" readonly
+                      formControlName="mobile_phone_number">
+                  </div>
+                </div>
+              </app-card>
+              <!-- <app-card [hidden]="hiddenTime" cardTitle="{{'CONTENT.exam-implementation-data' | translate}}"
+                headerClass="text-center text-md-left" [hidHeader]="false" [options]="false">
+                <div [hidden]="hiddenLoc" class="form-group">
+                  <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.exam-location' | translate }}</label>
+                  <input type="text" class="form-control" name="exam-location" readonly formControlName="exam_location">
+                </div>
+                <div [hidden]="hiddenLoc" class="form-group">
+                  <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.exam-location-address' | translate }}</label>
+                  <input type="text" class="form-control" name="exam-location-address" readonly
+                    formControlName="exam_address">
+                </div> -->
+              <!-- <h6>{{ 'CONTENT.exam-session' | translate}}</h6>
+                <app-alert type="primary" class="text-center mt-0">
+                  <div *ngIf="dataSession.length !== 0" class="row text-center">
+                    <div *ngFor="let e of dataSession" class="col-12 col-xs-12 col-md-4">
+                      <div class="card alignment mb-3 mt-2">
+                        <div class="card-body alignment p-2">
+                          <h6 class="text-center">{{ 'CONTENT.session' | translate }} {{ e.session }}</h6>
+                          <h6 class="text-center">({{ e.exam_start_date | date: 'dd/MM/yyyy HH:mm' }} -
+                            {{e.exam_end_date | date: 'dd/MM/yyyy HH:mm' }})</h6>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row text-center" *ngIf="dataSession.length == 0">
+                    <h6>{{ 'ROOT.no_data_found' | translate}}</h6>
+                  </div>
+                </app-alert> -->
+              <!-- </app-card> -->
+              <div class="col text-center">
+                <button type="button" class="btn btn-secondary btn-sm" (click)="resetWizard()">{{'ROOT.close' |
+                  translate}}</button>
+                <button type="button" class="btn btn-primary btn-sm m-1" (click)="nextStepDocument()">{{'ROOT.next' |
+                  translate}}</button>
+              </div>
+            </wizard-step>
+            <wizard-step stepTitle="{{'CONTENT.document-data' | translate}}" navigationSymbol="2">
+              <app-card cardTitle="{{ 'CONTENT.document-requirements' | translate }}" cardClass="card-datatable"
+                headerClass="text-center text-md-left" [hidHeader]="false" [options]="false"
+                [loading]="loadtableSelectionDocumentData">
+                <div class="table-responsive pb-1">
+                  <table class="table table-boder-radius dataTable">
+                    <thead class="thead-light">
+                      <tr>
+                        <th scope="col" style="padding-left: 10px">{{ 'CONTENT.no' | translate}}</th>
+                        <th scope="col" style="text-align:center">{{ 'CONTENT.document-requirements' | translate}}</th>
+                        <th scope="col" style="text-align:center">{{ 'CONTENT.action' | translate}}</th>
+                      </tr>
+                    </thead>
+                    <tbody *ngIf="tableDataDocument?.length != 0">
+                      <tr
+                        *ngFor="let data of tableDataDocument | slice: (pageDocument-1) * 10 : pageDocument * 10; let i = index">
+                        <th scope="row" style="padding-left: 10px">{{ (pageDocument-1) * 10 + (i + 1) }}</th>
+                        <td>{{ data.document_name }} <span style="color: red;" *ngIf="data.required == 1">*</span></td>
+                        <td style="text-align:center">
+                          <button class="btn btn-primary btn-sm btn-round has-ripple"
+                            (click)="loadDetailDocumentRequirementData(data.document_type_id);">
+                            <i class="icofont icofont-eye"></i> <span class="d-sm-none"> {{'ROOT.edit' |
+                              translate}}</span>
+                          </button>
+                        </td>
+                      </tr>
+                    </tbody>
+                    <tbody *ngIf="tableDataDocument?.length == 0 && !loadtableSelectionDocumentData">
+                      <tr>
+                        <td colspan="3" class="no-data-available text-center">Data tidak ditemukan!</td>
+                        <td class="hidden"></td>
+                        <td class="hidden"></td>
+                      </tr>
+                    </tbody>
+                    <tbody *ngIf="tableDataDocument?.length == 0 && loadtableSelectionDocumentData">
+                      <tr>
+                        <td colspan="3" class="no-data-available text-center">Loading Data....</td>
+                        <td class="hidden"></td>
+                        <td class="hidden"></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <ngb-pagination class="d-flex justify-content-center" [(page)]="pageDocument" [pageSize]="10"
+                    [collectionSize]="tableDataDocument.length" [maxSize]="3" [boundaryLinks]="true">
+                  </ngb-pagination>
+                </div>
+              </app-card>
+              <app-card cardTitle="{{'CONTENT.choice-of-study-program' | translate}}"
+                headerClass="text-center text-md-left" [hidHeader]="false" [options]="false"
+                [loading]="loadtableRegistrationProgramStudyData">
+                <div class="table-responsive pb-1">
+                  <table class="table table-boder-radius dataTable">
+                    <thead class="thead-light">
+                      <tr>
+                        <th scope="col" style="text-align:center">{{ 'CONTENT.priority' | translate}}</th>
+                        <th scope="col">{{ 'CONTENT.faculty' | translate}}</th>
+                        <th scope="col" style="text-align:center">{{ 'CONTENT.study-program' | translate}}</th>
+                        <th [hidden]="isAnotherProgram" scope="col" style="text-align:center">{{ isPjjProgram === true ?
+                          ('CONTENT.sks' | translate ) : ('CONTENT.concentration' | translate )}}</th>
+                        <th [hidden]="isAnotherProgram" scope="col" style="text-align:center">{{ 'CONTENT.class-type' |
+                          translate }}</th>
+                        <th scope="col" style="text-align:center">{{ 'CONTENT.SDP2' | translate}}</th>
+                      </tr>
+                    </thead>
+                    <tbody *ngIf="tableDataProdi?.length != 0">
+                      <tr *ngFor="let data of tableDataProdi; let i = index;">
+                        <td style="text-align:center">{{ data.priority }}</td>
+                        <td>{{ data.faculty_name }}</td>
+                        <td style="text-align:center">{{ data.study_program_name }}</td>
+                        <td [hidden]="isAnotherProgram" style="text-align:center">{{ data.specialization_name }}</td>
+                        <td [hidden]="isAnotherProgram" style="text-align:center">{{ data.class_type }}</td>
+                        <td style="text-align:center">Rp{{ data.sdp_total }}</td>
+                      </tr>
+                    </tbody>
+                    <tbody *ngIf="tableDataProdi?.length == 0 && !loadtableRegistrationProgramStudyData">
+                      <tr>
+                        <td colspan="5" class="no-data-available text-center">Data tidak ditemukan!</td>
+                        <td class="hidden"></td>
+                        <td class="hidden"></td>
+                        <td class="hidden"></td>
+                        <td class="hidden"></td>
+                      </tr>
+                    </tbody>
+                    <tbody *ngIf="tableDataProdi?.length == 0 && loadtableRegistrationProgramStudyData">
+                      <tr>
+                        <td colspan="5" class="no-data-available text-center">Loading Data....</td>
+                        <td class="hidden"></td>
+                        <td class="hidden"></td>
+                        <td class="hidden"></td>
+                        <td class="hidden"></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </app-card>
+              <div class="col text-center">
+                <button type="button" class="btn btn-secondary btn-sm" previousStep>{{'ROOT.back' | translate}}</button>
+                <button type="button" class="btn btn-dark btn-sm m-1" (click)="resetWizard()">{{'ROOT.exit' |
+                  translate}}</button>
+              </div>
+            </wizard-step>
+          </wizard>
+        </form>
+      </div>
+    </div>
+  </div>
+</app-ui-modal>
+
+<!-- Forms Modal -->
+<app-ui-modal #transcriptRequirementModal [containerClick]="false" dialogClass="modal-dialog-centered modal-l"
+  [hideFooter]="true">
+  <div class="app-modal-header">
+    <h5 class="modal-title">{{ 'ROOT.upload' | translate }} {{ 'CONTENT.document-requirements' | translate }}</h5>
+    <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close"
+      (click)="closeTranscriptModal()"><span aria-hidden="true">&times;</span></button>
+  </div>
+  <div class="app-modal-body">
+    <form class="md-float-material form-material" action="javascript:" [formGroup]="transcriptDataForm">
+      <div class="row">
+        <div class="col-sm-12">
+          <div class="form-group mb-2">
+            <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.document-requirements' | translate }}</label>
+            <input type="text" class="form-control" formControlName="name" readonly>
+          </div>
+        </div>
+      </div>
+      <div [hidden]="isTranscript" class="row">
+        <div class="col-sm-12">
+          <div class="form-group mb-2">
+            <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.ipk-score' | translate }} <span
+                class="text-danger">*</span></label>
+            <input type="text" class="form-control" formControlName="gpa" placeholder="3.55">
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+          <div class="form-group mb-0">
+            <label class="form-label mb-1 f-w-600">{{ 'CONTENT.berkas_persyaratan' | translate }}
+            </label>
+            <div *ngIf="dataTranscriptUrlDoc.length !== 0" class="row">
+              <div *ngFor="let e of dataTranscriptUrlDoc" class="col-12 col-xs-12 col-md-12">
+                <div *ngIf="e.url === null">
+                  <div class="col-12 mt-1 row"> Data Tidak Ditemukan!</div>
+                </div>
+                <div *ngIf="e.url !== null">
+                  <div class="card text-left mb-3">
+                    <div class="card-body p-2">
+                      <a [href]="e.url" target="_blank" class="d-flex flex-row" title="Download"><i
+                          class="icofont icofont-file-document f-40 ml-0"></i>
+                        <p class="card-text pl-1 mb-0"> Transkrip Nilai
+                        </p>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div *ngIf="dataTranscriptUrlDoc.length == 0" class="row">
+              <div class="col-12 m-2"> Data Tidak Ditemukan!
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="app-modal-footer"></div>
+</app-ui-modal>
+
+<!-- Forms Modal -->
+<app-ui-modal #paymentAbilityModal [containerClick]="false" [dialogClass]="'modal-lg'" [hideFooter]="true">
+  <div class="app-modal-header">
+    <h5 class="modal-title">{{ 'CONTENT.document-requirements' | translate }}</h5>
+    <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close"
+      (click)="closePaymentAbilityModal();"><span aria-hidden="true">&times;</span></button>
+  </div>
+  <div class="app-modal-body">
+    <form [formGroup]="abilityDataForm" class="md-float-material form-material" action="javascript:">
+      <div class="row">
+        <div class="col-sm-12">
+          <div class="form-group mb-2">
+            <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.document-requirements' | translate }}</label>
+            <input type="text" class="form-control" name="document-requirements" required formControlName="name">
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+          <div class="form-group mb-2">
+            <label class="form-label mb-1 f-w-600">{{ 'CONTENT.berkas_persyaratan' | translate }}
+            </label>
+            <div *ngIf="dataAbilityUrl.length !== 0" class="row">
+              <div *ngFor="let e of dataAbilityUrl" class="col-12 col-xs-12 col-md-12">
+                <div *ngIf="e.supporting_url === null">
+                  <div class="col-12 mt-1 row"> Data Tidak Ditemukan!</div>
+                </div>
+                <div *ngIf="e.supporting_url !== null">
+                  <div class="card text-left mb-3">
+                    <div class="card-body p-2">
+                      <a [href]="e.supporting_url" target="_blank" class="d-flex flex-row" title="Download"><i
+                          class="icofont icofont-file-document f-40 ml-0"></i>
+                        <p class="card-text pl-1 mb-0"> {{e.document_name | shortener:[55, '..']}}
+                        </p>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div *ngIf="dataAbilityUrl.length == 0" class="row">
+              <div class="col-12 mt-3 row"> Data Tidak Ditemukan!
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="form-group mb-0 mt-4 text-right">
+        <div class="btn-group">
+          <button type="submit" class="btn btn-secondary btn-sm" (click)="closePaymentAbilityModal()">
+            <i class="ti-close"></i> {{ 'ROOT.close' | translate }}
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="app-modal-footer"></div>
+</app-ui-modal>
+
+<!-- Forms Modal -->
+<app-ui-modal #reportCardRequirementModal [containerClick]="false" [dialogClass]="'modal-xl'" [hideFooter]="true" [loading]="loadtableReportCardData">
+  <div class="app-modal-header">
+    <h5 class="modal-title">{{ 'CONTENT.document-requirements' | translate }}</h5>
+    <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close"
+      (click)="closeRaportDocumentModal();"><span aria-hidden="true">&times;</span></button>
+  </div>
+  <div class="app-modal-body modal-body">
+      <div class="table-responsive pb-1">
+        <table class="table table-boder-radius dataTable">
+          <thead class="thead-light">
+            <tr>
+              <th scope="col" style="padding-left: 10px">{{ 'CONTENT.no' | translate}}</th>
+              <th scope="col" style="text-align:center">{{ 'CONTENT.semester' | translate}}</th>
+              <th *ngIf="isMathStudy" scope="col" style="text-align:center">{{ 'CONTENT.math-score' | translate}}</th>
+              <th *ngIf="isBahasaStudy" scope="col" style="text-align:center">{{ 'CONTENT.indo-score' | translate}}</th>
+              <th *ngIf="isEnglishStudy" scope="col" style="text-align:center">{{ 'CONTENT.english-score' | translate}}
+              </th>
+              <th *ngIf="physicsStudy" scope="col" style="text-align:center">{{ 'CONTENT.physics-score' | translate}}
+              </th>
+              <th *ngIf="biologyStudy" scope="col" style="text-align:center">{{ 'CONTENT.biology-score' | translate}}
+              </th>
+              <th *ngIf="chemicalStudy" scope="col" style="text-align:center">{{ 'CONTENT.chemical-score' | translate}}
+              </th>
+              <th *ngIf="sociologicalStudy" scope="col" style="text-align:center">{{ 'CONTENT.sociology-score' |
+                translate}}</th>
+              <th *ngIf="economyStudy" scope="col" style="text-align:center">{{ 'CONTENT.economy-score' | translate}}
+              </th>
+              <th *ngIf="geographyStudy" scope="col" style="text-align:center">{{ 'CONTENT.geography-score' |
+                translate}}</th>
+              <th scope="col" style="text-align:center">{{ 'CONTENT.action' | translate}}</th>
+            </tr>
+          </thead>
+          <tbody *ngIf="tableDataRaport?.length != 0">
+            <tr *ngFor="let data of tableDataRaport; let i = index;">
+              <th scope="row" style="padding-left: 10px">{{ i+1 }}</th>
+              <td>{{ data.semesters }}</td>
+              <td *ngIf="isMathStudy" style="text-align:center">{{ data.math ? data.math : '-' }}</td>
+              <td *ngIf="isBahasaStudy" style="text-align:center">{{ data.bahasa ? data.bahasa : '-'}}</td>
+              <td *ngIf="isEnglishStudy" style="text-align:center">{{ data.english ? data.english : '-' }}</td>
+              <td *ngIf="physicsStudy" style="text-align:center">{{ data.physics ? data.physics : '-' }}</td>
+              <td *ngIf="biologyStudy" style="text-align:center">{{ data.biology ? data.biology : '-' }}</td>
+              <td *ngIf="chemicalStudy" style="text-align:center">{{ data.chemical ? data.chemical : '-' }}</td>
+              <td *ngIf="sociologicalStudy" style="text-align:center">{{ data.sociological ? data.sociological : '-' }}
+              </td>
+              <td *ngIf="economyStudy" style="text-align:center">{{ data.economy ? data.economy : '-'}}</td>
+              <td *ngIf="geographyStudy" style="text-align:center">{{ data.geography ? data.geography : '-' }}</td>
+              <td style="text-align:center">
+                <button class="btn btn-secondary btn-sm btn-round has-ripple"
+                  (click)="loadReportCardDetailFileData(data)">
+                  <i class="ti-download"></i> <span class="d-sm-none"> {{'ROOT.download' | translate}}</span>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+          <tbody *ngIf="tableDataRaport?.length == 0 && !loadtableReportCardData">
+            <tr>
+              <td colspan="12" class="no-data-available text-center">Data tidak ditemukan!</td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+            </tr>
+          </tbody>
+          <tbody *ngIf="tableDataRaport?.length == 0 && loadtableReportCardData">
+            <tr>
+              <td colspan="12" class="no-data-available text-center">Loading Data....</td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+  </div>
+  <div class="app-modal-footer"></div>
+</app-ui-modal>
+
+<!-- Forms Modal -->
+<app-ui-modal #certificateRequirementModal [containerClick]="false" [dialogClass]="'modal-xl'" [hideFooter]="true">
+  <div class="app-modal-header">
+    <h5 class="modal-title">{{ 'CONTENT.document-requirements' | translate }}</h5>
+    <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close"
+      (click)="closeCertificateDocumentModal();"><span aria-hidden="true">&times;</span></button>
+  </div>
+  <div class="app-modal-body modal-body">
+    <app-card cardTitle="{{ 'CONTENT.certificate' | translate }}" cardClass="card-datatable"
+      headerClass="text-center text-md-left" [hidHeader]="true" [options]="true" [loading]="loadtableCertificateData">
+      <div class="table-responsive pb-1">
+        <table class="table table-hover">
+          <thead class="thead-light">
+            <tr>
+              <th scope="col" style="padding-left: 10px">{{ 'CONTENT.no' | translate}}</th>
+              <th scope="col">{{ 'CONTENT.certificate-level' | translate}}</th>
+              <th scope="col">{{ 'CONTENT.certificate-type' | translate}}</th>
+              <th scope="col" style="text-align:center">{{ 'CONTENT.publication-year' | translate}}</th>
+              <th scope="col" style="text-align:center">{{ 'CONTENT.certificate-score' | translate}}</th>
+              <th scope="col" style="text-align:center">{{ 'CONTENT.action' | translate}}</th>
+            </tr>
+          </thead>
+          <tbody *ngIf="tableDataCertificate?.length != 0">
+            <tr *ngFor="let data of tableDataCertificate; let i = index;">
+              <th scope="row" style="padding-left: 10px">{{i+1}}</th>
+              <td>{{ data.certificate_level }}</td>
+              <td>{{ data.certificate_type }}</td>
+              <td style="text-align:center">{{ data.publication_year }}</td>
+              <td style="text-align:center">{{ data.certificate_score }}</td>
+              <td style="text-align:center">
+                <button class="btn btn-secondary btn-sm btn-round has-ripple"
+                  (click)="loadCertificateDetailFileData(data)">
+                  <i class="ti-download"></i> <span class="d-sm-none"> {{'ROOT.download' | translate}}</span>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+          <tbody *ngIf="tableDataCertificate?.length == 0 && !loadtableCertificateData">
+            <tr>
+              <td colspan="6" class="no-data-available text-center">Data tidak ditemukan!</td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+            </tr>
+          </tbody>
+          <tbody *ngIf="tableDataCertificate?.length == 0 && loadtableCertificateData">
+            <tr>
+              <td colspan="6" class="no-data-available text-center">Loading Data....</td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </app-card>
+  </div>
+  <div class="app-modal-footer"></div>
+</app-ui-modal>
+
+<!-- Forms Modal -->
+<app-ui-modal #recommendationLetterRequirementModal [containerClick]="false" [dialogClass]="'modal-lg'"
+  [hideFooter]="true">
+  <div class="app-modal-header">
+    <h5 class="modal-title">{{ 'CONTENT.document-requirements' | translate }}</h5>
+    <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close"
+      (click)="closeRecommendationLetterModal();"><span aria-hidden="true">&times;</span></button>
+  </div>
+  <div class="app-modal-body">
+    <form class="md-float-material form-material" action="javascript:" [formGroup]="supportingDataForm">
+      <div class="row">
+        <div class="col-sm-6">
+          <div class="form-group mb-2">
+            <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.pic-name' | translate }}</label>
+            <input type="text" class="form-control" formControlName="pic_name" name="picName">
+          </div>
+        </div>
+        <div class="col-sm-6">
+          <div class="form-group mb-2">
+            <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.pic-phone-number' | translate }}</label>
+            <input type="number" class="form-control" formControlName="pic_phone_number" name="picPhoneNumber">
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-6">
+          <div class="form-group mb-2">
+            <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.pic-email' | translate }}</label>
+            <input type="email" class="form-control" formControlName="pic_email_address" name="picEmail">
+          </div>
+        </div>
+        <div class="col-sm-6">
+          <div class="form-group mb-2">
+            <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.pic-address' | translate }}</label>
+            <input type="text" class="form-control" formControlName="pic_address" name="picAddress">
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+          <div class="form-group mb-2">
+            <label class="form-label mb-1 f-w-600">{{ 'CONTENT.berkas_persyaratan' | translate }}
+            </label>
+            <div *ngIf="dataRecommendationUrl.length !== 0" class="row">
+              <div *ngFor="let e of dataRecommendationUrl" class="col-12 col-xs-12 col-md-12">
+                <div *ngIf="e.supporting_url === null">
+                  <div class="col-12 mt-1 row"> Data Tidak Ditemukan!</div>
+                </div>
+                <div *ngIf="e.supporting_url !== null">
+                  <div class="card text-left mb-3">
+                    <div class="card-body p-2">
+                      <a [href]="e.supporting_url" target="_blank" class="d-flex flex-row" title="Download"><i
+                          class="icofont icofont-file-document f-40 ml-0"></i>
+                        <p class="card-text pl-1 mb-0"> {{e.document_name | shortener:[55, '..']}}
+                        </p>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div *ngIf="dataRecommendationUrl.length == 0" class="row">
+              <div class="col-12 mt-3 row"> Data Tidak Ditemukan!
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="form-group mb-0 mt-4 text-right">
+        <div class="btn-group">
+          <button type="submit" class="btn btn-secondary btn-sm" (click)="closeRecommendationLetterModal()">
+            <i class="ti-close"></i> {{ 'ROOT.close' | translate }}
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="app-modal-footer"></div>
+</app-ui-modal>
+
+<!-- Forms Modal -->
+<app-ui-modal #documentRequirementModal [containerClick]="false" [dialogClass]="'modal-lg'" [hideFooter]="true">
+  <div class="app-modal-header">
+    <h5 class="modal-title">{{ 'CONTENT.document-requirements' | translate }}</h5>
+    <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close"
+      (click)="closeRequirementDocumentModal();"><span aria-hidden="true">&times;</span></button>
+  </div>
+  <div class="app-modal-body">
+    <form [formGroup]="participantDocumentForm" class="md-float-material form-material" action="javascript:">
+      <div class="row">
+        <div class="col-sm-12">
+          <div class="form-group mb-2">
+            <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.document-req-name' | translate }}</label>
+            <input type="text" class="form-control" name="name" readonly formControlName="name">
+          </div>
+        </div>
+      </div>
+      <div class="row" *ngIf="isShowIdentityNumber">
+        <div class="col-sm-12">
+          <div class="form-group mb-2">
+            <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.identity-number' | translate }}</label>
+            <input type="text" class="form-control" name="number" formControlName="number"
+              placeholder="{{ 'CONTENT.identity-number' | translate }}">
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+          <div class="form-group mb-2">
+            <label class="form-label mb-1 f-w-600">{{ 'CONTENT.berkas_persyaratan' | translate }}
+            </label>
+            <div *ngIf="dataRequirementUrl.length !== 0" class="row">
+              <div *ngFor="let e of dataRequirementUrl" class="col-12 col-xs-12 col-md-12">
+                <div *ngIf="e.document_url === null">
+                  <div class="col-12 mt-1 row"> Data Tidak Ditemukan!</div>
+                </div>
+                <div *ngIf="e.document_url !== null">
+                  <div class="card text-left mb-3">
+                    <div class="card-body p-2">
+                      <a [href]="e.document_url" target="_blank" class="d-flex flex-row" title="Download"><i
+                          class="icofont icofont-file-document f-40 ml-0"></i>
+                        <p class="card-text pl-1 mb-0"> {{e.document_name ? e.document_name : e.document_type |
+                          shortener:[55, '..']}}
+                        </p>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div *ngIf="dataRequirementUrl.length == 0" class="row">
+              <div class="col-12 mt-3 row"> Data Tidak Ditemukan!
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="form-group mb-0 mt-4 text-right">
+        <div class="btn-group">
+          <button class="btn btn-secondary btn-sm" (click)="closeRequirementDocumentModal()">
+            <i class="ti-close"></i> {{ 'ROOT.close' | translate }}
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="app-modal-footer"></div>
+</app-ui-modal>
+
+<!-- Forms Modal -->
+<app-ui-modal #certificateDetailModal [containerClick]="false" [dialogClass]="'modal-lg'" [hideFooter]="true">
+  <div class="app-modal-header">
+    <h5 class="modal-title">{{ 'CONTENT.document-requirements' | translate }}</h5>
+    <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close"
+      (click)="certificateDetailModal.hide();"><span aria-hidden="true">&times;</span></button>
+  </div>
+  <div class="app-modal-body">
+    <form class="md-float-material form-material" action="javascript:" [formGroup]="certificateDataForm">
+      <div class="row">
+        <div class="form-group mb-2 col-md-6">
+          <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.certificate-level' | translate }}</label>
+          <input type="text" class="form-control" formControlName="certificate_level_id" name="description">
+        </div>
+        <div class="form-group mb-2 col-md-6">
+          <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.certificate-type' | translate }}</label>
+          <input type="text" class="form-control" formControlName="certificate_type_id" name="description">
+        </div>
+      </div>
+      <div class="row">
+        <div class="form-group mb-2 col-md-12">
+          <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.certificate-name' | translate }}</label>
+          <input type="text" class="form-control" formControlName="name" name="description"
+            [placeholder]="'CONTENT.certificate-name'|translate">
+        </div>
+      </div>
+      <div class="row">
+        <div class="form-group mb-2 col-md-12">
+          <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.certificate-description' | translate }}</label>
+          <input type="text" class="form-control" formControlName="description" name="description"
+            [placeholder]="'CONTENT.certificate-description'|translate">
+        </div>
+      </div>
+      <div class="row">
+        <div class="form-group mb-2 col-md-6">
+          <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.publication-year' | translate }}</label>
+          <input type="text" class="form-control" formControlName="publication_year" name="publicationYear"
+            [placeholder]="'CONTENT.publication-year'|translate">
+        </div>
+        <div class="form-group mb-2 col-md-6">
+          <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.certificate-score' | translate }}</label>
+          <input type="text" class="form-control" formControlName="certificate_score" name="certificateScore"
+            [placeholder]="'CONTENT.certificate-score'|translate">
+        </div>
+      </div>
+      <div class="row">
+        <div class="form-group col-md-6">
+          <label class="form-label mb-1 f-w-600">{{ 'CONTENT.certificate-file' | translate }}
+          </label>
+          <div *ngIf="listDocumentCertificate.length !== 0" class="row">
+            <div *ngFor="let e of listDocumentCertificate" class="col-12 col-xs-12 col-md-12">
+              <div *ngIf="e.certificate_url === null">
+                <div class="col-12 mt-1 row"> Data Tidak Ditemukan!</div>
+              </div>
+              <div *ngIf="e.certificate_url !== null">
+                <div class="card text-left mb-3">
+                  <div class="card-body p-2">
+                    <a [href]="e.certificate_url" target="_blank" class="d-flex flex-row" title="Download"><i
+                        class="icofont icofont-file-document f-40 ml-0"></i>
+                      <p class="card-text pl-1 mb-0"> {{e.certificate_name | shortener:[55, '..']}}
+                      </p>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div *ngIf="listDocumentCertificate.length == 0" class="row">
+            <div class="col-12 mt-3 row"> Data Tidak Ditemukan!
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="form-group mb-0 mt-2 text-right col-md-12">
+        <div class="btn-group">
+          <button type="button" (click)="certificateDetailModal.hide()" class="btn btn-secondary btn-sm">
+            <i class="ti-close"></i> {{ 'ROOT.close' | translate }}
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="app-modal-footer"></div>
+</app-ui-modal>
+
+<!-- Forms Modal -->
+<app-ui-modal #transcriptRequirementModalView [containerClick]="false" [dialogClass]="'modal-lg'" [hideFooter]="true">
+  <div class="app-modal-header">
+    <h5 class="modal-title">{{ 'ROOT.upload' | translate }} {{ 'CONTENT.document-requirements' | translate }}</h5>
+    <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close"
+      (click)="closeTranscriptRequirementModalView();"><span aria-hidden="true">&times;</span></button>
+  </div>
+  <div class="app-modal-body">
+    <form class="md-float-material form-material" action="javascript:" [formGroup]="transcriptDataForm">
+      <div class="col-md-12S">
+        <form [formGroup]="transcriptFormlView">
+          <!-- <div class="row"> -->
+          <!-- <div class="form-group mb-0 text-right">
+              <div class="btn-group">
+                <button type="submit" class="btn btn-danger btn-sm" (click)="deleteTranscriptDocument()">
+                  <i class="ti-trash"></i> {{ 'ROOT.delete' | translate }} {{'CONTENT.transcript-data' | translate}}
+                </button>
+              </div>
+            </div> -->
+          <!-- </div> -->
+          <div class="row">
+            <div class="col-sm-12">
+              <div class="form-group mb-2">
+                <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.document-requirements' | translate }}</label>
+                <input type="text" class="form-control" formControlName="name" readonly>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-6">
+              <div class="form-group mb-2">
+                <label class="form-label m-b-0 f-w-600">SKS yang telah diampu</label>
+                <input type="text" class="form-control" formControlName="totalCredit" readonly>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="form-group mb-2">
+                <label class="form-label m-b-0 f-w-600">Total Mata Kuliah</label>
+                <input type="text" class="form-control" formControlName="totalCourse" readonly>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12">
+              <div class="form-group mb-2">
+                <label class="form-label mb-1 f-w-600">{{ 'CONTENT.berkas_persyaratan' | translate }}
+                </label>
+                <div *ngIf="dataTranscriptUrl.length !== 0" class="row">
+                  <div class="col-12 col-xs-12 col-md-12">
+                    <div *ngIf="dataTranscriptUrl == null">
+                      <div class="col-12 mt-1 row"> Data Tidak Ditemukan!</div>
+                    </div>
+                    <div *ngIf="dataTranscriptUrl != null">
+                      <div class="card text-left mb-3">
+                        <div class="card-body p-2">
+                          <a [href]="dataTranscriptUrl" target="_blank" class="d-flex flex-row" title="Download"><i
+                              class="icofont icofont-file-document f-40 ml-0"></i>
+                            <p class="card-text pl-1 mb-0"> Transkrip Nilai Pendidikan Terakhir
+                            </p>
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div *ngIf="dataTranscriptUrl.length == 0" class="row">
+                  <div class="col-12 mt-3 row"> Data Tidak Ditemukan!
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="table-responsive pb-6">
+            <table class="table table-striped table-hover table-sm">
+              <thead class="thead-light bg-primarys">
+                <tr>
+                  <th scope="col" class="center-table" style="padding-left: 10px">{{ 'CONTENT.no' | translate}}</th>
+                  <th class="center-table" scope="col">{{ 'CONTENT.course-code' | translate}}</th>
+                  <th class="center-table" scope="col">{{ 'CONTENT.course-name' | translate}}</th>
+                  <th class="center-table" scope="col" class="center-table">{{ 'CONTENT.credit-hour' | translate}}</th>
+                  <th class="center-table" scope="col" class="center-table">{{ 'CONTENT.grade' | translate}}</th>
+                </tr>
+              </thead>
+              <tbody *ngIf="tableTranscript?.length != 0">
+                <tr *ngFor="let data of tableTranscript; let i = index;">
+                  <th class="center-table" scope="row" style="padding-left: 10px">{{ i+1 }}</th>
+                  <td class="center-table">{{data.course_code}}
+                  </td>
+                  <td class="center-table">{{ data.course_name }}</td>
+                  <td class="center-table">{{ data.credit_hour }}</td>
+                  <td class="center-table">{{ data.grade }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </form>
+      </div>
+    </form>
+  </div>
+  <div class="app-modal-footer"></div>
+</app-ui-modal>
+
+<app-ui-modal #utbkModals [containerClick]="false" [dialogClass]="'modal-lg'" [hideFooter]="true">
+  <div class="app-modal-header">
+    <h5 class="modal-title">{{ 'ROOT.upload' | translate }} {{ 'CONTENT.document-requirements' | translate }}</h5>
+    <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close"
+      (click)="closeUtbkModals();"><span aria-hidden="true">&times;</span></button>
+  </div>
+  <div class="app-modal-body">
+    <form class="md-float-material form-material" action="javascript:" [formGroup]="utbkForm">
+      <div class="row">
+        <p class="col-md-12"><span class="text-danger">* Wajib diisi</span></p>
+        <h5 class="col-md-12 text-center">{{'CONTENT.common-value' | translate}} <span class="text-danger">*</span></h5>
+      </div>
+      <hr class="text-bold">
+      <div class="row">
+        <div class="form-group mb-2 col-md-6">
+          <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.kpu-score' | translate }} </label>
+          <input type="text" class="form-control" formControlName="KPUScore" name="KPUScore"
+            [placeholder]="'CONTENT.placeholder-utbk'|translate">
+        </div>
+        <div class="form-group mb-2 col-md-6">
+          <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.pk-score' | translate }} </label>
+          <input type="text" class="form-control" [placeholder]="'CONTENT.placeholder-utbk'|translate"
+            formControlName="PKScore" name="PKScore">
+        </div>
+      </div>
+      <div class="row">
+        <div class="form-group mb-2 col-md-6">
+          <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.pdpu-score' | translate }} </label>
+          <input type="text" class="form-control" [placeholder]="'CONTENT.placeholder-utbk'|translate"
+            formControlName="PDPUScore" name="PDPUScore">
+        </div>
+        <div class="form-group mb-2 col-md-6">
+          <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.kmbdm-score' | translate }}</label>
+          <input type="text" class="form-control" [placeholder]="'CONTENT.placeholder-utbk'|translate"
+            formControlName="KMBDMScore" name="KMBDMScore">
+        </div>
+      </div>
+      <div class="row">
+        <div class="form-group mb-2 col-md-12">
+          <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.category-utbk' | translate }} <span
+              class="text-danger">*</span></label>
+          <input type="text" class="form-control" [placeholder]="'CONTENT.category-utbk'|translate"
+          formControlName="category" name="category-utbk">
+        </div>
+      </div>
+      <div class="row">
+        <div *ngIf="isSaintek" class="form-group mb-2 col-md-3">
+          <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.math-score' | translate }} <span
+              class="text-danger">*</span></label>
+          <input type="text" class="form-control" [placeholder]="'CONTENT.placeholder-utbk'|translate"
+            formControlName="math" name="math">
+        </div>
+        <div *ngIf="isSaintek" class="form-group mb-2 col-md-3">
+          <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.physics-score' | translate }} <span
+              class="text-danger">*</span></label>
+          <input type="text" class="form-control" formControlName="physics"
+            [placeholder]="'CONTENT.placeholder-utbk'|translate" name="physics">
+        </div>
+        <div *ngIf="isSaintek" class="form-group mb-2 col-md-3">
+          <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.chemical' | translate }} <span
+              class="text-danger">*</span></label>
+          <input type="text" class="form-control" [placeholder]="'CONTENT.placeholder-utbk'|translate"
+            formControlName="chemical" name="chemical">
+        </div>
+        <div *ngIf="isSaintek" class="form-group mb-2 col-md-3">
+          <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.biology' | translate }} <span
+              class="text-danger">*</span></label>
+          <input type="text" class="form-control" [placeholder]="'CONTENT.placeholder-utbk'|translate"
+            formControlName="biological" name="biological">
+        </div>
+        <div *ngIf="!isSaintek" class="form-group mb-2 col-md-3">
+          <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.geography' | translate }} <span
+              class="text-danger">*</span></label>
+          <input type="text" class="form-control" [placeholder]="'CONTENT.placeholder-utbk'|translate"
+            formControlName="geography" name="geography">
+        </div>
+        <div *ngIf="!isSaintek" class="form-group mb-2 col-md-3">
+          <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.historical' | translate }} <span
+              class="text-danger">*</span></label>
+          <input type="text" class="form-control" [placeholder]="'CONTENT.placeholder-utbk'|translate"
+            formControlName="historical" name="historical">
+        </div>
+        <div *ngIf="!isSaintek" class="form-group mb-2 col-md-3">
+          <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.sociological' | translate }} <span
+              class="text-danger">*</span></label>
+          <input type="text" class="form-control" [placeholder]="'CONTENT.placeholder-utbk'|translate"
+            formControlName="sociological" name="sociological">
+        </div>
+        <div *ngIf="!isSaintek" class="form-group mb-2 col-md-3">
+          <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.economy' | translate }} <span
+              class="text-danger">*</span></label>
+          <input type="text" class="form-control" [placeholder]="'CONTENT.placeholder-utbk'|translate"
+            formControlName="economy" name="economy">
+        </div>
+      </div>
+      <div class="row">
+        <div class="form-group col-md-12">
+          <label class="form-label mb-1 f-w-600">{{ 'CONTENT.evidence' | translate }}
+          </label>
+          <div *ngIf="dataUtbkUrl.length !== 0" class="row">
+            <div *ngFor="let e of dataUtbkUrl" class="col-12 col-xs-12 col-md-12">
+              <div *ngIf="e.url === null">
+                <div class="col-12 mt-1 row"> Data Tidak Ditemukan!</div>
+              </div>
+              <div *ngIf="e.url !== null">
+                <div class="card text-left mb-3">
+                  <div class="card-body p-2">
+                    <a [href]="e.url" target="_blank" class="d-flex flex-row" title="Download"><i
+                        class="icofont icofont-file-document f-40 ml-0"></i>
+                      <p class="card-text pl-1 mb-0"> Nilai UTBK
+                      </p>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div *ngIf="dataUtbkUrl.length == 0" class="row">
+            <div class="col-12 mt-3 row"> Data Tidak Ditemukan!
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="app-modal-footer"></div>
+</app-ui-modal>
+
+<app-ui-modal #eprtAndTpaModal [containerClick]="false" dialogClass="modal-dialog-centered modal-l" [hideFooter]="true">
+  <div class="app-modal-header">
+    <h5 class="modal-title">{{ 'ROOT.upload' | translate }} {{ 'CONTENT.document-requirements' | translate }}</h5>
+    <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close"
+      (click)="closeEprtTpaModals();"><span aria-hidden="true">&times;</span></button>
+  </div>
+  <div class="app-modal-body">
+    <form class="md-float-material form-material" action="javascript:" [formGroup]="eprtAndTpaForm">
+      <div class="row">
+        <app-alert *ngIf="isEPRTDocument || isTPADocument" type="primary" class="text-center col-md-12">
+          {{isTPADocument ? ('CONTENT.tpa-information' | translate) : ('CONTENT.eprt-information' | translate)}} <br>
+          <a *ngIf="isEPRTDocument" href="https://tinyurl.com/documenttmp" target="_blank" type="button" class="btn btn-primary btn-sm m-1"
+            ><i class="icofont icofont-prescription"></i> {{'CONTENT.eprt-test' | translate}}</a>
+          <a *ngIf="isTPADocument" href="https://tinyurl.com/documenttmp" target="_blank" type="button" class="btn btn-primary btn-sm m-1"
+            ><i class="icofont icofont-prescription"></i> {{'CONTENT.tpa-test' | translate}} </a>
+        </app-alert>
+      </div>
+      <div class="row align-items-center">
+          <div class="text-left col-12 col-md-6 mb-1">
+            <a *ngIf="isResidensi"
+            href="https://tinyurl.com/documenttmp"
+            target="_blank" type="button" class="btn btn-primary btn-sm">
+           <i class="icofont icofont-cloud-download"></i> {{ 'CONTENT.template-download' | translate }}
+          </a>
+          <a *ngIf="isSuratIjinAtasan"
+            href="https://tinyurl.com/documenttmp"
+            target="_blank" type="button" class="btn btn-primary btn-sm">
+            <i class="icofont icofont-cloud-download"></i> {{ 'CONTENT.template-download' | translate }}
+          </a>
+          <a *ngIf="isPromotor"
+            href="https://tinyurl.com/documenttmp"
+            target="_blank" type="button" class="btn btn-primary btn-sm">
+            <i class="icofont icofont-cloud-download"></i> {{ 'CONTENT.template-download' | translate }}
+          </a>
+          <a *ngIf="isCoPromotor"
+            href="https://tinyurl.com/documenttmp"
+            target="_blank" type="button" class="btn btn-primary btn-sm">
+            <i class="icofont icofont-cloud-download"></i> {{ 'CONTENT.template-download' | translate }}
+          </a>
+          </div>
+        </div>
+        <div class="row">
+          <div *ngIf="isPromotor || isCoPromotor|| isResidensi || isSuratIjinAtasan" class="form-group mb-2 col-md-12">
+            <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.document-req-name' | translate }} </label>
+            <input type="text" class="form-control" formControlName="name" name="name" readonly>
+          </div>
+          <div *ngIf="isCoPromotor" class="form-group mb-2 col-md-12">
+            <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.name-co-promotor' | translate }}
+              <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" formControlName="nameCoPromotor" name="nameCoPromotor"
+              [placeholder]="'CONTENT.name-co-promotor'|translate" >
+          </div>
+          <div [hidden]="isPromotor || isCoPromotor || isResidensi || isSuratIjinAtasan || isIPKDocument"
+            class="form-group mb-2 col-md-12">
+            <label *ngIf="isEPRTDocument" class="form-label m-b-0 f-w-600">{{ 'CONTENT.eprt-publication-year' | translate
+              }} <span class="text-danger">*</span></label>
+            <label *ngIf="isTPADocument" class="form-label m-b-0 f-w-600">{{ 'CONTENT.tpa-publication-year' | translate }}
+              <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" formControlName="publication_year" name="publicationYear"
+              [placeholder]="'CONTENT.pub-year'|translate">
+          </div>
+          <div [hidden]="isPromotor || isCoPromotor || isResidensi || isSuratIjinAtasan || isIPKDocument" class="form-group mb-2 col-md-12">
+            <label *ngIf="isEPRTDocument" class="form-label m-b-0 f-w-600">{{ 'CONTENT.eprt-score' | translate }} <span
+                class="text-danger">*</span></label>
+            <label *ngIf="isTPADocument" class="form-label m-b-0 f-w-600">{{ 'CONTENT.tpa-score' | translate }} <span
+                class="text-danger">*</span></label>
+            <input type="text" class="form-control" formControlName="eprt_tpa_score" name="certificateScore"
+              [placeholder]="'CONTENT.score'|translate">
+          </div>
+          <div [hidden]="isPromotor || isCoPromotor || isResidensi || isSuratIjinAtasan || isEPRTDocument || isTPADocument" class="form-group mb-2 col-md-12">
+            <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.ipk-score' | translate }} <span
+                class="text-danger">*</span></label>
+                <input type="text" class="form-control" formControlName="gpa" placeholder="3.55">
+               </div>
+        </div>
+      <div class="row">
+        <div class="form-group col-md-12">
+          <label class="form-label mb-1 f-w-600">{{ 'CONTENT.berkas_persyaratan' | translate }}
+          </label>
+          <div *ngIf="dataStudyUrl.length !== 0" class="row">
+            <div *ngFor="let e of dataStudyUrl" class="col-12 col-xs-12 col-md-12">
+              <div *ngIf="e.document_url === null">
+                <div class="col-12 mt-1 row"> Data Tidak Ditemukan!</div>
+              </div>
+              <div *ngIf="e.document_url !== null">
+                <div class="card text-left mb-3">
+                  <div class="card-body p-2">
+                    <a [href]="e.document_url" target="_blank" class="d-flex flex-row" title="Download"><i
+                        class="icofont icofont-file-document f-40 ml-0"></i>
+                      <p class="card-text pl-1 mb-0"> {{e.document_name !== null ? (e.document_name | shortener:[55, '..']) : 'Data Dokumen'}}
+                      </p>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div *ngIf="dataStudyUrl.length == 0" class="row">
+            <div class="col-12 mt-3 row"> Data Tidak Ditemukan!
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="app-modal-footer"></div>
+</app-ui-modal>
+
+<app-ui-modal #proposalModal [containerClick]="false" dialogClass="modal-dialog-centered modal-l" [hideFooter]="true">
+  <div class="app-modal-header">
+    <h5 class="modal-title">{{ 'ROOT.upload' | translate }} {{ 'CONTENT.document-requirements' | translate }}</h5>
+    <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close"
+      (click)="closeProposal();"><span aria-hidden="true">&times;</span></button>
+  </div>
+  <div class="app-modal-body">
+    <form class="md-float-material form-material" action="javascript:" [formGroup]="proposalForm">
+      <div class="row">
+        <div class="form-group mb-2 col-md-12">
+          <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.proposal-title' | translate }} <span
+              class="text-danger">*</span></label>
+          <textarea class="form-control" formControlName="title"
+            [placeholder]="'CONTENT.proposal-title'|translate"></textarea>
+        </div>
+      </div>
+      <div class="row">
+        <div class="form-group col-md-12">
+          <label class="form-label mb-1 f-w-600">{{ 'CONTENT.berkas_persyaratan' | translate }}
+          </label>
+          <div *ngIf="dataProposal.length !== 0" class="row">
+            <div *ngFor="let e of dataProposal" class="col-12 col-xs-12 col-md-12">
+              <div *ngIf="e.document_url === null">
+                <div class="col-12 mt-1 row"> Data Tidak Ditemukan!</div>
+              </div>
+              <div *ngIf="e.document_url !== null">
+                <div class="card text-left mb-3">
+                  <div class="card-body p-2">
+                    <a [href]="e.document_url" target="_blank" class="d-flex flex-row" title="Download"><i
+                        class="icofont icofont-file-document f-40 ml-0"></i>
+                      <p class="card-text pl-1 mb-0"> {{e.document_name | shortener:[55, '..']}}
+                      </p>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div *ngIf="dataProposal.length == 0" class="row">
+            <div class="col-12 mt-3 row"> Data Tidak Ditemukan!
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="app-modal-footer"></div>
+</app-ui-modal>
+
+<!-- Forms Modal -->
+<app-ui-modal #ijazahModals [containerClick]="false" dialogClass="modal-dialog-centered modal-l" [hideFooter]="true">
+  <div class="app-modal-header">
+    <h5 class="modal-title">{{ 'ROOT.upload' | translate }} {{ 'CONTENT.document-requirements' | translate }}</h5>
+    <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close"
+      (click)="closeIjazahModals()"><span aria-hidden="true">&times;</span></button>
+  </div>
+  <div class="app-modal-body">
+    <form class="md-float-material form-material" action="javascript:" [formGroup]="ijazahForm">
+      <div class="row">
+        <div class="form-group mb-1 col-md-12">
+          <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.document-name' | translate }} </label>
+          <input type="text" class="form-control" formControlName="name" name="name"
+            [placeholder]="'CONTENT.document-name'| translate" readonly>
+        </div>
+      </div>
+      <div class="row">
+        <div class="form-group col-md-12">
+          <label class="form-label mb-1 f-w-600">{{ 'CONTENT.berkas_persyaratan' | translate }}
+          </label>
+          <div *ngIf="dataIjazah.length !== 0" class="row">
+            <div *ngFor="let e of dataIjazah" class="col-12 col-xs-12 col-md-12">
+              <div *ngIf="e.document_url === null">
+                <div class="col-12 mt-1 row"> Data Tidak Ditemukan!</div>
+              </div>
+              <div *ngIf="e.document_url !== null">
+                <div class="card text-left mb-3">
+                  <div class="card-body p-2">
+                    <a [href]="e.document_url" target="_blank" class="d-flex flex-row" title="Download"><i
+                        class="icofont icofont-file-document f-40 ml-0"></i>
+                      <p class="card-text pl-1 mb-0"> {{e.document_type | shortener:[55, '..']}}
+                      </p>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div *ngIf="dataIjazah.length == 0" class="row">
+            <div class="col-12 m-1"> Data Tidak Ditemukan!
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="app-modal-footer"></div>
+</app-ui-modal>
+
+<app-ui-modal #publicationDataModals [containerClick]="false" dialogClass="modal-dialog modal-dialog-centered modal-xl" [hideFooter]="true" [loading]="loadTablePublication">
+  <div class="app-modal-header">
+    <h5 class="modal-title">{{ 'ROOT.detail' | translate }} {{ 'CONTENT.publication' | translate }}</h5>
+    <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close"
+      (click)="closePublicationDataModals();"><span aria-hidden="true">&times;</span></button>
+  </div>
+  <div class="app-modal-body">
+    <div class="table-responsive pb-1">
+        <table class="table table-sm table-boder-radius dataTable">
+          <thead class="thead-light">
+            <tr>
+              <th scope="col" class="text-center pl-1 pr-1">{{ 'CONTENT.no' | translate}}</th>
+              <th scope="col" class="text-center">{{ 'CONTENT.writer-name' | translate}}</th>
+              <th scope="col" class="text-center">{{ 'CONTENT.writer-position' | translate}}</th>
+              <th scope="col" class="text-center">{{ 'CONTENT.publication-title' | translate}}</th>
+              <th scope="col" class="text-center">{{ 'CONTENT.writer-type' | translate}}</th>
+              <th scope="col" class="text-center">{{ 'CONTENT.publication-date' | translate}}</th>
+              <th scope="col" class="text-center">{{ 'CONTENT.link' | translate}}</th>
+            </tr>
+          </thead>
+          <tbody *ngIf="tableDataPublication?.length != 0">
+            <tr *ngFor="let data of tableDataPublication | slice: (pageDocumentPub-1) * 10 : pageDocumentPub * 10; let i = index;">
+              <td class="text-center pl-1 pr-1">{{ (pageDocumentPub-1) * 10 + (i + 1) }}.</td>
+              <td>{{ data.writer_name }}</td>
+              <td class="text-center">{{ data.publication_writer_position }}</td>
+              <td class="text-center">{{ data.title }}</td>
+              <td class="text-center">{{ data.publication_type }}</td>
+              <td class="text-center">{{ data.publish_date | date: 'dd/MM/yyyy' }}</td>
+              <td class="text-center">
+                <a [href]="data.publication_link" target="_blank"class="btn btn-sm btn-outline-primary">
+                  {{'CONTENT.link' | translate}}</a>
+              </td>
+            </tr>
+          </tbody>
+          <tbody *ngIf="tableDataPublication?.length == 0 && !loadTablePublication">
+            <tr>
+              <td colspan="8" class="no-data-available text-center">
+              <app-no-data-found message="{{ 'ROOT.no_data_found' | translate }}"></app-no-data-found>
+            </td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+            </tr>
+          </tbody>
+          <tbody *ngIf="tableDataPublication?.length == 0 && loadTablePublication">
+            <tr>
+              <td colspan="7" class="no-data-available text-center">
+                <app-no-data-found message="{{ 'ROOT.loading' | translate }}"></app-no-data-found>
+              </td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+            </tr>
+          </tbody>
+        </table>
+        <ngb-pagination class="d-flex justify-content-center" [(page)]="pageDocumentPub" [pageSize]="10"
+          [collectionSize]="tableDataPublication.length" [maxSize]="3" [boundaryLinks]="true">
+        </ngb-pagination>
+    </div>
+  </div>
+  <div class="app-modal-footer"></div>
+</app-ui-modal>
+
+<app-ui-modal #recommendationS2Modal [containerClick]="false" dialogClass="modal-dialog-centered modal-l" [hideFooter]="true">
+  <div class="app-modal-header">
+    <h5 class="modal-title">{{ 'ROOT.upload' | translate }} {{ 'CONTENT.recommendation-document-S2' | translate }}</h5>
+    <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close"
+      (click)="closeRecommendationS2Modal();"><span aria-hidden="true">&times;</span></button>
+  </div>
+  <div class="app-modal-body">
+    <form class="md-float-material form-material" action="javascript:" [formGroup]="recommendationS2Form">
+      <div class="row">
+        <h5 class="col-md-12">Rekomendasi Pertama
+          <hr>
+        </h5>
+        <div class="form-group mb-2 col-md-12">
+          <label class="form-label m-b-2 f-w-600">{{'CONTENT.name' | translate}} <span class="text-danger">*</span></label>
+          <input type="text" class="form-control" formControlName="name_rec1" name="name_rec1"
+            [placeholder]="'CONTENT.recommendation_name_1'|translate">
+        </div>
+        <div class="form-group mb-2 col-md-12">
+          <label class="form-label m-b-2 f-w-600">{{'CONTENT.handphone' | translate}} <span
+              class="text-danger">*</span></label>
+          <input type="text" class="form-control" formControlName="handphone_rec1" name="handphone_rec1"
+            [placeholder]="'CONTENT.placeholder-number' | translate"
+            >
+        </div>
+        <div class="form-group mb-2 col-md-12">
+          <label class="form-label m-b-2 f-w-600">{{'CONTENT.email' | translate}} <span
+              class="text-danger">*</span></label>
+          <input type="text" class="form-control" formControlName="email_rec1"
+            name="email_rec1" [placeholder]="'CONTENT.recommendation_email_1'|translate">
+        </div>
+        <h5 class="mt-3 col-md-12">Rekomendasi Kedua
+          <hr>
+        </h5>
+        <hr>
+        <div class="form-group mb-2 col-md-12">
+          <label class="form-label m-b-2 f-w-600">{{'CONTENT.name' | translate}} <span class="required">*</span></label>
+          <input type="text" class="form-control" formControlName="name_rec2" name="name_rec2"
+            [placeholder]="'CONTENT.recommendation_name_1'|translate">
+        </div>
+        <div class="form-group mb-2 col-md-12">
+          <label class="form-label m-b-2 f-w-600">{{'CONTENT.handphone' | translate}} <span
+              class="text-danger">*</span></label>
+          <input type="text" class="form-control" formControlName="handphone_rec2" name="handphone_rec2"
+            [placeholder]="'CONTENT.placeholder-number' | translate">
+        </div>
+        <div class="form-group mb-2 col-md-12">
+          <label class="form-label m-b-2 f-w-600">{{'CONTENT.email' | translate}} <span
+              class="text-danger">*</span></label>
+          <input type="text" class="form-control" formControlName="email_rec2"
+            name="email_rec2" [placeholder]="'CONTENT.recommendation_email_1'|translate">
+        </div>
+      </div>
+    </form>
+  </div>
+</app-ui-modal>

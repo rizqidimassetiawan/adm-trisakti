@@ -1,0 +1,134 @@
+input[type=text] {
+    width: 100%;
+    padding: 5px 5px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+  }
+  
+  input[type=number] {
+    width: 100%;
+    padding: 5px 5px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+  }
+  input[type=email] {
+    width: 100%;
+    padding: 5px 5px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+  }
+  input[type=date] {
+    width: 100%;
+    padding: 5px 5px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+  }
+  
+  textarea {
+    width: 100%;
+    height: 70px;
+    padding: 5px 5px;
+    padding-top: 2px;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background: transparent;
+    font-size: 13px;
+    color:grey;
+    resize: none;
+  }
+  
+  .required {
+    color: red;
+  }
+
+  .col-width {
+    width: 30px;
+  }
+
+  .custom-style {
+    table-layout:fixed;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+  }
+
+  .image-size {
+    height: 400px;
+    width: 400px;
+  }
+  
+  .no-border {
+    border: none;
+  }
+  .center-table {
+      margin-left: auto;
+      margin-right: auto;
+      border: none;
+      width: auto;
+  }
+  
+  .middle-content {
+    display: flex;
+    // justify-content: center;
+    align-items: center;
+    > img {
+      max-width: 100%;
+    }
+  }
+  @media (min-width: 992px) {
+    span.head-home {
+      padding-right: 3rem !important;
+    }
+  }
+  
+  .img-alert {
+    max-width: 90%;
+    @media (min-width: 576px) {
+      max-width: 30%;
+    }
+  
+    .img-center {
+      display: inline-block;
+      width: 70%;
+    }
+  }
+  
+  .vector-styling{
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .table-custom{
+    table-layout:fixed;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+  }
+
+  .custom-no{
+    width:auto;
+    max-width: 10px;
+    text-align: center;
+  }
+
+  .table-boder-radius {
+    border-collapse: collapse;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    tr:hover {
+      color: #4680ff;
+    }
+  }
+  

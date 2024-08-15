@@ -1,0 +1,239 @@
+<div class="row">
+  <div class="col-sm-12">
+    <app-card cardTitle="{{'MENU.registration_report' | translate}}" headerClass="text-center text-md-left" [hidHeader]="true" [options]="false" [loading]="loadtableParticipantPassData">
+      <br>
+      <div class="row">
+        <div class="col-sm-12">
+          <div class="table-responsive pb-1">
+            <table datatable id="report-table" class="table table-striped mb-0" [dtOptions]="dtOptions" [dtTrigger]="dtTrigger">
+              <thead>
+                <tr>
+                  <th scope="col" class="center-text">{{ 'CONTENT.no' | translate }}</th>
+                  <th scope="col" class="center-text">{{ 'CONTENT.registration-number' | translate }}</th>
+                  <th scope="col" class="center-text">{{ 'CONTENT.selection-path' | translate }}</th>
+                  <th scope="col" class="center-text">{{ 'CONTENT.approval-status' | translate }}</th>
+                  <th scope="col" class="center-text">{{ 'CONTENT.action' | translate }}</th>
+                </tr>
+              </thead>
+              <tbody *ngIf="tableData?.length != 0">
+                <tr *ngFor="let data of tableData; let i = index;">
+                  <th scope="row" class="center-text" style="padding-left: 10px">{{ i+1 }}</th>
+                  <td class="center-text">{{ data.registration_number }}</td>
+                  <td class="center-text uppercase">{{ data.selection_path_name ? data.selection_path_name : '-' }}</td>
+                  <td class="center-text">
+                    <div *ngIf="data.pass_status_name == 'Lulus'">
+                      <span class="badge badge-light-success" *ngIf="data.transfer_status == null">{{ 'CONTENT.pass' | translate}}</span>
+                      <span class="badge badge-light-warning " *ngIf="data.transfer_status == '1'">{{ 'CONTENT.pass-offered' | translate}}</span>
+                    </div>
+                    <div *ngIf="data.pass_status_name == 'Tidak Lulus'">
+                      <span class="badge badge-light-danger" *ngIf="data.transfer_status == null">{{ 'CONTENT.not-pass' | translate}}</span>
+                      <span class="badge badge-light-warning " *ngIf="data.transfer_status == '1'">{{ 'CONTENT.pass-offered' | translate}}</span>
+                    </div>
+                    <div *ngIf="data.pass_status_name == 'Belum Ditentukan'">
+                      <span class="badge badge-light-secondary">{{ 'CONTENT.pending_pass' | translate}}</span>
+                    </div>
+                  </td>
+                  <td class="center-text">
+                    <div [hidden]="data.transfer_status == '1'">
+                        <button *ngIf="data.pass_status_name == 'Lulus'" class="btn btn-outline-primary btn-sm btn-round has-ripple" [placement]="'top'" ngbTooltip="{{'ROOT.detail' | translate}}" (click)="loadDetailPassingData(data)">
+                          <i class="icofont icofont-eye"></i> <span class="d-sm-none"> {{'ROOT.detail' | translate}}</span>
+                        </button>
+                      <button *ngIf="data.pass_status_name == 'Tidak Lulus'" class="btn btn-outline-primary btn-sm btn-round has-ripple" [placement]="'top'" ngbTooltip="{{'ROOT.detail' | translate}}" (click)="loadDetailFailedPassingData(data)">
+                        <i class="icofont icofont-eye"></i> <span class="d-sm-none"> {{'ROOT.detail' | translate}}</span>
+                      </button>
+                      <button *ngIf="data.pass_status_name== 'Belum Ditentukan'" class="btn btn-outline-primary btn-sm btn-round has-ripple" [placement]="'top'" ngbTooltip="{{'ROOT.detail' | translate}}" (click)="loadDetailConfirmationPassingData(data)">
+                        <i class="icofont icofont-eye"></i> <span class="d-sm-none"> {{'ROOT.detail' | translate}}</span>
+                      </button>
+                      <button *ngIf="data.pass_status_name == 'Lulus'" class="btn btn-outline-success btn-sm btn-round has-ripple m-1" [placement]="'top'" ngbTooltip="{{'ROOT.download' | translate}}" (click)="createBilling(data.registration_number)"
+                      [disabled]="this.downloadProgress">
+                        <span *ngIf="this.downloadProgress" class="spinner-border spinner-border-sm" role="status"></span>
+                        <i *ngIf="!this.downloadProgress" class="icofont icofont-download-alt"></i> <span class="d-sm-none"> {{'ROOT.download' | translate}}</span>
+                      </button>
+                      <button *ngIf="data.pass_status_name == 'Belum Ditentukan' || data.pass_status_name == 'Tidak Lulus'" class="btn btn-outline-success btn-sm btn-round has-ripple m-1" [placement]="'top'" ngbTooltip="{{'ROOT.download' | translate}}" disabled>
+                        <i class="icofont icofont-download-alt"></i> <span class="d-sm-none"> {{'ROOT.download' | translate}}</span>
+                      </button>
+                    </div>
+                    <button *ngIf="data.transfer_status == '1'" class="btn btn-outline-primary btn-sm btn-round has-ripple" [placement]="'top'" ngbTooltip="{{'ROOT.detail' | translate}}" (click)="data.pass_status_name == 'Belum Ditentukan' ? loadDetailConfirmationPassingData(data) : loadDetailTransferData(data) ">
+                      <i class="icofont icofont-eye"></i> <span class="d-sm-none"> {{'ROOT.detail' | translate}}</span>
+                    </button>
+                    <button *ngIf="data.transfer_status == '1'" class="btn btn-outline-success btn-sm btn-round has-ripple m-1" [placement]="'top'" ngbTooltip="{{'ROOT.download' | translate}}"  (click)="createBilling(data.registration_number)"
+                    [disabled]="this.downloadProgress || data.pass_status_name == 'Belum Ditentukan'">
+                      <span *ngIf="this.downloadProgress" class="spinner-border spinner-border-sm" role="status"></span>
+                      <i *ngIf="!this.downloadProgress" class="icofont icofont-download-alt"></i> <span class="d-sm-none"> {{'ROOT.download' | translate}}</span>
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+              <tbody *ngIf="tableData?.length == 0 && !loadtableParticipantPassData">
+                <tr>
+                  <td colspan="5" class="no-data-available text-center">
+                    <app-no-data-found message="{{ 'ROOT.no_data_found' | translate }}"></app-no-data-found>
+                  </td>
+                  <td class="hidden"></td>
+                  <td class="hidden"></td>
+                  <td class="hidden"></td>
+                  <td class="hidden"></td>
+                </tr>
+              </tbody>
+              <tbody *ngIf="tableData?.length == 0 && loadtableParticipantPassData">
+                <tr>
+                  <td colspan="5" class="no-data-available text-center">
+                    <app-no-data-found message="{{ 'ROOT.loading' | translate }}"></app-no-data-found>
+                  </td>
+                  <td class="hidden"></td>
+                  <td class="hidden"></td>
+                  <td class="hidden"></td>
+                  <td class="hidden"></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </app-card>
+  </div>
+</div>
+
+<!-- Forms Modal -->
+<app-ui-modal #passDetailDataModal [containerClick]="false" dialogClass="modal-dialog-centered modal-lg" [hideFooter]="true">
+  <div class="app-modal-header">
+    <h5 class="modal-title">{{ 'CONTENT.passing-detail' | translate }}</h5>
+    <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close"
+      (click)="passDetailDataModal.hide();"><span aria-hidden="true">&times;</span></button>
+  </div>
+  <div class="app-modal-body">
+    <div class="col-md-12">
+      <div class="row">
+        <div class="col-12 col-lg-6 p-4 text-center middle-content">
+          <img src="assets/images/vector/announcement-vector.svg" class="vector-styling center" alt="">
+        </div>
+        <div class="col-12 col-lg-6 p-4 text-left middle-content text-justify">
+          <span class="head-home">
+            <app-alert type="success">
+              <p class="text-center">
+                {{ 'CONTENT.congratulations' | translate }}: <br>
+                <b>{{ dataSeleksi | titlecase }}</b> <br>
+                {{'CONTENT.registration-number-pass' | translate}}: <br>
+                <b>{{ dataKelulusan.registration_number}} </b> <br>
+                pada Fakultas: <br>
+                <b>{{ dataKelulusan.faculty_name}}</b> <br>
+                Program Studi: <br>
+                <b>{{ dataKelulusan.study_program_name }}</b>
+              </p>
+              <p class="text-center ">
+                <button type="submit" class="btn btn-outline-success btn-sm text-center"
+                  (click)="createBilling(dataKelulusan.registration_number)"
+                  [disabled]="this.downloadProgress">
+                  <span *ngIf="this.downloadProgress" class="spinner-border spinner-border-sm" role="status"></span>
+                  <span *ngIf="this.downloadProgress" class="load-text"> Loading...</span>
+                  <span *ngIf="!this.downloadProgress" class="btn-text"><i class="icofont icofont-print"></i> {{ 'CONTENT.print-passing-letter' | translate
+                    }}</span>
+                </button>
+              </p>
+            </app-alert>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="app-modal-footer"></div>
+</app-ui-modal>
+
+<!-- Forms Modal -->
+<app-ui-modal #failedpassDetailDataModal [containerClick]="false" dialogClass="modal-dialog-centered modal-lg" [hideFooter]="true">
+  <div class="app-modal-header">
+    <h5 class="modal-title">{{ 'CONTENT.passing-detail' | translate }}</h5>
+    <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close" (click)="failedpassDetailDataModal.hide();"><span aria-hidden="true">&times;</span></button>
+  </div>
+  <div class="app-modal-body">
+    <div class="col-md-12">
+      <div class="row">
+        <div class="col-12 col-lg-6 p-4 text-center middle-content">
+          <img src="assets/images/vector/announcement-vector.svg" class="vector-styling center" alt="">
+        </div>
+        <div class="col-12 col-lg-6 p-4 text-left middle-content text-justify">
+          <span class="head-home">
+            <app-alert type="danger">
+              <p class="text-center"> 
+                {{ 'CONTENT.sorry' | translate }}: <br>
+                <b>{{ dataKelulusanFailed.selection_path_name | titlecase}}</b> <br>
+                {{'CONTENT.registration-number-pass' | translate}}: <br>
+                <b>{{ dataKelulusanFailed.registration_number}}</b>
+              </p>
+            </app-alert>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="app-modal-footer"></div>
+</app-ui-modal>
+
+<!-- Forms Modal -->
+<app-ui-modal #confirmationpassDetailDataModal [containerClick]="false" dialogClass="modal-dialog-centered modal-lg" [hideFooter]="true">
+  <div class="app-modal-header">
+    <h5 class="modal-title">{{ 'CONTENT.passing-detail' | translate }}</h5>
+    <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close" (click)="confirmationpassDetailDataModal.hide();"><span aria-hidden="true">&times;</span></button>
+  </div>
+  <div class="app-modal-body">
+    <div class="col-md-12">
+      <div class="row">
+        <div class="col-12 col-lg-6 p-4 text-center middle-content">
+          <img src="assets/images/vector/announcement-vector.svg" class="vector-styling center" alt="">
+        </div>
+        <div class="col-12 col-lg-6 p-4 text-left middle-content text-justify">
+          <span class="head-home">
+            <app-alert type="warning">
+              <p class="text-center">{{ 'CONTENT.waiting' | translate }}</p>
+            </app-alert>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>  
+  <div class="app-modal-footer"></div>
+</app-ui-modal>
+
+<!-- Forms Modal -->
+<app-ui-modal #confirmationTransferDataModal [containerClick]="false" dialogClass="modal-dialog-centered modal-lg" [hideFooter]="true">
+  <div class="app-modal-header">
+    <h5 class="modal-title">{{ 'CONTENT.passing-detail' | translate }}</h5>
+    <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close" (click)="confirmationTransferDataModal.hide();"><span aria-hidden="true">&times;</span></button>
+  </div>
+  <div class="app-modal-body">
+    <div class="col-md-12">
+      <div class="row">
+        <div class="col-12 col-lg-6 p-4 text-center middle-content">
+          <img src="assets/images/vector/announcement-vector.svg" class="vector-styling center" alt="">
+        </div>
+        <div class="col-12 col-lg-6 p-4 text-left middle-content text-justify">
+          <span class="head-home">
+            <app-alert type="success">
+              <p class="text-center">
+                {{ 'CONTENT.congratulations-transfer' | translate }}: <br>
+                <b>{{ dataSeleksi | titlecase }}</b> <br>
+                {{'CONTENT.registration-number-pass' | translate}}: <br>
+                <b>{{ dataKelulusan.registration_number}} </b> <br>
+                pada Fakultas: <br> 
+                <b>{{ dataKelulusan.transfer_faculty_name}}</b> <br> 
+                Program Studi: <br>
+                <b>{{ dataStudyProgram }}</b>
+              </p>
+              <p class="text-center ">
+                <button type="submit" class="btn btn-outline-success btn-sm"
+                (click)="createBilling(dataKelulusan.registration_number)"
+                [disabled]="this.downloadProgress">
+                  <span *ngIf="this.downloadProgress" class="spinner-border spinner-border-sm" role="status"></span>
+                  <span *ngIf="this.downloadProgress" class="load-text"> Loading...</span>
+                  <span *ngIf="!this.downloadProgress" class="btn-text"><i class="icofont icofont-print"></i> {{ 'CONTENT.print-passing-letter' | translate
+                    }}</span>
+                </button>
+              </p>
+            </app-alert>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="app-modal-footer"></div>
+</app-ui-modal>

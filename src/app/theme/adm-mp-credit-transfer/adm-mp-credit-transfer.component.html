@@ -1,0 +1,231 @@
+<div class="page-header">
+    <div class="page-block">
+      <div class="text-md-left">
+        <div class="page-header-title">
+          <h5>{{ 'MENU.credit-transfer'| translate}}</h5>
+        </div>
+      </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <app-card cardClass="card-datatable" headerClass="text-center text-md-left" [options]="false"
+            [loading]="loadCreditTransfer" [hidHeader]="true" cardTitle="{{ 'CONTENT.mata-kuliah-asal' | translate}}">
+            <div class="col-12">
+              <div class="row align-items-center">
+                <div class="col-12 col-md-6 text-left mb-1">
+                  <button class="btn btn-outline-secondary btn-sm btn-round has-ripple" routerLink="/adm-mp-document-data">
+                    <i class="ti-angle-left"></i>
+                    {{'ROOT.back' | translate}}
+                  </button>
+                </div>
+                <div class="col-12 col-md-6 text-right mb-1">
+                  <button class="btn btn-outline-success btn-sm btn-round has-ripple" [disabled]="!isCreditTransferNodata || loading" (click)="generateEqualizationResult()">
+                    <span *ngIf="this.loading" class="spinner-border spinner-border-sm" role="status"></span>
+                    <span *ngIf="this.loading" class="load-text"> Loading...</span>
+                    <span *ngIf="!this.loading" class="btn-text"><i class="fas fa-cloud-download-alt"></i>
+                    {{'CONTENT.send-credit-transfer' | translate}}  </span>
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="table-responsive pb-1">
+                <table datatable class="table table-bordered table-hover table-sm" [dtOptions]="dtOptions" [dtTrigger]="dtTrigger">
+                    <thead class="thead-light">
+                        <tr>
+                          <th scope="col" colspan="1" rowspan="2" class="center-table" style="padding-left: 10px">{{ 'CONTENT.no' | translate}}
+                          </th>
+                          <th scope="col" class="center-table" colspan="4" rowspan="1">{{ 'CONTENT.mata-kuliah-asal' | translate}}
+                          </th>
+                          <th scope="col" class="center-table" colspan="4" rowspan="1">{{ 'CONTENT.mata-kuliah-setara' | translate}}
+                          </th>
+                          <th class="center-table" scope="col" colspan="1" rowspan="2" class="center-table">{{ 'CONTENT.action' | translate}}</th>
+                        </tr>
+                        <tr>
+                            <th class="center-table" scope="col">{{ 'CONTENT.courses-code' | translate}}</th>
+                            <th class="center-table" scope="col">{{ 'CONTENT.name' | translate}}</th>
+                            <th class="center-table" scope="col" class="center-table">{{ 'CONTENT.credit-hour' | translate}}
+                            </th>
+                            <th class="center-table" scope="col" class="center-table">{{ 'CONTENT.grade' | translate}}</th>
+                            <th class="center-table" scope="col">{{ 'CONTENT.courses-code' | translate}}</th>
+                            <th class="center-table" scope="col">{{ 'CONTENT.name' | translate}}</th>
+                            <th class="center-table" scope="col" class="center-table">{{ 'CONTENT.credit-hour' | translate}}
+                            </th>
+                            <th class="center-table" scope="col" class="center-table">{{ 'CONTENT.grade' | translate}}</th>
+                        </tr>
+                    </thead>
+                    <tbody *ngIf="tableTranscript?.length != 0">
+                        <tr *ngFor="let data of tableTranscript; let i = index;">
+                            <th class="center-table" scope="row" style="padding-left: 10px">{{ i+1 }}</th>
+                            <td class="center-table">{{data.course_code}}
+                            </td>
+                            <td class="center-table">{{ data.course_name }}</td>
+                            <td class="center-table">{{ data.credit_hour }}</td>
+                            <td class="center-table">{{ data.grade }}</td>
+                            <td class="center-table">{{data.course_code_approved}}
+                            </td>
+                            <td class="center-table">{{ data.course_name_approved }}</td>
+                            <td class="center-table">{{ data.credit_hour_approved }}</td>
+                            <td class="center-table">{{ data.grade_approved }}</td>
+                            <td class="center-table">
+                              <button class="btn btn-outline-warning btn-sm btn-round has-ripple" [placement]="'left'" (click)="openCourseModal(data)"
+                                ngbTooltip="{{'ROOT.edit' | translate}}">
+                                <i class="ti-pencil"></i>
+                              </button>
+                            </td>       
+                        </tr>
+                    </tbody>
+                    <tbody *ngIf="tableTranscript?.length == 0 && !loadCreditTransfer">
+                      <tr>
+                        <td colspan="10" class="no-data-available text-center">Data tidak ditemukan!</td>
+                        <td class="hidden"></td>
+                        <td class="hidden"></td>
+                        <td class="hidden"></td>
+                        <td class="hidden"></td>
+                        <td class="hidden"></td>
+                        <td class="hidden"></td>
+                        <td class="hidden"></td>
+                        <td class="hidden"></td>
+                        <td class="hidden"></td>
+                      </tr>
+                    </tbody>
+                    <tbody *ngIf="tableTranscript?.length == 0 && loadCreditTransfer">
+                      <tr>
+                        <td colspan="10" class="no-data-available text-center">Loading Data....</td>
+                        <td class="hidden"></td>
+                        <td class="hidden"></td>
+                        <td class="hidden"></td>
+                        <td class="hidden"></td>
+                        <td class="hidden"></td>
+                        <td class="hidden"></td>
+                        <td class="hidden"></td>
+                        <td class="hidden"></td>
+                        <td class="hidden"></td>
+                      </tr>
+                    </tbody>
+                </table>
+            </div>
+        </app-card>
+    </div>
+    
+    <!-- <div class="col-md-6">
+        <app-card cardClass="card-datatable" headerClass="text-center text-md-left" [options]="false"
+          [loading]="loadCreditTransfer" [hidHeader]="false" cardTitle="{{ 'CONTENT.mata-kuliah-setara' | translate}}">
+          <div class="col-12">
+            <div class="row align-items-center">
+              <div class="col-12 col-md-12 text-right mb-1">
+                <button class="btn btn-outline-success btn-sm btn-round has-ripple" (click)="openCourseModal(null, 'input')">
+                  <i class="icofont icofont-plus"></i>
+                  {{'CONTENT.added-matkul' | translate}}
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="table-responsive pb-6">
+            <table class="table table-striped table-hover table-sm dataTable">
+              <thead class="thead-light bg-primarys">
+                <tr>
+                  <th scope="col" class="center-table" style="padding-left: 10px">{{ 'CONTENT.no' | translate}}</th>
+                  <th class="center-table" scope="col">{{ 'CONTENT.course-code' | translate}}</th>
+                  <th class="center-table" scope="col">{{ 'CONTENT.course-name' | translate}}</th>
+                  <th class="center-table" scope="col" class="center-table">{{ 'CONTENT.credit-hour' | translate}}</th>
+                  <th class="center-table" scope="col" class="center-table">{{ 'CONTENT.grade' | translate}}</th>
+                  <th class="center-table" scope="col" class="center-table">{{ 'CONTENT.action' | translate}}</th>
+                </tr>
+              </thead>
+              <tbody *ngIf="tableTransferCredit?.length != 0">
+                <tr *ngFor="let data of tableTransferCredit; let i = index;">
+                  <th class="center-table" scope="row" style="padding-left: 10px">{{ i+1 }}</th>
+                  <td class="center-table">{{data.course_code_approved}}
+                  </td>
+                  <td class="center-table">{{ data.course_name_approved }}</td>
+                  <td class="center-table">{{ data.credit_hour_approved }}</td>
+                  <td class="center-table">{{ data.grade_approved }}</td>
+                  <td class="center-table">
+                    <button class="btn btn-outline-warning btn-sm btn-round has-ripple" [placement]="'left'" (click)="openCourseModal(data, 'edit')"
+                      ngbTooltip="{{'ROOT.edit' | translate}}">
+                      <i class="ti-pencil"></i>
+                    </button>
+                  </td>                
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </app-card>
+    </div> -->
+</div>
+
+<app-ui-modal #showMatkulSetaraModals [containerClick]="false" dialogClass="modal-dialog-centered modal-l" [hideFooter]="true">
+  <div class="app-modal-header">
+    <h5 class="modal-title">
+      {{ "ROOT.edit" | translate}} {{'CONTENT.mata-kuliah-setara' | translate }}</h5>
+    <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close"
+      (click)="closeCourses()"><span aria-hidden="true">&times;</span></button>
+  </div>
+  <div class="app-modal-body">
+    <form class="md-float-material form-material" action="javascript:" [formGroup]="coursesForm" (ngSubmit)="createCourses()">
+      <div class="col-md-12">
+        <div class="row">
+          <div class="col-md-12 form-group mb-2">
+            <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.course-code' | translate }}  <span
+              class="required">*</span></label>
+              <input type="text" class="form-control uppercase" name="quota" coursesCode formControlName="coursesCode"
+              [placeholder]="'CONTENT.course-code'|translate" maxlength="10"
+              [ngClass]="f.coursesCode.invalid && f.coursesCode.touched?'is-invalid':(f.coursesCode.valid?'is-valid':'')">
+            <label *ngIf="f.coursesCode.errors && f.coursesCode.errors.required && (f.coursesCode.touched || f.coursesCode.dirty)"
+              class="error text-danger small form-text">
+              {{ 'ROOT.required' | translate }}
+            </label>
+          </div>
+          <div class="col-md-12 form-group mb-2">
+            <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.course-name' | translate }}  <span
+              class="required">*</span></label>
+              <input type="text" class="form-control" name="quota" required formControlName="coursesName"
+              [placeholder]="'CONTENT.course-name'|translate" maxlength="50"
+              [ngClass]="f.coursesName.invalid && f.coursesName.touched?'is-invalid':(f.coursesName.valid?'is-valid':'')">
+            <label *ngIf="f.coursesName.errors && f.coursesName.errors.required && (f.coursesName.touched || f.coursesName.dirty)"
+              class="error text-danger small form-text">
+              {{ 'ROOT.required' | translate }}
+            </label>
+          </div>
+          <div class="col-md-12 form-group mb-2">
+            <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.credit-hour' | translate }}  <span
+              class="required">*</span></label>
+              <input type="text" class="form-control" name="quota" required formControlName="coursesSKS"
+              [placeholder]="'CONTENT.credit-hour'|translate" maxlength="1"
+              [ngClass]="f.coursesSKS.invalid && f.coursesSKS.touched?'is-invalid':(f.coursesSKS.valid?'is-valid':'')">
+            <label *ngIf="f.coursesSKS.errors && f.coursesSKS.errors.required && (f.coursesSKS.touched || f.coursesSKS.dirty)"
+              class="error text-danger small form-text">
+              {{ 'ROOT.required' | translate }}
+            </label>
+          </div>
+          <div class="col-md-12 form-group mb-2">
+            <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.grade' | translate }}  <span
+              class="required">*</span></label>
+              <!-- <input type="text" class="form-control" name="quota" required formControlName="coursesScore"
+              [placeholder]="'CONTENT.grade'|translate" min="0" max="100" maxlength="2"
+              [ngClass]="f.coursesScore.invalid && f.coursesScore.touched?'is-invalid':(f.coursesScore.valid?'is-valid':'')"> -->
+              <ng-select name="grade" [allowClear]="false" [options]="gradeList"
+                [placeholder]="'ROOT.choose' | translate"
+                [ngClass]="f.coursesScore.errors && f.coursesScore.errors.required && (f.coursesScore.touched || f.coursesScore.dirty)?'filter-dropdown is-invalid':(!f.coursesScore.errors?'filter-dropdown is-valid':'filter-dropdown')"
+                [notFoundMsg]="'ROOT.no_data_found' | translate" formControlName="coursesScore">
+              </ng-select>
+            <label *ngIf="f.coursesScore.errors && f.coursesScore.errors.required && (f.coursesScore.touched || f.coursesScore.dirty)"
+              class="error text-danger small form-text">
+              {{ 'ROOT.required' | translate }}
+            </label>
+          </div>
+          <div class="form-group mb-0 col-md-12 text-right">
+            <button type="submit" class="btn btn-success btn-sm"
+            [disabled]="coursesForm.invalid || this.loading">
+            <span *ngIf="this.loading" class="spinner-border spinner-border-sm" role="status"></span>
+            <span *ngIf="this.loading" class="load-text"> Loading...</span>
+            <span *ngIf="!this.loading" class="btn-text">{{ 'ROOT.submit' | translate }} <i
+              class="icofont icofont-location-arrow"></i></span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</app-ui-modal>

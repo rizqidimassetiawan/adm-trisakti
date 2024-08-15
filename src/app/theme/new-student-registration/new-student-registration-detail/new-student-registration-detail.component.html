@@ -1,0 +1,1170 @@
+<div class="page-header">
+  <div class="page-block">
+    <div class="text-md-left">
+      <div class="page-header-title">
+        <h5>{{ "MENU.new-student-detail" | translate }}</h5>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-sm-12">
+    <app-card hidHeader="false" [loading]="loadCard">
+      <wizard #wizard class="arc-wizard" navBarLayout="large-empty-symbols">
+        <wizard-step stepTitle="{{'CONTENT.biodatas' | translate}}" navigationSymbol="1">
+          <div class="row">
+            <div padding class="col-md-12">
+              <form class="md-float-material form-material" action="javascript:" [formGroup]="biodatasForms">
+                <div class="row">
+                  <div class="col-sm-12">
+                    <app-card cardTitle="{{'CONTENT.biodata' | translate}}" headerClass="text-center text-md-left" [options]="false"
+                      [loading]="loadBiodata">
+                      <div class="app-body">
+                        <!-- Profile Picture -->
+                        <div class="user-profile user-card mt-5 mb-0">
+                          <div class="card-body py-0">
+                            <div class="user-about-block m-0">
+                              <div class="row">
+                                <div class="col-md-12 text-center mt-n5">
+                                  <div class="change-profile text-center mb-2">
+                                    <div class="dropdown w-auto d-inline-block" ngbDropdown>
+                                      <a class="dropdown-toggle" data-toggle="dropdown" ngbDropdownToggle aria-haspopup="true"
+                                        aria-expanded="false">
+                                        <div class="profile-dp">
+                                          <div class="position-fit d-inline-block">
+                                            <img class="img-radius align-top m-r-15 wid-100 img-cover-fit"
+                                              [src]="photoCard.photo_url ? photoCard.photo_url : 'https://cdndata.telkomuniversity.ac.id/situ-round.png'"
+                                              alt="User image">
+                                          </div>
+                                          <div class="overlay">
+                                            <span>{{'CONTENT.change' | translate }}</span>
+                                          </div>
+                                        </div>
+                                        <input class="d-none" id="fileInput" type="file" accept="image/jpg,image/jpeg,image/png"
+                                          (change)="onUploadImagePhoto($event)" />
+                                        <div class="certificated-badge">
+                                          <i class="icofont icofont-camera bg-icon pointer-clicked"></i>
+                                        </div>
+                                      </a>
+                                      <div class="dropdown-menu" ngbDropdownMenu>
+                                        <a *ngIf="!isViewData" class="dropdown-item" href="javascript:" (click)="openFile()"><i
+                                            class="feather icon-upload-cloud mr-2"></i>{{'CONTENT.change-photo' |
+                                          translate }}</a>
+                                        <a target="_blank" class="dropdown-item" [href]="photoCard.photo_url"
+                                          *ngIf="!notHavePhoto"><i class="feather icon-image mr-2"></i>{{'CONTENT.view-photo' |
+                                          translate}}</a>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                                <div class="p-4 col-12">
+                                  <app-alert type="warning" *ngIf="notHavePhoto">
+                                    <h6 class="text-dark text-center">{{ 'CONTENT.photo-info' | translate }}</h6>
+                                    <div class="col-sm-12 text-center">
+                                      <p>{{ 'CONTENT.photo-info-2' | translate }}<br>{{ 'CONTENT.photo-info-3' |
+                                        translate }}.<br>{{ 'CONTENT.photo-info-4' | translate }}.</p>
+                                      <br>
+                                      <p><i>{{ 'CONTENT.photo-info-5' | translate }}</i></p>
+                                    </div>
+                                  </app-alert>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div *ngIf="!notHavePhoto" class="mt-0">
+                          <span class="required mb-4">
+                            <p>* Wajib diisi</p>
+                          </span>
+                          <div class="form-row">
+                            <div class="form-group mb-2 col-md-12">
+                              <label class="form-label mb-0 f-w-600">{{ 'CONTENT.fullname' | translate }} <span
+                                  class="required">*</span></label>
+                              <input type="text" class="form-control mt-1" name="name" required formControlName="fullname"
+                                [readOnly]="isViewData"
+                                [ngClass]="f.fullname.invalid && f.fullname.touched?'is-invalid':(f.fullname.valid?'is-valid':'')"
+                                maxlength="100">
+                              <label
+                                *ngIf="f.fullname.errors && f.fullname.errors.required && (f.fullname.touched || f.fullname.dirty)"
+                                class="error text-danger small form-text">{{ 'ROOT.required' | translate }}</label>
+                              <label
+                                *ngIf="f.fullname.errors && f.fullname.errors.maxlength && (f.fullname.touched || f.fullname.dirty)"
+                                class="error text-danger small form-text">{{ 'CONTENT.validation-fullname' | translate
+                                }}</label>
+                              <label
+                                *ngIf="f.fullname.errors && f.fullname.errors.pattern && (f.fullname.touched || f.fullname.dirty)"
+                                class="error text-danger small form-text">{{ 'CONTENT.letter-only' | translate }}</label>
+                            </div>
+                          </div>
+                          <div class="form-row">
+                            <div class="form-group col-md-4">
+                              <label class="form-label mb-1 f-w-600">{{ 'CONTENT.gender' | translate }} <span
+                                  class="required">*</span></label>
+                              <ng-select [placeholder]="'CONTENT.gender'|translate" required
+                                [notFoundMsg]="'ROOT.no_data_found'|translate" formControlName="gender" [(ngModel)]="gender"
+                                [ngClass]="!gender?'filter-dropdown is-invalid':(gender?'filter-dropdown is-valid':'filter-dropdown')"
+                                [options]="listGender" [disabled]="isViewData"></ng-select>
+                              <div *ngIf="submitted && f.gender.errors" class="invalid-feedback">
+                                <div *ngIf="f.gender.errors.required">{{ 'CONTENT.gender' | translate }} {{
+                                  'CONTENT.is-required' | translate }}</div>
+                              </div>
+                            </div>
+                            <div class="form-group col-md-4">
+                              <label class="form-label mb-1 f-w-600">{{ 'CONTENT.religion' | translate }} <span
+                                  class="required">*</span></label>
+                              <ng-select [placeholder]="'CONTENT.religion'|translate" required
+                                [notFoundMsg]="'ROOT.no_data_found'|translate" formControlName="religion" [(ngModel)]="religion"
+                                [ngClass]="!religion?'filter-dropdown is-invalid':(religion?'filter-dropdown is-valid':'filter-dropdown')"
+                                [options]="listReligion" [disabled]="isViewData">
+                              </ng-select>
+                              <label id="validation-religion-error"
+                                class="error jquery-validation-error small form-text invalid-feedback">{{
+                                'CONTENT.please-input' | translate }}{{ 'CONTENT.religion' | translate }}</label>
+                            </div>
+                            <div class="form-group col-md-4">
+                              <label class="form-label mb-0 f-w-600">{{ 'CONTENT.birthdate' | translate }} <span
+                                  class="required">*</span></label>
+                              <input [textMask]="{mask: maskDateSlash}" type="text" class="form-control mt-1"
+                                formControlName="birthdate" name="birthdate" required
+                                [placeholder]="'CONTENT.date-validation'|translate" [readOnly]="isViewData"
+                                [ngClass]="f.birthdate.invalid && f.birthdate.touched?'is-invalid':(f.birthdate.valid?'is-valid':'')" />
+                              <label
+                                *ngIf="f.birthdate.errors && f.birthdate.errors.required && (f.birthdate.touched || f.birthdate.dirty)"
+                                class="error text-danger small form-text">{{ 'ROOT.required' | translate }}</label>
+                            </div>
+                          </div>
+                          <div class="form-row">
+                            <div class="form-group col-md-4">
+                              <label class="form-label mb-1 f-w-600">{{ 'CONTENT.country_birth' | translate }} <span
+                                  class="required">*</span></label>
+                              <ng-select [placeholder]="'CONTENT.country_birth'|translate" required
+                                [notFoundMsg]="'ROOT.no_data_found'|translate" formControlName="country_birth"
+                                [(ngModel)]="countryBirth"
+                                [ngClass]="!countryBirth?'filter-dropdown is-invalid':(countryBirth?'filter-dropdown is-valid':'filter-dropdown')"
+                                [options]="listCountryBirth" (ngModelChange)="changeProvinceBirth(countryBirth)"
+                                [disabled]="isViewData">
+                              </ng-select>
+                              <label id="validation-country-birth-error"
+                                class="error jquery-validation-error small form-text invalid-feedback">{{
+                                'CONTENT.please-input' | translate }}{{ 'CONTENT.country_birth' | translate }}</label>
+                            </div>
+                            <div [hidden]="!isIndonesiaBirthCountry" class="form-group col-md-4">
+                              <label class="form-label mb-1 f-w-600">{{ 'CONTENT.province_birth' | translate }} <span
+                                  class="required">*</span></label>
+                              <ng-select [placeholder]="'CONTENT.province_birth'|translate" required
+                                [notFoundMsg]="'ROOT.no_data_found'|translate" formControlName="province_birth"
+                                [(ngModel)]="provinceBirth" [options]="listProvinceBirth"
+                                [ngClass]="!provinceBirth?'filter-dropdown is-invalid':(provinceBirth?'filter-dropdown is-valid':'filter-dropdown')"
+                                (ngModelChange)="loadCityBirthDataList(provinceBirth)" [disabled]="isViewData"></ng-select>
+                              <label id="validation-province-birth-error"
+                                class="error jquery-validation-error small form-text invalid-feedback">{{
+                                'CONTENT.please-input' | translate }}{{ 'CONTENT.province_birth' | translate }}</label>
+                            </div>
+                            <div [hidden]="isIndonesiaBirthCountry" class="form-group col-md-4">
+                              <label class="form-label mb-0 f-w-600">{{ 'CONTENT.province_birth' | translate }} <span
+                                  class="required">*</span></label>
+                              <input type="text" [placeholder]="'CONTENT.province_birth'|translate" class="form-control mt-1"
+                                name="province_birth" formControlName="province_birth_other" maxlength="100" [readOnly]="isViewData"
+                                [ngClass]="f.province_birth_other.invalid && f.province_birth_other.touched?'is-invalid':(f.province_birth_other.valid?'is-valid':'')">
+                              <label
+                                *ngIf="f.province_birth_other.errors && f.province_birth_other.errors.required && (f.province_birth_other.touched || f.province_birth_other.dirty)"
+                                class="error text-danger small form-text">{{ 'ROOT.required' | translate }}</label>
+                            </div>
+                            <div [hidden]="!isIndonesiaBirthCountry" class="form-group col-md-4">
+                              <label class="form-label mb-1 f-w-600">{{ 'CONTENT.city_birth' | translate }} <span
+                                  class="required">*</span></label>
+                              <ng-select [disabled]="!provinceBirth" [placeholder]="'CONTENT.city_birth'|translate" required
+                                [notFoundMsg]="'ROOT.no_data_found'|translate" formControlName="city_birth" [(ngModel)]="cityBirth"
+                                [ngClass]="!cityBirth?'filter-dropdown is-invalid':(cityBirth?'filter-dropdown is-valid':'filter-dropdown')"
+                                [options]="listCityBirth" [disabled]="isViewData"></ng-select>
+                              <label id="validation-city-birth-error"
+                                class="error jquery-validation-error small form-text invalid-feedback">{{
+                                'CONTENT.please-input' | translate }}{{ 'CONTENT.city_birth' | translate }}</label>
+                            </div>
+                            <div [hidden]="isIndonesiaBirthCountry" class="form-group col-md-4">
+                              <label class="form-label mb-0 f-w-600">{{ 'CONTENT.city_birth' | translate }} <span
+                                  class="required">*</span></label>
+                              <input type="text" [placeholder]="'CONTENT.city_birth'|translate" class="form-control mt-1"
+                                name="city_birth_other" formControlName="city_birth_other" maxlength="100" [readOnly]="isViewData"
+                                [ngClass]="f.city_birth_other.invalid && f.city_birth_other.touched?'is-invalid':(f.city_birth_other.valid?'is-valid':'')">
+                              <label
+                                *ngIf="f.city_birth_other.errors && f.city_birth_other.errors.required && (f.city_birth_other.touched || f.city_birth_other.dirty)"
+                                class="error text-danger small form-text">{{ 'ROOT.required' | translate }}</label>
+                            </div>
+                          </div>
+                          <div class="form-row">
+                            <div class="form-group col-md-4">
+                              <label class="form-label mb-1 f-w-600">{{ 'CONTENT.nationality' | translate }} <span
+                                  class="required">*</span></label>
+                              <ng-select [placeholder]="'CONTENT.nationality'|translate" required
+                                [notFoundMsg]="'ROOT.no_data_found'|translate" formControlName="nationality" [(ngModel)]="nationality"
+                                [ngClass]="!nationality?'filter-dropdown is-invalid':(nationality?'filter-dropdown is-valid':'filter-dropdown')"
+                                [options]="listNationality" (ngModelChange)="changeNationality(nationality)" [disabled]="isViewData">
+                              </ng-select>
+                              <label id="validation-nationality-error"
+                                class="error jquery-validation-error small form-text invalid-feedback">{{
+                                'CONTENT.please-input' | translate }}{{ 'CONTENT.nationality' | translate }}</label>
+                            </div>
+                            <div class="form-group col-md-4">
+                              <label class="form-label mb-1 f-w-600">{{ 'CONTENT.country_origin' | translate }} <span
+                                  class="required">*</span></label>
+                              <ng-select [placeholder]="'CONTENT.country_origin'|translate" required
+                                [notFoundMsg]="'ROOT.no_data_found'|translate" formControlName="country_origin"
+                                [(ngModel)]="countryOrigin" [options]="listCountryBirth" [disabled]="isViewData"
+                                [ngClass]="!countryOrigin?'filter-dropdown is-invalid':(countryOrigin?'filter-dropdown is-valid':'filter-dropdown')">
+                              </ng-select>
+                              <label id="validation-country-origin-error"
+                                class="error jquery-validation-error small form-text invalid-feedback">{{
+                                'CONTENT.please-input' | translate }}{{ 'CONTENT.country_origin' | translate }}</label>
+                            </div>
+                            <div *ngIf="isIndonesianNationality" class="form-group mb-2 col-md-4">
+                              <label class="form-label mb-0 f-w-600">{{ 'CONTENT.NIK' | translate }}
+                                <i class="icofont icofont-info-circle" [placement]="'right'"
+                                  ngbTooltip="NIK terdapat pada KTP atau Kartu Keluarga"></i><span class="required">*</span></label>
+                              <input type="text" class="form-control mt-1" name="NIK" required formControlName="NIK" minlength="16"
+                                maxlength="16" [readOnly]="isViewData"
+                                [ngClass]="f.NIK.invalid && f.NIK.touched?'is-invalid':(f.NIK.valid?'is-valid':'')">
+                              <label *ngIf="f.NIK.errors && f.NIK.errors.required && (f.NIK.touched || f.NIK.dirty)"
+                                class="error text-danger small form-text">{{ 'ROOT.required' | translate }}</label>
+                              <label *ngIf="f.NIK.errors && f.NIK.errors.minlength && (f.NIK.touched || f.NIK.dirty)"
+                                class="error text-danger small form-text">{{ 'CONTENT.validation-nik' | translate
+                                }}</label>
+                              <label *ngIf="f.NIK.errors && f.NIK.errors.maxlength && (f.NIK.touched || f.NIK.dirty)"
+                                class="error text-danger small form-text">{{ 'CONTENT.validation-nik' | translate
+                                }}</label>
+                              <label *ngIf="f.NIK.errors && f.NIK.errors.pattern && (f.NIK.touched || f.NIK.dirty)"
+                                class="error text-danger small form-text">{{ 'CONTENT.number-only' | translate }}</label>
+                            </div>
+                            <div *ngIf="!isIndonesianNationality" class="form-group col-md-2">
+                              <div><label class="form-label mb-0 f-w-600">{{ 'CONTENT.passport_number' | translate
+                                  }}<span class="required"> *</span></label></div>
+                              <input type="text" class="form-control mt-1" name="passport_number" formControlName="passport_number"
+                                required minlength="7" maxlength="7" [readOnly]="isViewData"
+                                [ngClass]="f.passport_number.invalid && f.passport_number.touched?'is-invalid':(f.passport_number.valid?'is-valid':'')">
+                              <label
+                                *ngIf="f.passport_number.errors && f.passport_number.errors.required && (f.passport_number.touched || f.passport_number.dirty)"
+                                class="error text-danger small form-text">{{ 'ROOT.required' | translate }}</label>
+                              <label
+                                *ngIf="f.passport_number.errors && f.passport_number.errors.minlength && (f.passport_number.touched || f.passport_number.dirty)"
+                                class="error text-danger small form-text">{{ 'CONTENT.validation-passport' | translate
+                                }}</label>
+                              <label
+                                *ngIf="f.passport_number.errors && f.passport_number.errors.maxlength && (f.passport_number.touched || f.passport_number.dirty)"
+                                class="error text-danger small form-text">{{ 'CONTENT.validation-passport' | translate
+                                }}</label>
+                              <label
+                                *ngIf="f.passport_number.errors && f.passport_number.errors.pattern && (f.passport_number.touched || f.passport_number.dirty)"
+                                class="error text-danger small form-text">{{ 'CONTENT.number-only' | translate
+                                }}</label>
+                            </div>
+                            <div *ngIf="!isIndonesianNationality" class="form-group col-md-2">
+                              <label class="form-label mb-0 f-w-600">{{ 'CONTENT.passport_expired_date' | translate
+                                }}<span class="required"> *</span></label>
+                              <input type="date" class="form-control mt-1" name="passport_expired_date" max="9999-12-31"
+                                formControlName="passport_expiry_date" required [readOnly]="isViewData"> <label
+                                *ngIf="f.passport_expiry_date.errors && f.passport_expiry_date.errors.required && (f.passport_expiry_date.touched || f.passport_expiry_date.dirty)"
+                                class="error text-danger small form-text">{{ 'ROOT.required' | translate }}</label>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </app-card>
+                  </div>
+                </div>
+                <div *ngIf="!notHavePhoto" class="row">
+                  <div class="col-md-12">
+                    <app-card cardTitle="{{'CONTENT.education-data' | translate}}" headerClass="text-center text-md-left"
+                      [options]="false" [loading]="loadBiodata">
+                      <div class="app-body">
+                        <div class="col-12">
+                          <div class="row">
+                            <div *ngIf="isIndonesianNationality" class="form-group mb-2 col-md-4">
+                              <label class="form-label mb-0 f-w-600">{{ 'CONTENT.nis' | translate }}
+                                <span class="required">*</span>
+                              </label>
+                              <input type="text" class="form-control mt-1" name="nis" required formControlName="nis" minlength="8"
+                                maxlength="8" placeholder="{{'CONTENT.nis' | translate }}"
+                                [ngClass]="f.nis.invalid && f.nis.touched?'is-invalid':(f.nis.valid?'is-valid':'')"
+                                [readOnly]="isViewData">
+                              <label *ngIf="f.nis.errors && f.nis.errors.required && (f.nis.touched || f.nis.dirty)"
+                                class="error text-danger small form-text">{{ 'ROOT.required' | translate }}
+                              </label>
+                              <label *ngIf="f.nis.errors && f.nis.errors.minlength && (f.nis.touched || f.nis.dirty)"
+                                class="error text-danger small form-text">{{ 'CONTENT.nis-validation' | translate}}
+                              </label>
+                              <label *ngIf="f.nis.errors && f.nis.errors.pattern && (f.nis.touched || f.nis.dirty)"
+                                class="error text-danger small form-text">{{ 'CONTENT.number-only' | translate }}
+                              </label>
+                            </div>
+                            <div *ngIf="isIndonesianNationality" class="form-group mb-2 col-md-4">
+                              <label class="form-label mb-0 f-w-600">{{ 'CONTENT.nisn' | translate }}
+                                <span class="required">*</span>
+                              </label>
+                              <input type="text" class="form-control mt-1" name="nisn" required formControlName="nisn" minlength="10"
+                                maxlength="10" placeholder="{{'CONTENT.nisn' | translate }}"
+                                [ngClass]="f.nisn.invalid && f.nisn.touched?'is-invalid':(f.nisn.valid?'is-valid':'')"
+                                [readOnly]="isViewData">
+                              <label *ngIf="f.nisn.errors && f.nisn.errors.required && (f.nisn.touched || f.nisn.dirty)"
+                                class="error text-danger small form-text">{{ 'ROOT.required' | translate }}
+                              </label>
+                              <label *ngIf="f.nisn.errors && f.nisn.errors.minlength && (f.nisn.touched || f.nisn.dirty)"
+                                class="error text-danger small form-text">{{ 'CONTENT.validation-nisn' | translate}}
+                              </label>
+                              <label *ngIf="f.nisn.errors && f.nisn.errors.pattern && (f.nisn.touched || f.nisn.dirty)"
+                                class="error text-danger small form-text">{{ 'CONTENT.number-only' | translate }}
+                              </label>
+                            </div>
+                            <div [class]="isIndonesianNationality ? 'form-group mb-2 col-md-4' : 'form-group mb-2 col-md-12'">
+                              <label class="form-label mb-0 f-w-600">{{ 'CONTENT.ijazah-number' | translate }}
+                                <i class="icofont icofont-info-circle" [placement]="'top'"
+                                ngbTooltip="{{'CONTENT.ijazah-detail-number' | translate}}"></i><span
+                                class="required"> *</span></label>
+                              <input type="text" class="form-control mt-1" name="ijazah_number" required formControlName="ijazah_number" minlength="14"
+                                maxlength="25" placeholder="{{'CONTENT.ijazah-number' | translate }}"
+                                [ngClass]="f.ijazah_number.invalid && f.ijazah_number.touched?'is-invalid':(f.ijazah_number.valid?'is-valid':'')"
+                                [readOnly]="isViewData">
+                              <label *ngIf="f.ijazah_number.errors && f.ijazah_number.errors.required && (f.ijazah_number.touched || f.ijazah_number.dirty)"
+                                class="error text-danger small form-text">{{ 'ROOT.required' | translate }}
+                              </label>
+                              <label *ngIf="f.ijazah_number.errors && f.ijazah_number.errors.minlength && (f.ijazah_number.touched || f.ijazah_number.dirty)"
+                                class="error text-danger small form-text">{{ 'CONTENT.ijazah-number-validation' | translate}}
+                              </label>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </app-card>
+                  </div>
+                </div>
+                <div *ngIf="!notHavePhoto" class="row">
+                  <div class="col-md-6">
+                    <app-card cardTitle="{{'CONTENT.disabilitas-data' | translate}}" headerClass="text-center text-md-left"
+                      [options]="false" [loading]="loadBiodata">
+                      <div class="col-12">
+                        <div class="row">
+                          <div class="form-group mb-2 col-md-12">
+                            <label class="form-label mb-1 f-w-600">{{ 'CONTENT.color-blind' | translate }}<span class="required">
+                                *</span></label><br>
+                            <ng-select [(ngModel)]="colorBlind" name="color_blind" [allowClear]="false" [options]="colorBlindList"
+                              [placeholder]="'ROOT.choose' | translate" [disabled]="isViewData"
+                              [ngClass]="!colorBlind?'filter-dropdown is-invalid':(colorBlind?'filter-dropdown is-valid':'filter-dropdown')"
+                              [notFoundMsg]="'ROOT.no_data_found' | translate" formControlName="color_blind">
+                            </ng-select>
+                            <label *ngIf="!colorBlind" class="error text-danger small form-text">{{ 'ROOT.required' |
+                              translate }}</label>
+                          </div>
+                          <div class="form-group mb-0 col-12 col-md-12">
+                            <label class="form-label mb-1 f-w-600">{{ 'CONTENT.special-needs' | translate }}<span class="required">
+                                *</span>
+                            </label><br>
+                            <ng-select [(ngModel)]="specialNeeds" name="special_needs" [allowClear]="false"
+                              formControlName="special_needs" [options]="listOptions" [placeholder]="'ROOT.choose' | translate"
+                              [ngClass]="!specialNeeds?'filter-dropdown is-invalid':(specialNeeds?'filter-dropdown is-valid':'filter-dropdown')"
+                              [notFoundMsg]="'ROOT.no_data_found' | translate" [disabled]="isViewData"
+                              (ngModelChange)="changeSpecialNeeds(specialNeeds)">
+                            </ng-select>
+                            <label *ngIf="!specialNeeds" class="error text-danger small form-text">{{ 'ROOT.required' | translate
+                              }}</label>
+                          </div>
+                          <div class="form-group mb-2 col-md-12">
+                          </div>
+                          <div class="form-group mb-2 col-md-12" *ngIf="showSpecialNeeds">
+                            <input type="text" class="form-control mt-0" formControlName="special_needs_text"
+                              [placeholder]="'CONTENT.mention-special-needs' | translate" [readOnly]="isViewData"
+                              [ngClass]="f.special_needs_text.invalid && f.special_needs_text.touched?'is-invalid':(f.special_needs_text.valid?'is-valid':'')">
+                            <label
+                              *ngIf="f.special_needs_text.errors && f.special_needs_text.errors.required && (f.special_needs_text.touched || f.special_needs_text.dirty)"
+                              class="error text-danger small form-text">{{ 'ROOT.required' | translate }}</label>
+                          </div>
+                        </div>
+                      </div>
+                    </app-card>
+                  </div>
+                  <div class="col-md-6">
+                    <app-card cardTitle="{{'CONTENT.contact_data' | translate}}" headerClass="text-center text-md-left"
+                      [options]="false" [loading]="loadBiodata">
+                      <div class="app-body">
+                        <div class="col-12">
+                          <div class="row">
+                            <div class="form-group mb-0 col-md-12">
+                              <label class="form-label mb-0 f-w-600">{{ 'CONTENT.email' | translate }}</label>
+                              <input type="text" class="form-control mt-1" formControlName="email" readonly>
+                            </div>
+                            <div class="form-group mb-1 col-md-12">
+                              <label class="form-label mb-0 f-w-600">{{ 'CONTENT.phone_number' | translate }} <span class="required">
+                                  *</span></label>
+                              <input type="text" class="form-control mt-1" required formControlName="mobile_phone_number"
+                                minlength="11" maxlength="13" [readOnly]="isViewData"
+                                [ngClass]="f.mobile_phone_number.invalid && f.mobile_phone_number.touched?'is-invalid':(f.mobile_phone_number.valid?'is-valid':'')">
+                              <label
+                                *ngIf="f.mobile_phone_number.errors && f.mobile_phone_number.errors.required && (f.mobile_phone_number.touched || f.mobile_phone_number.dirty)"
+                                class="error text-danger small form-text">{{ 'ROOT.required' | translate }}</label>
+                              <label
+                                *ngIf="f.mobile_phone_number.errors && f.mobile_phone_number.errors.minlength && (f.mobile_phone_number.touched || f.mobile_phone_number.dirty)"
+                                class="error text-danger small form-text">{{ 'CONTENT.min-length' | translate }}</label>
+                              <label
+                                *ngIf="f.mobile_phone_number.errors && f.mobile_phone_number.errors.pattern && (f.mobile_phone_number.touched || f.mobile_phone_number.dirty)"
+                                class="error text-danger small form-text">{{ 'CONTENT.number-only' | translate
+                                }}</label>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </app-card>
+                  </div>
+                </div>
+                <div *ngIf="!notHavePhoto" class="row">
+                  <div class="col-12 col-md-12">
+                   <!--Data Alamat-->
+                    <app-card cardTitle="{{'CONTENT.address_data' | translate}}" headerClass="text-center text-md-left"
+                      [options]="false" [loading]="loadBiodata">
+                      <div class="app-body">
+                        <div class="col-12">
+                          <div class="row">
+                            <div class="form-group mb-2 col-md-12">
+                              <label class="form-label mb-1 f-w-600">{{ 'CONTENT.country' | translate }} <span
+                                  class="required">*</span></label>
+                              <ng-select [placeholder]="'CONTENT.country'|translate" required
+                                [notFoundMsg]="'ROOT.no_data_found'|translate" formControlName="address_country" [(ngModel)]="country"
+                                [options]="listCountryBirth"
+                                [ngClass]="!country?'filter-dropdown is-invalid':(country?'filter-dropdown is-valid':'filter-dropdown')"
+                                (selected)="changeCountryDataforProvince($event)" [disabled]="isViewData"></ng-select>
+                            </div>
+                          </div>
+                          <div *ngIf="!hiddenAddressDetail" class="row">
+                            <div class="form-group col-md-4">
+                              <label class="form-label mb-1 f-w-600">{{ 'CONTENT.province' | translate }} <span
+                                  class="required">*</span></label>
+                              <ng-select [placeholder]="'CONTENT.province'|translate" required
+                                [notFoundMsg]="'ROOT.no_data_found'|translate" formControlName="address_province"
+                                [(ngModel)]="province" [options]="listProvince"
+                                [ngClass]="!province?'filter-dropdown is-invalid':(province?'filter-dropdown is-valid':'filter-dropdown')"
+                                (selected)="changeProvinceDataforCity($event)" [disabled]="isViewData"></ng-select>
+                            </div>
+                            <div class="form-group col-md-4">
+                              <label class="form-label mb-1 f-w-600">{{ 'CONTENT.city' | translate }} <span
+                                  class="required">*</span></label>
+                              <ng-select [placeholder]="'CONTENT.city'|translate" required
+                                [notFoundMsg]="'ROOT.no_data_found'|translate" formControlName="address_city" [(ngModel)]="city"
+                                [options]="listCity"
+                                [ngClass]="!city?'filter-dropdown is-invalid':(city?'filter-dropdown is-valid':'filter-dropdown')"
+                                (selected)="changeCityDataforDistrict($event)" [disabled]="isViewData"></ng-select>
+                            </div>
+                            <div class="form-group col-md-4">
+                              <label class="form-label mb-1 f-w-600">{{ 'CONTENT.district' | translate }}</label>
+                              <ng-select [placeholder]="'CONTENT.district'|translate" [notFoundMsg]="'ROOT.no_data_found'|translate"
+                                formControlName="address_district" [(ngModel)]="district" [options]="listDistrict"
+                                [disabled]="isViewData"
+                                [ngClass]="!district?'filter-dropdown is-invalid':(district?'filter-dropdown is-valid':'filter-dropdown')">
+                              </ng-select>
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="form-group mb-2 col-md-12">
+                              <label class="form-label mb-1 f-w-600">{{ 'CONTENT.address' | translate }} <span
+                                  class="required">*</span></label>
+                              <textarea class="form-control" formControlName="address_detail" maxlength="150" required
+                                [readOnly]="isViewData"
+                                [ngClass]="f.address_detail.invalid && f.address_detail.touched?'is-invalid':(f.address_detail.valid?'is-valid':'')"></textarea>
+                              <label
+                                *ngIf="f.address_detail.errors && f.address_detail.errors.required && (f.address_detail.touched || f.address_detail.dirty)"
+                                class="error text-danger small form-text">{{ 'ROOT.required' | translate }}</label>
+                              <label
+                                *ngIf="f.address_detail.errors && f.address_detail.errors.maxlength && (f.address_detail.touched || f.address_detail.dirty)"
+                                class="error text-danger small form-text">{{ 'CONTENT.validation-address-detail' |
+                                translate }}</label>
+                            </div>
+                          </div>
+                          <div *ngIf="!hiddenAddressDetail" class="row">
+                            <div class="form-group col-md-6">
+                              <label class="form-label mb-0 f-w-600">{{ 'CONTENT.zipcode' | translate }}
+                                <span class="required">*</span></label>
+                              <input type="text" [placeholder]="'CONTENT.zipcode'|translate" class="form-control mt-1" name="zipcode"
+                                maxlength="5" minlength="5" required formControlName="zipcode" [readOnly]="isViewData"
+                                [ngClass]="f.zipcode.invalid && f.zipcode.touched?'is-invalid':(f.zipcode.valid?'is-valid':'')">
+                              <label *ngIf="f.zipcode.errors && f.zipcode.errors.required && (f.zipcode.touched || f.zipcode.dirty)"
+                                class="error text-danger small form-text">{{ 'ROOT.required' | translate }}</label>
+                              <label *ngIf="f.zipcode.errors && f.zipcode.errors.minlength && (f.zipcode.touched || f.zipcode.dirty)"
+                                class="error text-danger small form-text">{{ 'CONTENT.validation-zipcode' | translate
+                                }}</label>
+                              <label *ngIf="f.zipcode.errors && f.zipcode.errors.pattern && (f.zipcode.touched || f.zipcode.dirty)"
+                                class="error text-danger small form-text">{{ 'CONTENT.number-only' | translate
+                                }}</label>
+                            </div>
+                            <div class="form-group col-md-6">
+                              <label class="form-label mb-0 f-w-600">{{ 'CONTENT.home_number' | translate }}</label>
+                              <input type="text" [placeholder]="'CONTENT.home_number'|translate" class="form-control mt-1"
+                                name="home_number" formControlName="house_phone_number" maxlength="11" [readOnly]="isViewData"
+                                [ngClass]="f.house_phone_number.invalid && f.house_phone_number.touched?'is-invalid':(f.house_phone_number.valid?'is-valid':'')">
+                              <label
+                                *ngIf="f.house_phone_number.errors && f.house_phone_number.errors.maxlength && (f.house_phone_number.touched || f.house_phone_number.dirty)"
+                                class="error text-danger small form-text">{{ 'CONTENT.validation-zipcode' | translate
+                                }}</label>
+                              <label
+                                *ngIf="f.house_phone_number.errors && f.house_phone_number.errors.pattern && (f.house_phone_number.touched || f.house_phone_number.dirty)"
+                                class="error text-danger small form-text">{{ 'CONTENT.number-only' | translate
+                                }}</label>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </app-card>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+          <div class="col-sm-12 centered-content">
+            <button type="submit" class="btn btn-outline-primary btn-sm"
+              [disabled]="!biodatasForms.valid || loadBiodata " (click)="!isViewData ? createBiodatas() : goToParentsData()">
+              <span *ngIf="this.loadBiodata" class="spinner-border spinner-border-sm" role="status"></span>
+              <span *ngIf="this.loadBiodata" class="load-text"> Loading...</span>
+              <span *ngIf="!this.loadBiodata" class="btn-text">{{ 'ROOT.next' | translate }} <i
+                  class="icofont icofont-rounded-right"></i></span>
+            </button>
+          </div>
+        </wizard-step>
+        <wizard-step stepTitle="{{'CONTENT.parents' | translate}}" navigationSymbol="2">
+          <div class="row">
+            <div padding class="col-md-12">
+              <form class="md-float-material form-material" action="javascript:" [formGroup]="parentsForm">
+                <div class="row">
+                  <div class="col-sm-12">
+                    <app-card [hidHeader]="true" headerClass="text-center text-md-left"
+                      [options]="false" [loading]="loadingParents">
+                      <div class="app-body">
+                        <div class="form-group mb-2">
+                          <label class="form-label mb-1 f-w-600">{{ 'CONTENT.relationship' | translate }} <span
+                              class="required">*</span></label>
+                          <ng-select [placeholder]="'CONTENT.relationship'|translate"
+                            [notFoundMsg]="'ROOT.no_data_found'|translate" formControlName="parents"
+                            [(ngModel)]="realtionshipSelected" [disabled]="isViewData"
+                            [ngClass]="!realtionshipSelected?'filter-dropdown is-invalid':(realtionshipSelected?'filter-dropdown is-valid':'filter-dropdown')"
+                            [options]="listFamilyRelationship" (selected)="changeFamilyRelationship($event)">
+                          </ng-select>
+                          <label class="error text-danger small form-text"
+                            *ngIf="!realtionshipSelected">{{'ROOT.required' | translate }}</label>
+                        </div>
+                      </div>
+                    </app-card>
+                  </div>
+                  <div class="col-12 col-md-6" *ngIf="realtionshipSelected && haveParents">
+                    <app-card cardTitle="{{'CONTENT.father' | translate}}" headerClass="text-center text-md-left"
+                    [options]="false" [loading]="loadingParents">
+                    <div class="form-group mb-2">
+                      <label class="form-label mb-1 f-w-600">{{ 'CONTENT.fullname' | translate }} <span
+                          class="required">*</span></label>
+                      <input type="text" class="form-control" name="name" required formControlName="fathersName"
+                        placeholder="{{'CONTENT.fathers-name' | translate}}" [readOnly]="isViewData"
+                        [ngClass]="fp.fathersName.invalid && fp.fathersName.touched?'is-invalid':(fp.fathersName.valid?'is-valid':'')"
+                        maxlength="100">
+                      <label
+                        *ngIf="fp.fathersName.errors && fp.fathersName.errors.required && (fp.fathersName.touched || fp.fathersName.dirty)"
+                        class="error text-danger small form-text">{{ 'ROOT.required' | translate }}</label>
+                      <label
+                        *ngIf="fp.fathersName.errors && fp.fathersName.errors.maxlength && (fp.fathersName.touched || fp.fathersName.dirty)"
+                        class="error text-danger small form-text">{{ 'CONTENT.validation-fullname' | translate
+                        }}</label>
+                      <label
+                        *ngIf="fp.fathersName.errors && fp.fathersName.errors.pattern && (fp.fathersName.touched || fp.fathersName.dirty)"
+                        class="error text-danger small form-text">{{ 'CONTENT.letter-only' | translate }}</label>
+                    </div>
+                    <div class="form-row">
+                      <div class="form-group mb-2 col-md-6">
+                        <label class="form-label mb-1 f-w-600">{{ 'CONTENT.handphone' | translate }} <span
+                            class="required">*</span></label>
+                        <input type="text" class="form-control" required formControlName="fathersPhone"
+                          minlength="11" maxlength="13" placeholder="{{'CONTENT.placeholder-number' | translate}}" [readOnly]="isViewData"
+                          [ngClass]="fp.fathersPhone.invalid && fp.fathersPhone.touched?'is-invalid':(fp.fathersPhone.valid?'is-valid':'')">
+                        <label
+                          *ngIf="fp.fathersPhone.errors && fp.fathersPhone.errors.required && (fp.fathersPhone.touched || fp.fathersPhone.dirty)"
+                          class="error text-danger small form-text">{{ 'ROOT.required' | translate }}</label>
+                        <label
+                          *ngIf="fp.fathersPhone.errors && fp.fathersPhone.errors.minlength && (fp.fathersPhone.touched || fp.fathersPhone.dirty)"
+                          class="error text-danger small form-text">{{ 'CONTENT.min-length' | translate }}</label>
+                        <label
+                          *ngIf="fp.fathersPhone.errors && fp.fathersPhone.errors.pattern && (fp.fathersPhone.touched || fp.fathersPhone.dirty)"
+                          class="error text-danger small form-text">{{ 'CONTENT.number-only' | translate
+                          }}</label>
+                      </div>
+                      <div class="form-group mb-2 col-md-6">
+                        <label class="form-label mb-1 f-w-600">{{ 'CONTENT.NIK' | translate }}
+                          <i class="icofont icofont-info-circle" [placement]="'top'"
+                            ngbTooltip="NIK terdapat pada KTP atau Kartu Keluarga"></i><span
+                            class="required"> *</span></label>
+                        <input type="text" class="form-control" name="NIK"
+                          placeholder="{{'CONTENT.nik-father' | translate}}" required
+                          formControlName="fathersIdentityNumber" minlength="16" maxlength="16" [readOnly]="isViewData"
+                          [ngClass]="fp.fathersIdentityNumber.invalid && fp.fathersIdentityNumber.touched?'is-invalid':(fp.fathersIdentityNumber.valid?'is-valid':'')">
+                        <label
+                          *ngIf="fp.fathersIdentityNumber.errors && fp.fathersIdentityNumber.errors.required && (fp.fathersIdentityNumber.touched || fp.fathersIdentityNumber.dirty)"
+                          class="error text-danger small form-text">{{ 'ROOT.required' | translate }}</label>
+                        <label
+                          *ngIf="fp.fathersIdentityNumber.errors && fp.fathersIdentityNumber.errors.minlength && (fp.fathersIdentityNumber.touched || fp.fathersIdentityNumber.dirty)"
+                          class="error text-danger small form-text">{{ 'CONTENT.validation-nik' | translate
+                          }}</label>
+                        <label
+                          *ngIf="fp.fathersIdentityNumber.errors && fp.fathersIdentityNumber.errors.maxlength && (fp.fathersIdentityNumber.touched || fp.fathersIdentityNumber.dirty)"
+                          class="error text-danger small form-text">{{ 'CONTENT.validation-nik' | translate
+                          }}</label>
+                        <label
+                          *ngIf="fp.fathersIdentityNumber.errors && fp.fathersIdentityNumber.errors.pattern && (fp.fathersIdentityNumber.touched || fp.fathersIdentityNumber.dirty)"
+                          class="error text-danger small form-text">{{ 'CONTENT.number-only' | translate
+                          }}</label>
+                      </div>
+                    </div>
+                    </app-card>
+                  </div>
+                  <div class="col-12 col-md-6" *ngIf="realtionshipSelected && haveParents">
+                    <app-card cardTitle="{{'CONTENT.mother' | translate}}" headerClass="text-center text-md-left"
+                    [options]="false" [loading]="loadingParents">
+                    <div class="form-group mb-2">
+                      <label class="form-label mb-1 f-w-600">{{ 'CONTENT.fullname' | translate }} <span
+                          class="required">*</span></label>
+                      <input type="text" class="form-control" name="name" required formControlName="mothersName" [readOnly]="isViewData"
+                        placeholder="{{'CONTENT.mothers-name' | translate}}"
+                        [ngClass]="fp.mothersName.invalid && fp.mothersName.touched?'is-invalid':(fp.mothersName.valid?'is-valid':'')"
+                        maxlength="100">
+                      <label
+                        *ngIf="fp.mothersName.errors && fp.mothersName.errors.required && (fp.mothersName.touched || fp.mothersName.dirty)"
+                        class="error text-danger small form-text">{{ 'ROOT.required' | translate }}</label>
+                      <label
+                        *ngIf="fp.mothersName.errors && fp.mothersName.errors.maxlength && (fp.mothersName.touched || fp.mothersName.dirty)"
+                        class="error text-danger small form-text">{{ 'CONTENT.validation-fullname' | translate
+                        }}</label>
+                      <label
+                        *ngIf="fp.mothersName.errors && fp.mothersName.errors.pattern && (fp.mothersName.touched || fp.mothersName.dirty)"
+                        class="error text-danger small form-text">{{ 'CONTENT.letter-only' | translate }}</label>
+                    </div>
+                    <div class="form-row">
+                      <div class="form-group mb-2 col-md-6">
+                        <label class="form-label mb-1 f-w-600">{{ 'CONTENT.handphone' | translate }} <span
+                            class="required">*</span></label>
+                        <input type="text" class="form-control" required formControlName="mothersPhone" [readOnly]="isViewData"
+                          minlength="11" maxlength="13" placeholder="{{'CONTENT.placeholder-number' | translate}}"
+                          [ngClass]="fp.mothersPhone.invalid && fp.mothersPhone.touched?'is-invalid':(fp.mothersPhone.valid?'is-valid':'')">
+                        <label
+                          *ngIf="fp.mothersPhone.errors && fp.mothersPhone.errors.required && (fp.mothersPhone.touched || fp.mothersPhone.dirty)"
+                          class="error text-danger small form-text">{{ 'ROOT.required' | translate }}</label>
+                        <label
+                          *ngIf="fp.mothersPhone.errors && fp.mothersPhone.errors.minlength && (fp.mothersPhone.touched || fp.mothersPhone.dirty)"
+                          class="error text-danger small form-text">{{ 'CONTENT.min-length' | translate }}</label>
+                        <label
+                          *ngIf="fp.mothersPhone.errors && fp.mothersPhone.errors.pattern && (fp.mothersPhone.touched || fp.mothersPhone.dirty)"
+                          class="error text-danger small form-text">{{ 'CONTENT.number-only' | translate
+                          }}</label>
+                      </div>
+                      <div class="form-group mb-2 col-md-6">
+                        <label class="form-label mb-1 f-w-600">{{ 'CONTENT.NIK' | translate }}
+                          <i class="icofont icofont-info-circle" [placement]="'top'"
+                            ngbTooltip="NIK terdapat pada KTP atau Kartu Keluarga"></i><span
+                            class="required"> *</span></label>
+                        <input type="text" class="form-control" name="NIK" required [readOnly]="isViewData"
+                          formControlName="mothersIdentityNumber" minlength="16" maxlength="16"
+                          placeholder="{{'CONTENT.nik-mother' | translate}}"
+                          [ngClass]="fp.mothersIdentityNumber.invalid && fp.mothersIdentityNumber.touched?'is-invalid':(fp.mothersIdentityNumber.valid?'is-valid':'')">
+                        <label
+                          *ngIf="fp.mothersIdentityNumber.errors && fp.mothersIdentityNumber.errors.required && (fp.mothersIdentityNumber.touched || fp.mothersIdentityNumber.dirty)"
+                          class="error text-danger small form-text">{{ 'ROOT.required' | translate }}</label>
+                        <label
+                          *ngIf="fp.mothersIdentityNumber.errors && fp.mothersIdentityNumber.errors.minlength && (fp.mothersIdentityNumber.touched || fp.mothersIdentityNumber.dirty)"
+                          class="error text-danger small form-text">{{ 'CONTENT.validation-nik' | translate
+                          }}</label>
+                        <label
+                          *ngIf="fp.mothersIdentityNumber.errors && fp.mothersIdentityNumber.errors.maxlength && (fp.mothersIdentityNumber.touched || fp.mothersIdentityNumber.dirty)"
+                          class="error text-danger small form-text">{{ 'CONTENT.validation-nik' | translate
+                          }}</label>
+                        <label
+                          *ngIf="fp.mothersIdentityNumber.errors && fp.mothersIdentityNumber.errors.pattern && (fp.mothersIdentityNumber.touched || fp.mothersIdentityNumber.dirty)"
+                          class="error text-danger small form-text">{{ 'CONTENT.number-only' | translate
+                          }}</label>
+                      </div>
+                    </div>
+                    </app-card>
+                  </div>
+                  <div class="col-12 col-md-12" *ngIf="realtionshipSelected && !haveParents">
+                    <app-card cardTitle="{{'CONTENT.male-relatives' | translate}}" headerClass="text-center text-md-left"
+                    [options]="false" [loading]="loadingParents">
+                    <div class="form-group mb-2">
+                      <label class="form-label mb-1 f-w-600">{{ 'CONTENT.fullname' | translate }} <span
+                          class="required">*</span></label>
+                      <input type="text" class="form-control" name="name" required
+                        formControlName="maleRelativesName" [readOnly]="isViewData"
+                        placeholder="{{'CONTENT.male-relative-name' | translate}}"
+                        [ngClass]="fp.maleRelativesName.invalid && fp.maleRelativesName.touched?'is-invalid':(fp.maleRelativesName.valid?'is-valid':'')"
+                        maxlength="100">
+                      <label
+                        *ngIf="fp.maleRelativesName.errors && fp.maleRelativesName.errors.required && (fp.maleRelativesName.touched || fp.maleRelativesName.dirty)"
+                        class="error text-danger small form-text">{{ 'ROOT.required' | translate }}</label>
+                      <label
+                        *ngIf="fp.maleRelativesName.errors && fp.maleRelativesName.errors.maxlength && (fp.maleRelativesName.touched || fp.maleRelativesName.dirty)"
+                        class="error text-danger small form-text">{{ 'CONTENT.validation-fullname' | translate
+                        }}</label>
+                      <label
+                        *ngIf="fp.maleRelativesName.errors && fp.maleRelativesName.errors.pattern && (fp.maleRelativesName.touched || fp.maleRelativesName.dirty)"
+                        class="error text-danger small form-text">{{ 'CONTENT.letter-only' | translate }}</label>
+                    </div>
+                    <div class="form-row">
+                      <div class="form-group mb-2 col-md-6">
+                        <label class="form-label mb-1 f-w-600">{{ 'CONTENT.handphone' | translate }}
+                          <span class="required">*</span></label>
+                        <input type="text" class="form-control" required formControlName="maleRelativesPhone" [readOnly]="isViewData"
+                          minlength="11" maxlength="13" placeholder="{{'CONTENT.placeholder-number' | translate}}"
+                          [ngClass]="fp.maleRelativesPhone.invalid && fp.maleRelativesPhone.touched?'is-invalid':(fp.maleRelativesPhone.valid?'is-valid':'')">
+                        <label
+                          *ngIf="fp.maleRelativesPhone.errors && fp.maleRelativesPhone.errors.required && (fp.maleRelativesPhone.touched || fp.maleRelativesPhone.dirty)"
+                          class="error text-danger small form-text">{{ 'ROOT.required' | translate }}</label>
+                        <label
+                          *ngIf="fp.maleRelativesPhone.errors && fp.maleRelativesPhone.errors.minlength && (fp.maleRelativesPhone.touched || fp.maleRelativesPhone.dirty)"
+                          class="error text-danger small form-text">{{ 'CONTENT.min-length' | translate }}</label>
+                        <label
+                          *ngIf="fp.maleRelativesPhone.errors && fp.maleRelativesPhone.errors.pattern && (fp.maleRelativesPhone.touched || fp.maleRelativesPhone.dirty)"
+                          class="error text-danger small form-text">{{ 'CONTENT.number-only' | translate
+                          }}</label>
+                      </div>
+                      <div class="form-group mb-2 col-md-6">
+                        <label class="form-label mb-1 f-w-600">{{ 'CONTENT.NIK' | translate }}
+                          <i class="icofont icofont-info-circle" [placement]="'top'"
+                            ngbTooltip="NIK terdapat pada KTP atau Kartu Keluarga"></i> <span
+                            class="required">*</span></label>
+                        <input type="text" class="form-control" name="NIK" required
+                          formControlName="maleRelativesIdentityNumber" minlength="16" maxlength="16"
+                          placeholder="{{'CONTENT.nik-malerelative' | translate}}" [readOnly]="isViewData"
+                          [ngClass]="fp.maleRelativesIdentityNumber.invalid && fp.maleRelativesIdentityNumber.touched?'is-invalid':(fp.maleRelativesIdentityNumber.valid?'is-valid':'')">
+                        <label
+                          *ngIf="fp.maleRelativesIdentityNumber.errors && fp.maleRelativesIdentityNumber.errors.required && (fp.maleRelativesIdentityNumber.touched || fp.maleRelativesIdentityNumber.dirty)"
+                          class="error text-danger small form-text">{{ 'ROOT.required' | translate }}</label>
+                        <label
+                          *ngIf="fp.maleRelativesIdentityNumber.errors && fp.maleRelativesIdentityNumber.errors.minlength && (fp.maleRelativesIdentityNumber.touched || fp.maleRelativesIdentityNumber.dirty)"
+                          class="error text-danger small form-text">{{ 'CONTENT.validation-nik' | translate
+                          }}</label>
+                        <label
+                          *ngIf="fp.maleRelativesIdentityNumber.errors && fp.maleRelativesIdentityNumber.errors.maxlength && (fp.maleRelativesIdentityNumber.touched || fp.maleRelativesIdentityNumber.dirty)"
+                          class="error text-danger small form-text">{{ 'CONTENT.validation-nik' | translate
+                          }}</label>
+                        <label
+                          *ngIf="fp.maleRelativesIdentityNumber.errors && fp.maleRelativesIdentityNumber.errors.pattern && (fp.maleRelativesIdentityNumber.touched || fp.maleRelativesIdentityNumber.dirty)"
+                          class="error text-danger small form-text">{{ 'CONTENT.number-only' | translate
+                          }}</label>
+                      </div>
+                    </div>
+                    </app-card>
+                  </div>
+                    <div class="col-sm-12 centered-content">
+                      <button type="button" class="btn btn-outline-secondary btn-sm m-1" previousStep><i
+                          class="icofont icofont-rounded-left"></i> {{ 'ROOT.back' | translate }}
+                      </button>
+                      <button type="submit" class="btn btn-outline-primary btn-sm m-1" (click)="!isViewData ? createParents() : gotoStepDocument()" [disabled]="!parentsForm.valid || loadingParents">
+                        <span *ngIf="this.loadingParents" class="spinner-border spinner-border-sm" role="status"></span>
+                        <span *ngIf="this.loadingParents" class="load-text"> Loading...</span>
+                        <span *ngIf="!this.loadingParents" class="btn-text">{{ 'ROOT.next' | translate }} <i
+                            class="icofont icofont-rounded-right"></i></span>
+                      </button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </wizard-step>
+        <wizard-step stepTitle="{{'CONTENT.documents' | translate}}" navigationSymbol="3">
+          <div padding class="col-md-12">
+            <form class="md-float-material form-material" action="javascript:" [formGroup]="parentsForm">
+              <div class="row">
+                <div class="col-sm-12">
+                  <app-alert type="warning" *ngIf="!isViewData">
+                    <i class="icofont icofont-warning"></i> <b> {{'CONTENT.warning' | translate }}!</b> <br>{{'CONTENT.warning-new-student-data' | translate}}
+                  </app-alert>
+                  <app-card cardTitle="Data {{'CONTENT.documents' | translate}}" headerClass="text-center text-md-left"
+                    [options]="false" [loading]="loadTableDocument">
+                    <div class="table-responsive pb-1 mt-2">
+                      <table datatable class="table table-striped mb-0 table-sm" [dtOptions]="dtOptions[0]"
+                        [dtTrigger]="dtTrigger">
+                        <thead>
+                          <tr>
+                            <th scope="col" class="text-center">{{ 'CONTENT.no' | translate }}</th>
+                            <th scope="col">{{ 'CONTENT.document-name' | translate }}</th>
+                            <th scope="col" class="text-center">{{ 'CONTENT.status-document' | translate }}</th>
+                            <th scope="col" class="text-center col-width filter-dropdown-style">{{ 'CONTENT.status-approved' |
+                              translate }}</th>
+                              <th scope="col" class="text-center col-width">{{ 'CONTENT.action' | translate }}</th>
+                          </tr>
+                        </thead>
+                        <tbody *ngIf="tableDocument?.length != 0">
+                          <tr *ngFor="let data of tableDocument; let i = index;">
+                            <th scope="row" style="padding-left: 10px; text-align:center ">{{i+1}}</th>
+                            <td>
+                              {{data.new_student_document_type}}
+                            </td>
+                            <td class="text-center">
+                              <span *ngIf="data.document != null &&  data.document_type_id !== 7"
+                                [class]="data.document.url == null ? 'badge badge-light-danger' : 'badge badge-light-success'">
+                                <i
+                                  [class]="data.document.url == null ? 'icofont icofont-error' : 'icofont icofont-tick-mark'"></i>
+                                {{ data.document.url == null ? ('CONTENT.not-complete' | translate) : ('CONTENT.complete' | translate) }}
+                              </span>
+                              <span *ngIf="data.document == [] && data.document_type_id !== 7" [class]="'badge badge-light-danger'">
+                                <i [class]="'icofont icofont-error'"></i> {{ 'CONTENT.not-complete' | translate }}
+                              </span>
+                              <span *ngIf="data.document == null && data.document_type_id !== 7" class="badge badge-light-danger">
+                                <i [class]="'icofont icofont-error'"></i> {{ 'CONTENT.not-complete' | translate }}
+                              </span>
+                            </td>
+                            <td class="text-center">
+                              <div *ngIf="data.document != null && data.document_type_id != 7">
+                                <span *ngIf="data.document.approval_final_status == true" class="badge badge-success">{{ 'CONTENT.approve' |
+                                  translate }}</span>
+                                <span *ngIf="data.document.approval_final_status == false" class="badge badge-danger">{{
+                                  'ROOT.rejected' | translate }}</span>
+                                <span *ngIf="data.document.approval_final_status == null" class="badge badge-secondary">{{
+                                  'CONTENT.not-specified' | translate }}</span>
+                                </div>
+                                <div *ngIf="data.document == null && data.document_type_id != 7">
+                                  <span class="badge badge-secondary">{{
+                                    'CONTENT.not-specified' | translate }}</span>
+                                  </div>
+                            </td>
+                            <td class="text-center">
+                              <button [hidden]="data.document_type_id == 7" type="button" class="btn btn-outline-primary btn-sm m-1" [placement]="'left'"
+                                (click)="downloadDocument(data)" [disabled]="loadingDownload"
+                                [ngbTooltip]="'CONTENT.download-document' | translate">
+                                <span *ngIf="this.loadingDownload" class="spinner-border spinner-border-sm"
+                                  role="status"></span>
+                                <span *ngIf="this.loadingDownload" class="load-text"> Loading...</span>
+                                <span *ngIf="!this.loadingDownload" class="btn-text"><i
+                                    class="feather icon-download"></i>
+                                </span>
+                              </button>
+                              <button type="button" [class]="data.document_type_id == 7 ? 'btn btn-outline-info btn-sm m-1' : 'btn btn-outline-warning btn-sm m-1'" [placement]="'left'"
+                                (click)="uploadDocumentData(data)"
+                                [ngbTooltip]="data.document_type_id == 7 ? ('CONTENT.view-document-info' | translate) : ('CONTENT.change-document-info' | translate)">
+                                <i [class]="data.document_type_id == 7 ? 'icofont icofont-info-circle' : 'fas fa-cloud-upload-alt'"></i>
+                              </button>
+                              <button type="button" *ngIf="data.document_type_id != 7 && data.document != null && data.document.approval_final_status == false" class="btn btn-outline-info btn-sm m-1" [placement]="'left'" [ngbTooltip]="'CONTENT.rejected-info' | translate"
+                                (click)="revisedData(data)"><i
+                                  class="fas fa-eye"></i></button>
+                            </td>
+                          </tr>
+                        </tbody>
+                        <tbody *ngIf="tableDocument?.length == 0 && !loadTableDocument">
+                          <tr>
+                            <td colspan="5" class="no-data-available text-center">
+                              <app-no-data-found message="{{ 'ROOT.no_data_found' | translate }}"></app-no-data-found>
+                            </td>
+                            <td class="hidden"></td>
+                            <td class="hidden"></td>
+                            <td class="hidden"></td>
+                            <td class="hidden"></td>
+                          </tr>
+                        </tbody>
+                        <tbody *ngIf="tableDocument?.length == 0 && loadTableDocument">
+                          <tr>
+                            <td colspan="5" class="no-data-available text-center">
+                              <app-no-data-found message="{{ 'ROOT.loading' | translate }}"></app-no-data-found>
+                            </td>
+                            <td class="hidden"></td>
+                            <td class="hidden"></td>
+                            <td class="hidden"></td>
+                            <td class="hidden"></td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </app-card>
+                  <div class="col-sm-12 centered-content">
+                    <button type="button" class="btn btn-outline-secondary btn-sm m-1" previousStep><i
+                        class="icofont icofont-rounded-left"></i> {{ 'ROOT.back' | translate }}
+                    </button>
+                    <button *ngIf="isComplete" type="button" class="btn btn-outline-primary btn-sm m-1" (click)="createMappingNewStepDocument()" [disabled]="loadTableDocument">
+                      <span *ngIf="this.loadTableDocument" class="spinner-border spinner-border-sm" role="status"></span>
+                      <span *ngIf="this.loadTableDocument" class="load-text"> Loading...</span>
+                      <span *ngIf="!this.loadTableDocument" class="btn-text">{{ 'ROOT.next' | translate }} <i
+                          class="icofont icofont-rounded-right"></i></span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </wizard-step>
+        <wizard-step stepTitle="{{'CONTENT.berita-acara' | translate}}" navigationSymbol="4">
+          <div class="col-md-12">
+            <div class="row">
+              <div class="col-12 col-lg-6 p-4 text-center middle-content">
+                <img *ngIf="haveNimEmail" src="assets/images/vector/done-vector.svg" class="vector-styling center image-size" alt="">
+                <img *ngIf="!haveNimEmail" src="assets/images/vector/loading-vector.svg" class="vector-styling center image-size" alt="">
+              </div>
+              <div class="col-12 col-lg-6 p-4 text-left middle-content text-justify">
+                <span class="head-home">
+                  <app-alert *ngIf="haveNimEmail" type="success">
+                    <p class="text-center">
+                      <b>Well Done!</b> <br>
+                      {{ 'CONTENT.document-step-approved' | translate }} <br>
+                      {{ 'CONTENT.nim-institusi' | translate}} : <br>
+                      <b>{{ dataEmail.student_id ? dataEmail.student_id : '-'}}</b> <br>
+                      {{ 'CONTENT.email-institusi' | translate}} : <br>
+                      <b>{{ dataEmail.university_email ? dataEmail.university_email : '-' }}</b>
+                    </p>
+                  </app-alert>
+                  <app-alert *ngIf="!haveNimEmail" type="primary">
+                    <p class="text-center">
+                      <!-- <b>{{ 'CONTENT.information' | translate }}</b> <br> -->
+                      {{ 'CONTENT.document-complete' | translate }}<br>
+                      {{ 'CONTENT.nim-institusi' | translate}} : <br>
+                      <b>{{ 'CONTENT.not-specified' | translate }}</b> <br>
+                      {{ 'CONTENT.email-institusi' | translate}} : <br>
+                      <b>{{ 'CONTENT.not-specified' | translate }}</b>
+                    </p>
+                  </app-alert>
+                </span>
+              </div>
+            </div>
+          </div>
+          <div class="rpw">
+            <div class="col-sm-12 centered-content">
+              <button type="button" class="btn btn-outline-secondary btn-sm m-1" previousStep><i
+                  class="icofont icofont-rounded-left"></i> {{ 'ROOT.back' | translate }}
+              </button>
+              <button *ngIf="haveNimEmail" type="button" class="btn btn-outline-success btn-sm m-1" routerLink="/new-student-registration">
+                <span *ngIf="this.submitloader" class="spinner-border spinner-border-sm" role="status"></span>
+                <span *ngIf="this.submitloader" class="load-text"> Loading...</span>
+                <span *ngIf="!this.submitloader" class="btn-text">{{ 'ROOT.finish' | translate }} <i
+                    class="icofont icofont-racing-flag-alt"></i></span>
+              </button>
+              <button *ngIf="!haveNimEmail"  type="button" class="btn btn-outline-dark btn-sm m-1" routerLink="/new-student-registration">
+                <span *ngIf="this.submitloader" class="spinner-border spinner-border-sm" role="status"></span>
+                <span *ngIf="this.submitloader" class="load-text"> Loading...</span>
+                <span *ngIf="!this.submitloader" class="btn-text">{{ 'ROOT.close' | translate }} <i
+                    class="icofont icofont-close-circled"></i></span>
+              </button>
+            </div>
+          </div>
+        </wizard-step>
+      </wizard>
+    </app-card>
+  </div>
+</div>
+
+<app-ui-modal #modalPreview [containerClick]="false" [dialogClass]="'modal-md'" [hideFooter]="false"
+  [loading]="loadingSaveGambar">
+  <div class="app-modal-header">
+    <h5 class="modal-title">{{'CONTENT.preview-image' | translate}}</h5>
+    <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close"
+      (click)="modalPreview.hide();"><span aria-hidden="true">&times;</span></button>
+  </div>
+  <div class="app-modal-body">
+    <div class="row pb-3">
+      <div class="col-12 text-center">
+        <img id="photo" [src]="previewPhoto" alt="user image" class="img-radius align-top m-r-15 wid-40 img-cover-fit"
+          style="width:150px; height:150px; margin-left:15px; margin-right:15px;">
+      </div>
+    </div>
+    <app-alert type="info" *ngIf="!notHavePhoto">
+      <div class="col-sm-12 text-center">
+        <p><b>{{'CONTENT.provision' |translate}}</b> <br>{{ 'CONTENT.photo-info-2' | translate }}<br>{{
+          'CONTENT.photo-info-3' | translate }}.<br>{{ 'CONTENT.photo-info-4' | translate }}. <br><br><i>{{
+            'CONTENT.photo-info-5' | translate }}</i></p>
+      </div>
+    </app-alert>
+    <div class="row align-items-center">
+      <div class="col-12 text-center">
+        <button class="btn btn-success btn-sm btn-round has-ripple" (click)="saveImg()">
+          {{'ROOT.save' | translate}}
+        </button>
+      </div>
+    </div>
+  </div>
+</app-ui-modal>
+
+<app-ui-modal #uploadDocumentModals [containerClick]="false" dialogClass="modal-dialog-centered modal-l"
+  [hideFooter]="true">
+  <div class="app-modal-header">
+    <h5 class="modal-title">{{ 'CONTENT.change-document-info' | translate }}</h5>
+    <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close"
+      (click)="uploadDocumentClose()"><span aria-hidden="true">&times;</span></button>
+  </div>
+  <div class="app-modal-body">
+    <form class="md-float-material form-material" action="javascript:" [formGroup]="uploadFileForm">
+      <div class="row">
+        <div class="col-sm-12">
+          <div class="form-group mb-2">
+            <label class="form-label mb-1 f-w-600">{{ 'CONTENT.upload-file' | translate }} <span class="required">*</span></label>
+            <input class="form-control" id="url" type="file" name="url" formControlName="url"
+              accept=".pdf,.jpg,.jpeg,.png" (change)="uploadUrl($event)" required
+              [ngClass]="fuf.url.invalid && fuf.url.touched?'is-invalid':(fuf.url.valid?'is-valid':'')" />
+            <p class="error text-danger small form-text">
+              {{fuf.url.errors && fuf.url.errors.required && (fuf.url.touched || fuf.url.dirty) ? ('CONTENT.required' |
+              translate) : ''}}
+              {{ errSize?('CONTENT.invalid-size-file' | translate):(errType?('CONTENT.invalid-format-file' |
+              translate):'') }} {{'CONTENT.format-file-1' | translate}} {{'CONTENT.size-file-maximum' | translate}} 2
+              Mb.</p>
+          </div>
+          <div class="form-group mb-0 text-right">
+            <button type="submit" class="btn btn-success btn-sm" (click)="createDocParticipant()"
+            [disabled]="uploadFileForm.invalid || this.loadingUpload">
+            <span *ngIf="this.loadingUpload" class="spinner-border spinner-border-sm" role="status"></span>
+            <span *ngIf="this.loadingUpload" class="load-text"> Loading...</span>
+            <span *ngIf="!this.loadingUpload" class="btn-text">{{ 'ROOT.submit' | translate }} <i
+              class="icofont icofont-location-arrow"></i></span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</app-ui-modal>
+
+<app-ui-modal #showTableDoc [containerClick]="false" dialogClass="modal-dialog-centered modal-lg"
+  [hideFooter]="true" [loading]="loadTableRaport">
+  <div class="app-modal-header">
+    <h5 class="modal-title">{{ 'CONTENT.raport-document-info' | translate }}</h5>
+    <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close"
+      (click)="showTableDocClose()"><span aria-hidden="true">&times;</span></button>
+  </div>
+  <div class="app-modal-body">
+    <div class="table-responsive pb-1">
+      <table class="table table-borderless table-sm table-boder-radius dataTable">
+        <thead class="thead-light">
+          <tr>
+            <th scope="col" class="custom-no">{{ 'CONTENT.no' | translate}}</th>
+            <th scope="col" style="text-align:center">{{ 'CONTENT.semester' | translate}}</th>
+            <th scope="col" class="text-center">{{ 'CONTENT.status-document' | translate }}</th>
+            <th scope="col" class="text-center col-width filter-dropdown-style table-custom">{{ 'CONTENT.status-approved' | translate}}</th>
+            <th scope="col" style="text-align:center">{{ 'CONTENT.action' | translate}}</th>
+          </tr>
+        </thead>
+        <tbody *ngIf="tableDataRaport?.length != 0">
+          <tr
+          *ngFor="let data of tableDataRaport; let i = index">
+            <th scope="row" class="custom-no">{{ i+1 }}</th>
+            <td class="text-center">Semester {{ data.semester_id }} </td>
+            <td class="text-center">
+              <span
+                [class]="data.url == null ? 'badge badge-light-danger' : 'badge badge-light-success'">
+                <i
+                  [class]="data.url == null ? 'icofont icofont-error' : 'icofont icofont-tick-mark'"></i>
+                {{ data.url == null ? ('CONTENT.not-complete' | translate) : ('CONTENT.complete' | translate) }}
+              </span>
+            </td>
+            <td class="text-center">
+              <div *ngIf="data.document_id != null">
+                <span *ngIf="data.approval_final_status == true" class="badge badge-success">{{ 'CONTENT.approve' |
+                  translate }}</span>
+                <span *ngIf="data.approval_final_status == false" class="badge badge-danger">{{
+                  'ROOT.rejected' | translate }}</span>
+                <span *ngIf="data.approval_final_status == null" class="badge badge-secondary">{{
+                  'CONTENT.not-specified' | translate }}</span>
+                </div>
+            </td>
+            <td class="text-center">
+              <button type="button" class="btn btn-outline-primary btn-sm m-1" [placement]="'left'"
+                (click)="downloadDocumentRaport(data)" [disabled]="loadingDownload"
+                [ngbTooltip]="'CONTENT.download-document' | translate">
+                <span *ngIf="this.loadingDownload" class="spinner-border spinner-border-sm"
+                  role="status"></span>
+                <span *ngIf="this.loadingDownload" class="load-text"> Loading...</span>
+                <span *ngIf="!this.loadingDownload" class="btn-text"><i
+                    class="feather icon-download"></i>
+                </span>
+              </button>
+              <button type="button" [class]="'btn btn-outline-warning btn-sm m-1'" [placement]="'left'"
+                (click)="uploadDocumentDataRaport(data)"
+                [ngbTooltip]="'CONTENT.change-document-info' | translate">
+                <i [class]="'fas fa-cloud-upload-alt'"></i>
+              </button>
+              <button type="button" *ngIf="data.approval_final_status == false" class="btn btn-outline-info btn-sm m-1" [placement]="'left'" [ngbTooltip]="'CONTENT.rejected-info' | translate"
+                (click)="revisedDataRaport(data)"><i
+                class="fas fa-eye"></i></button>
+            </td>
+          </tr>
+        </tbody>
+        <tbody *ngIf="tableDataRaport?.length == 0 && !loadTableRaport">
+          <tr>
+            <td colspan="5" class="no-data-available text-center">
+              <app-no-data-found message="{{ 'ROOT.no_data_found' | translate }}"></app-no-data-found>
+            </td>
+            <td class="hidden"></td>
+            <td class="hidden"></td>
+            <td class="hidden"></td>
+            <td class="hidden"></td>
+          </tr>
+        </tbody>
+        <tbody *ngIf="tableDataRaport?.length == 0 && loadTableRaport">
+          <tr>
+            <td colspan="5" class="no-data-available text-center">
+              <app-no-data-found message="{{ 'ROOT.loading' | translate }}"></app-no-data-found>
+            </td>
+            <td class="hidden"></td>
+            <td class="hidden"></td>
+            <td class="hidden"></td>
+            <td class="hidden"></td>
+          </tr>
+        </tbody>
+      </table>
+      <ngb-pagination *ngIf="tableDataRaport.length == 0" class="d-flex justify-content-center" [(page)]="pageDocument" [pageSize]="10"
+        [collectionSize]="tableDataRaport.length" [maxSize]="3" [boundaryLinks]="true">
+      </ngb-pagination>
+    </div>
+  </div>
+</app-ui-modal>
+
+<app-ui-modal #showTableDocDetails [containerClick]="false" dialogClass="modal-dialog-centered modal-l"
+  [hideFooter]="true">
+  <div class="app-modal-header">
+    <h5 class="modal-title">{{ 'CONTENT.change-document-info' | translate }}</h5>
+    <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close"
+      (click)="showTableDocDetailsClose()"><span aria-hidden="true">&times;</span></button>
+  </div>
+  <div class="app-modal-body">
+    <form class="md-float-material form-material" action="javascript:" [formGroup]="uploadRaportFileForm">
+      <div class="row">
+        <div class="col-sm-12">
+          <div class="form-group mb-2">
+            <label class="form-label mb-1 f-w-600">{{ 'CONTENT.upload-file' | translate }} <span class="required">*</span></label>
+            <input class="form-control" id="url" type="file" name="url" formControlName="url"
+              accept=".pdf,.jpg,.jpeg,.png" (change)="uploadRaportUrl($event)" required
+              [ngClass]="fur.url.invalid && fur.url.touched?'is-invalid':(fur.url.valid?'is-valid':'')" />
+            <p class="error text-danger small form-text">
+              {{fur.url.errors && fur.url.errors.required && (fur.url.touched || fur.url.dirty) ? ('CONTENT.required' |
+              translate) : ''}}
+              {{ errSize?('CONTENT.invalid-size-file' | translate):(errType?('CONTENT.invalid-format-file' |
+              translate):'') }} {{'CONTENT.format-file-1' | translate}} {{'CONTENT.size-file-maximum' | translate}} 2
+              Mb.</p>
+          </div>
+          <div class="form-group mb-0 text-right">
+            <button type="submit" class="btn btn-success btn-sm" (click)="createRaportDocument()"
+            [disabled]="uploadRaportFileForm.invalid || this.loadingUploadRaport">
+            <span *ngIf="this.loadingUploadRaport" class="spinner-border spinner-border-sm" role="status"></span>
+            <span *ngIf="this.loadingUploadRaport" class="load-text"> Loading...</span>
+            <span *ngIf="!this.loadingUploadRaport" class="btn-text">{{ 'ROOT.submit' | translate }} <i
+              class="icofont icofont-location-arrow"></i></span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</app-ui-modal>
+
+<app-ui-modal #revisedModals [containerClick]="false" dialogClass="modal-dialog-centered modal-l" [hideFooter]="true">
+  <div class="app-modal-header">
+    <h5 class="modal-title">{{ 'CONTENT.revised-title' | translate }}</h5>
+    <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close"
+      (click)="closeRevisedModals()"><span aria-hidden="true">&times;</span></button>
+  </div>
+  <div class="app-modal-body">
+    <form class="md-float-material form-material" action="javascript:" [formGroup]="rejectedForm">
+      <div class="row">
+        <div class="col-sm-12">
+          <div class="form-group mb-2">
+            <label class="form-label mb-0 f-w-600">{{ 'CONTENT.status-approved' | translate }} </label> <br>
+            <span class="badge badge-light-danger">{{ 'ROOT.rejected' | translate}}</span>
+          </div>
+          <div class="form-group mb-2">
+            <label class="form-label mb-1 f-w-600">{{ 'CONTENT.notes' | translate }} </label> <br>
+            <label>{{ dataRevised.approval_final_comment }}</label>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</app-ui-modal>

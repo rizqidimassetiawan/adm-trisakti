@@ -1,0 +1,490 @@
+<!-- <p>Program Data Management works!</p> -->
+<div class="row">
+  <div class="col-md-12">
+    <app-card cardTitle="Bobot Penilaian USM dan Rapor" cardClass="card-datatable"
+      headerClass="text-center text-md-left" [hidHeader]="false" [options]="false"
+      [loading]="loadTablePassingGrade">
+      <app-filter-container [loading]="false">
+        <div class="col-12 col-md-3">
+          <ng-select name="year" [allowClear]="false"
+          [placeholder]="'CONTENT.selection-path-choosing' | translate" [ngClass]="'filter'"
+          [notFoundMsg]="'ROOT.no_data_found'|translate" [(ngModel)]="selectionPathSelected"
+          [options]="listSelectionPath" (selected)="loadFiterMappingPath($event)"></ng-select>
+        </div>
+        <div class="col-12 col-md-2">
+          <ng-select name="year" [disabled]="!selectionPathSelected" [allowClear]="false" [placeholder]="'CONTENT.selection-year-choosing' | translate"
+            [ngClass]="'filter'" [notFoundMsg]="'ROOT.no_data_found'|translate" [(ngModel)]="mappingPathYearSelected"
+            [options]="listSelectionYear" (selected)="loadMappingPathYearId($event)"></ng-select>
+        </div>
+        <div class="col-12 col-md-3 ml-auto">
+          <div class="row pl-3 pr-3">
+            <div class="col-6">
+              <button type="button" class="btn btn-outline-warning btn-sm btn-block" [disabled]="!mappingPathYearSelected" (click)="resetFilters()">
+                <i class="icofont icofont-refresh"></i> {{ 'CONTENT.reset-filter' | translate }}
+              </button>
+            </div>
+            <div class="col-6">
+              <button type="button" class="btn btn-outline-info btn-sm btn-block" [disabled]="!mappingPathYearSelected" (click)="applyFilters(mappingPathYearSelected)">
+                <i class="icofont icofont-filter"></i> {{ 'CONTENT.apply-filter' | translate }}
+              </button>
+            </div>
+          </div>
+        </div>
+      </app-filter-container>
+      <div *ngIf="isApplyFilter" class="table-responsive pb-6">
+        <div class="row align-items-center p-2">
+         <div class="col-12 text-center text-md-right">
+           <button class="btn btn-outline-success btn-sm btn-round has-ripple ml-2"
+             (click)="openPassingGradeModals(null, 'input')">
+             <i class="icofont icofont-plus"></i> {{'ROOT.add' | translate}} {{'CONTENT.passing-grade' | translate}}
+           </button>
+         </div>
+       </div>
+        <table datatable class="table table-hover" [dtOptions]="dtOptions[0]" [dtTrigger]="dtTrigger">
+          <thead class="thead-light">
+            <tr>
+              <th scope="col" colspan="1" rowspan="2" class="center-table" style="padding-left: 10px">{{ 'CONTENT.no' | translate}}
+              </th>
+              <th scope="col" colspan="1" rowspan="2" class="center-table">{{ 'CONTENT.study-program-name' | translate}}</th>
+              <th scope="col" colspan="13" rowspan="1" class="center-table">Bobot Penilaian (Total 100%)</th>
+              <th scope="col" colspan="1" rowspan="2" class="center-table">Minimum Grade Value</th>
+              <th scope="col" colspan="1" rowspan="2" class="center-table">{{ 'CONTENT.action' | translate}}</th>
+              </tr>
+              <tr>
+              <th scope="col" class="center-table">Pelajaran Umum (%)</th>
+              <th scope="col" class="center-table">Matematika (%)</th>
+              <th scope="col" class="center-table">Bahasa Inggris (%)</th>
+              <th scope="col" class="center-table">Fisika (%)</th>
+              <th scope="col" class="center-table">Kimia (%)</th>
+              <th scope="col" class="center-table">Biologi (%)</th>
+              <th scope="col" class="center-table">Geografi (%)</th>
+              <th scope="col" class="center-table">Ekonomi (%)</th>
+              <th scope="col" class="center-table">Sosiologi (%)</th>
+              <th scope="col" class="center-table">Sejarah (%)</th>
+              <th scope="col" class="center-table">TPA (%)</th>
+              <th scope="col" class="center-table">Menggambar (%)</th>
+              <th scope="col" class="center-table">Pengetahuan Fotografi (%)</th>
+            </tr>
+          </thead>
+          <tbody *ngIf="tablePassingGrade?.length != 0">
+            <tr *ngFor="let data of tablePassingGrade; let i = index;">
+              <th scope="row" style="padding-left: 10px">{{ i+1 }}</th>
+              <td>{{ data.program_study_name ? data.program_study_name.replace('amp;', ' ') : '-' }}</td>
+              <td class="center-table">{{ data.general_knowledge ? data.general_knowledge : '-' }}</td>
+              <td class="center-table">{{ data.math ? data.math : '-' }}</td>
+              <td class="center-table">{{ data.english ? data.english : '-' }}</td>
+              <td class="center-table">{{ data.physics ? data.physics : '-' }}</td>
+              <td class="center-table">{{ data.chemical ? data.chemical : '-' }}</td>
+              <td class="center-table">{{ data.biology ? data.biology : '-' }}</td>
+              <td class="center-table">{{ data.geography ? data.geography : '-' }}</td>
+              <td class="center-table">{{ data.economy ? data.economy : '-' }}</td>
+              <td class="center-table">{{ data.sociological ? data.sociological : '-' }}</td>
+              <td class="center-table">{{ data.historical ? data.historical : '-' }}</td>
+              <td class="center-table">{{ data.tpa ? data.tpa : '-' }}</td>
+              <td class="center-table">{{ data.drawing ? data.drawing : '-' }}</td>
+              <td class="center-table">{{ data.photography_knowledge ? data.photography_knowledge : '-' }}</td>
+              <td class="center-table">{{ data.min_grade_value ? data.min_grade_value : '-' }}</td>
+              <td class="center-table">
+                <button class="btn btn-outline-danger btn-sm btn-round has-ripple" [placement]="'left'" (click)="deletePassingGrade(data)"
+                  ngbTooltip="{{'ROOT.delete' | translate}}">
+                  <i class="ti-trash"></i>
+                </button>
+                <!-- <button class="btn btn-outline-warning btn-sm btn-round has-ripple" [placement]="'left'" (click)="openPassingGradeModals(data, 'edit')"
+                  ngbTooltip="{{'ROOT.edit' | translate}}">
+                  <i class="ti-pencil"></i>
+                </button> -->
+              </td>
+            </tr>
+          </tbody>
+          <tbody *ngIf="tablePassingGrade?.length == 0 && !loadTablePassingGrade">
+            <tr>
+              <td colspan="17" class="no-data-available text-center">
+                <app-no-data-found message="{{ 'ROOT.no_data_found' | translate }}"></app-no-data-found>
+              </td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+            </tr>
+          </tbody>
+          <tbody *ngIf="tablePassingGrade?.length == 0 && loadTablePassingGrade">
+            <tr>
+              <td colspan="17" class="no-data-available text-center">
+                <app-no-data-found message="{{ 'ROOT.loading' | translate }}"></app-no-data-found>
+              </td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div *ngIf="!isApplyFilter" class="text-center">
+        <div class="col-12 text-center pt-3 pb-1">
+          <app-no-data-found message="{{ 'CONTENT.choose_approval_filter' | translate }}"></app-no-data-found>
+        </div>
+      </div>
+    </app-card>
+  </div>
+</div>
+
+<app-ui-modal #passingGradeModals [containerClick]="false" dialogClass="modal-dialog-centered modal-l" [hideFooter]="true">
+  <div class="app-modal-header">
+    <h5 class="modal-title">
+      {{ formType === "edit" ? ("ROOT.edit" | translate)
+      : ("ROOT.add" | translate)
+      }} {{'CONTENT.passing-grade' | translate }}</h5>
+    <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close"
+      (click)="closePassingGradeModals()"><span aria-hidden="true">&times;</span></button>
+  </div>
+  <div class="app-modal-body">
+    <form class="md-float-material form-material" action="javascript:" [formGroup]="passingGradeForm">
+      <div class="row">
+        <div class="col-md-12 form-group mb-2">
+          <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.study-program' | translate }}  <span
+            class="required">*</span></label>
+          <ng-select [placeholder]="'CONTENT.choose-study-program'|translate" [ngClass]="'custom bg-white'"
+            formControlName="program_study_id" required [(ngModel)]="studyProgramSelected"
+           [options]="listStudyProgram"></ng-select>
+          <label *ngIf="!studyProgramSelected" class="error text-danger small form-text">
+            {{ 'CONTENT.please-input' | translate }}{{ 'CONTENT.study-program' | translate }}
+          </label>
+        </div>
+        <div class="col-md-6 form-group mb-2">
+          <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.general-knowledge' | translate }}  <span
+            class="required">*</span></label>
+          <input type="text" class="form-control" name="quota" required formControlName="general_knowledge"
+            [placeholder]="'CONTENT.general-knowledge'|translate" min="0" max="100" maxlength="3" [disabled]="!studyProgramSelected">
+          <label *ngIf="fpg.general_knowledge.errors && fpg.general_knowledge.errors.required && (fpg.general_knowledge.touched || fpg.general_knowledge.dirty)"
+            class="error text-danger small form-text">
+            {{ 'ROOT.required' | translate }}
+          </label>
+          <label *ngIf="fpg.general_knowledge.errors && fpg.general_knowledge.errors.max && (fpg.general_knowledge.touched || fpg.general_knowledge.dirty)"
+            class="error text-danger small form-text">
+            {{ 'CONTENT.passing-grade-validation' | translate }}
+          </label>
+          <label *ngIf="fpg.general_knowledge.errors && fpg.general_knowledge.errors.min && (fpg.general_knowledge.touched || fpg.general_knowledge.dirty)"
+            class="error text-danger small form-text">
+            {{ 'CONTENT.passing-grade-validation' | translate }}
+          </label>
+          <label *ngIf="fpg.general_knowledge.errors && fpg.general_knowledge.errors.pattern && (fpg.general_knowledge.touched || fpg.general_knowledge.dirty)"
+            class="error text-danger small form-text">
+            {{ 'CONTENT.number-only' | translate }}
+          </label>
+        </div>
+        <div class="col-md-6 form-group mb-2">
+          <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.math' | translate }}  <span
+            class="required">*</span></label>
+          <input type="text" class="form-control" name="quota" required formControlName="math" [disabled]="!studyProgramSelected"
+            [placeholder]="'CONTENT.math'|translate"min="0" max="100"   maxlength="3">
+          <label *ngIf="fpg.math.errors && fpg.math.errors.required && (fpg.math.touched || fpg.math.dirty)"
+            class="error text-danger small form-text">
+            {{ 'ROOT.required' | translate }}
+          </label>
+          <label *ngIf="fpg.math.errors && fpg.math.errors.max && (fpg.math.touched || fpg.math.dirty)"
+            class="error text-danger small form-text">
+            {{ 'CONTENT.passing-grade-validation' | translate }}
+          </label>
+          <label *ngIf="fpg.math.errors && fpg.math.errors.pattern && (fpg.math.touched || fpg.math.dirty)"
+            class="error text-danger small form-text">
+            {{ 'CONTENT.number-only' | translate }}
+          </label>
+        </div>
+        <div class="col-md-6 form-group mb-2">
+          <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.english' | translate }}  <span
+            class="required">*</span></label>
+          <input type="text" class="form-control" name="quota" required formControlName="english" [disabled]="!studyProgramSelected"
+            [placeholder]="'CONTENT.english'|translate"min="0" max="100"   maxlength="3">
+          <label *ngIf="fpg.english.errors && fpg.english.errors.required && (fpg.english.touched || fpg.english.dirty)"
+            class="error text-danger small form-text">
+            {{ 'ROOT.required' | translate }}
+          </label>
+          <label *ngIf="fpg.english.errors && fpg.english.errors.max && (fpg.english.touched || fpg.english.dirty)"
+            class="error text-danger small form-text">
+            {{ 'CONTENT.passing-grade-validation' | translate }}
+          </label>
+          <label *ngIf="fpg.english.errors && fpg.english.errors.patterb && (fpg.english.touched || fpg.english.dirty)"
+            class="error text-danger small form-text">
+            {{ 'CONTENT.number-only' | translate }}
+          </label>
+        </div>
+        <div class="col-md-6 form-group mb-2">
+          <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.physics' | translate }}  <span
+            class="required">*</span></label>
+          <input type="text" class="form-control" name="quota" required formControlName="physics" [disabled]="!studyProgramSelected"
+            [placeholder]="'CONTENT.physics'|translate" min="0" max="100"   maxlength="3">
+          <label *ngIf="fpg.physics.errors && fpg.physics.errors.required && (fpg.physics.touched || fpg.physics.dirty)"
+            class="error text-danger small form-text">
+            {{ 'ROOT.required' | translate }}
+          </label>
+          <label *ngIf="fpg.physics.errors && fpg.physics.errors.max && (fpg.physics.touched || fpg.physics.dirty)"
+            class="error text-danger small form-text">
+            {{ 'CONTENT.passing-grade-validation' | translate }}
+          </label>
+          <label *ngIf="fpg.physics.errors && fpg.physics.errors.pattern && (fpg.physics.touched || fpg.physics.dirty)"
+            class="error text-danger small form-text">
+            {{ 'CONTENT.number-only' | translate }}
+          </label>
+        </div>
+        <div class="col-md-6 form-group mb-2">
+          <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.chemical' | translate }}  <span
+            class="required">*</span></label>
+          <input type="text" class="form-control" name="quota" required formControlName="chemical" [disabled]="!studyProgramSelected"
+            [placeholder]="'CONTENT.chemical'|translate" min="0" max="100"   maxlength="3">
+          <label *ngIf="fpg.chemical.errors && fpg.chemical.errors.required && (fpg.chemical.touched || fpg.chemical.dirty)"
+            class="error text-danger small form-text">
+            {{ 'ROOT.required' | translate }}
+          </label>
+          <label *ngIf="fpg.chemical.errors && fpg.chemical.errors.max && (fpg.chemical.touched || fpg.chemical.dirty)"
+            class="error text-danger small form-text">
+            {{ 'CONTENT.please-input' | translate }}{{ 'CONTENT.chemical' | translate }}
+          </label>
+          <label *ngIf="fpg.chemical.errors && fpg.chemical.errors.pattern && (fpg.chemical.touched || fpg.chemical.dirty)"
+            class="error text-danger small form-text">
+            {{ 'CONTENT.number-only' | translate }}
+          </label>
+        </div>
+        <div class="col-md-6 form-group mb-2">
+          <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.biology' | translate }}  <span
+            class="required">*</span></label>
+          <input type="text" class="form-control" name="quota" required formControlName="biology" [disabled]="!studyProgramSelected"
+            [placeholder]="'CONTENT.biology'|translate" min="0" max="100"   maxlength="3">
+          <label *ngIf="fpg.biology.errors && fpg.biology.errors.required && (fpg.biology.touched || fpg.biology.dirty)"
+            class="error text-danger small form-text">
+            {{ 'ROOT.required' | translate }}
+          </label>
+          <label *ngIf="fpg.biology.errors && fpg.biology.errors.max && (fpg.biology.touched || fpg.biology.dirty)"
+            class="error text-danger small form-text">
+            {{ 'CONTENT.passing-grade-validation' | translate }}
+          </label>
+          <label *ngIf="fpg.biology.errors && fpg.biology.errors.pattern && (fpg.biology.touched || fpg.biology.dirty)"
+            class="error text-danger small form-text">
+            {{ 'CONTENT.number-only' | translate }}
+          </label>
+        </div>
+        <div class="col-md-6 form-group mb-2">
+          <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.bahasa' | translate }}  <span
+            class="required">*</span></label>
+          <input type="text" class="form-control" name="quota" required formControlName="bahasa" [disabled]="!studyProgramSelected"
+            [placeholder]="'CONTENT.bahasa'|translate" min="0" max="100"   maxlength="3">
+          <label *ngIf="fpg.bahasa.errors && fpg.bahasa.errors.required && (fpg.bahasa.touched || fpg.bahasa.dirty)"
+            class="error text-danger small form-text">
+            {{ 'ROOT.required' | translate }}
+          </label>
+          <label *ngIf="fpg.bahasa.errors && fpg.bahasa.errors.max && (fpg.bahasa.touched || fpg.bahasa.dirty)"
+            class="error text-danger small form-text">
+            {{ 'CONTENT.passing-grade-validation' | translate }}
+          </label>
+          <label *ngIf="fpg.bahasa.errors && fpg.bahasa.errors.pattern && (fpg.bahasa.touched || fpg.bahasa.dirty)"
+            class="error text-danger small form-text">
+            {{ 'CONTENT.number-only' | translate }}
+          </label>
+        </div>
+        <div class="col-md-6 form-group mb-2">
+          <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.economy' | translate }}  <span
+            class="required">*</span></label>
+          <input type="text" class="form-control" name="quota" required formControlName="economy" [disabled]="!studyProgramSelected"
+            [placeholder]="'CONTENT.economy'|translate" min="0" max="100"   maxlength="3">
+          <label *ngIf="fpg.economy.errors && fpg.economy.errors.required && (fpg.economy.touched || fpg.economy.dirty)"
+            class="error text-danger small form-text">
+            {{ 'ROOT.required' | translate }}
+          </label>
+          <label *ngIf="fpg.economy.errors && fpg.economy.errors.max && (fpg.economy.touched || fpg.economy.dirty)"
+            class="error text-danger small form-text">
+            {{ 'CONTENT.passing-grade-validation' | translate }}
+          </label>
+          <label *ngIf="fpg.economy.errors && fpg.economy.errors.pattern && (fpg.economy.touched || fpg.economy.dirty)"
+            class="error text-danger small form-text">
+            {{ 'CONTENT.number-only' | translate }}
+          </label>
+        </div>
+        <div class="col-md-6 form-group mb-2">
+          <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.sociological' | translate }}  <span
+            class="required">*</span></label>
+          <input type="text" class="form-control" name="quota" required formControlName="sociological" [disabled]="!studyProgramSelected"
+            [placeholder]="'CONTENT.sociological'|translate" min="0" max="100"   maxlength="3">
+          <label *ngIf="fpg.sociological.errors && fpg.sociological.errors.required && (fpg.sociological.touched || fpg.sociological.dirty)"
+            class="error text-danger small form-text">
+            {{ 'ROOT.required' | translate }}
+          </label>
+          <label *ngIf="fpg.sociological.errors && fpg.sociological.errors.max && (fpg.sociological.touched || fpg.sociological.dirty)"
+            class="error text-danger small form-text">
+            {{ 'CONTENT.passing-grade-validation' | translate }}
+          </label>
+          <label *ngIf="fpg.tpa.errors && fpg.tpa.errors.pattern && (fpg.tpa.touched || fpg.tpa.dirty)"
+            class="error text-danger small form-text">
+            {{ 'CONTENT.number-only' | translate }}
+          </label>
+        </div>
+        <div class="col-md-6 form-group mb-2">
+          <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.geography' | translate }}  <span
+            class="required">*</span></label>
+          <input type="text" class="form-control" name="quota" required formControlName="geography" [disabled]="!studyProgramSelected"
+            [placeholder]="'CONTENT.geography'|translate" min="0" max="100"   maxlength="3">
+          <label *ngIf="fpg.geography.errors && fpg.geography.errors.required && (fpg.geography.touched || fpg.geography.dirty)"
+            class="error text-danger small form-text">
+            {{ 'ROOT.required' | translate }}
+          </label>
+          <label *ngIf="fpg.geography.errors && fpg.geography.errors.max && (fpg.geography.touched || fpg.geography.dirty)"
+            class="error text-danger small form-text">
+            {{ 'CONTENT.passing-grade-validation' | translate }}
+          </label>
+          <label *ngIf="fpg.geography.errors && fpg.geography.errors.pattern && (fpg.geography.touched || fpg.geography.dirty)"
+            class="error text-danger small form-text">
+            {{ 'CONTENT.number-only' | translate }}
+          </label>
+        </div>
+        <div class="col-md-6 form-group mb-2">
+          <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.historical' | translate }}  <span
+            class="required">*</span></label>
+          <input type="text" class="form-control" name="quota" required formControlName="historical" [disabled]="!studyProgramSelected"
+            [placeholder]="'CONTENT.historical'|translate" min="0" max="100"   maxlength="3">
+          <label *ngIf="fpg.historical.errors && fpg.historical.errors.required && (fpg.historical.touched || fpg.historical.dirty)"
+            class="error text-danger small form-text">
+            {{ 'ROOT.required' | translate }}
+          </label>
+          <label *ngIf="fpg.historical.errors && fpg.historical.errors.max && (fpg.historical.touched || fpg.historical.dirty)"
+            class="error text-danger small form-text">
+            {{ 'CONTENT.passing-grade-validation' | translate }}
+          </label>
+          <label *ngIf="fpg.historical.errors && fpg.historical.errors.pattern && (fpg.historical.touched || fpg.historical.dirty)"
+            class="error text-danger small form-text">
+            {{ 'CONTENT.number-only' | translate }}
+          </label>
+        </div>
+        <div class="col-md-6 form-group mb-2">
+          <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.tpa' | translate }}  <span
+            class="required">*</span></label>
+          <input type="text" class="form-control" name="quota" required formControlName="tpa" [disabled]="!studyProgramSelected"
+            [placeholder]="'CONTENT.tpa'|translate" min="0" max="800" maxlength="3">
+          <label *ngIf="fpg.tpa.errors && fpg.tpa.errors.required && (fpg.tpa.touched || fpg.tpa.dirty)"
+            class="error text-danger small form-text">
+            {{ 'ROOT.required' | translate }}
+          </label>
+          <label *ngIf="fpg.tpa.errors && fpg.tpa.errors.max && (fpg.tpa.touched || fpg.tpa.dirty)"
+            class="error text-danger small form-text">
+            {{ 'CONTENT.passing-grade-tpa-validation' | translate }}
+          </label>
+          <label *ngIf="fpg.tpa.errors && fpg.tpa.errors.pattern && (fpg.tpa.touched || fpg.tpa.dirty)"
+            class="error text-danger small form-text">
+            {{ 'CONTENT.number-only' | translate }}
+          </label>
+        </div>
+        <div class="col-md-6 form-group mb-2">
+          <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.drawing' | translate }}  <span
+            class="required">*</span></label>
+          <input type="text" class="form-control" name="quota" required formControlName="drawing" [disabled]="!studyProgramSelected"
+            [placeholder]="'CONTENT.drawing'|translate"min="0" max="100" maxlength="3">
+          <label *ngIf="fpg.drawing.errors && fpg.drawing.errors.required && (fpg.drawing.touched || fpg.drawing.dirty)"
+            class="error text-danger small form-text">
+            {{ 'ROOT.required' | translate }}
+          </label>
+          <label *ngIf="fpg.drawing.errors && fpg.drawing.errors.max && (fpg.drawing.touched || fpg.drawing.dirty)"
+            class="error text-danger small form-text">
+            {{ 'CONTENT.passing-grade-validation' | translate }}
+          </label>
+          <label *ngIf="fpg.drawing.errors && fpg.drawing.errors.pattern && (fpg.drawing.touched || fpg.drawing.dirty)"
+            class="error text-danger small form-text">
+            {{ 'CONTENT.number-only' | translate }}
+          </label>
+        </div>
+        <div class="col-md-6 form-group mb-2">
+          <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.photography-knowledge' | translate }}  <span
+            class="required">*</span></label>
+          <input type="text" class="form-control" name="quota" required formControlName="photography_knowledge" [disabled]="!studyProgramSelected"
+            [placeholder]="'CONTENT.photography-knowledge'|translate" min="0" max="100"   maxlength="3">
+          <label *ngIf="fpg.photography_knowledge.errors && fpg.photography_knowledge.errors.required && (fpg.photography_knowledge.touched || fpg.photography_knowledge.dirty)"
+            class="error text-danger small form-text">
+            {{ 'ROOT.required' | translate }}
+          </label>
+          <label *ngIf="fpg.photography_knowledge.errors && fpg.photography_knowledge.errors.max && (fpg.photography_knowledge.touched || fpg.photography_knowledge.dirty)"
+            class="error text-danger small form-text">
+            {{ 'CONTENT.passing-grade-validation' | translate }}
+          </label>
+          <label *ngIf="fpg.photography_knowledge.errors && fpg.photography_knowledge.errors.pattern && (fpg.photography_knowledge.touched || fpg.photography_knowledge.dirty)"
+            class="error text-danger small form-text">
+            {{ 'CONTENT.number-only' | translate }}
+          </label>
+        </div>
+        <div class="col-md-6 form-group mb-2">
+          <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.minimum-grade-value' | translate }}  <span
+            class="required">*</span></label>
+          <input type="text" class="form-control" name="quota" required formControlName="minimum_grade_value" [disabled]="!studyProgramSelected"
+            [placeholder]="'CONTENT.minimum-grade-value'|translate" min="0" max="100"   maxlength="3">
+          <label *ngIf="fpg.minimum_grade_value.errors && fpg.minimum_grade_value.errors.required && (fpg.minimum_grade_value.touched || fpg.minimum_grade_value.dirty)"
+            class="error text-danger small form-text">
+            {{ 'ROOT.required' | translate }}
+          </label>
+          <label *ngIf="fpg.minimum_grade_value.errors && fpg.minimum_grade_value.errors.max && (fpg.minimum_grade_value.touched || fpg.minimum_grade_value.dirty)"
+            class="error text-danger small form-text">
+            {{ 'CONTENT.please-input' | translate }}{{ 'CONTENT.minimum-grade-value' | translate }}
+          </label>
+          <label *ngIf="fpg.minimum_grade_value.errors && fpg.minimum_grade_value.errors.pattern && (fpg.minimum_grade_value.touched || fpg.minimum_grade_value.dirty)"
+            class="error text-danger small form-text">
+            {{ 'CONTENT.number-only' | translate }}
+          </label>
+        </div>
+        <!-- <div class=" col-md-4 form-group mb-2">
+          <h6 class="form-label m-b-0 f-w-600">{{ 'CONTENT.active-status'| translate}} <span
+            class="required">*</span></h6><br>
+          <div class="custom-control custom-radio custom-control-inline">
+            <input type="radio" id="active_status1" name="active_status" class="custom-control-input" value="1"
+              formControlName="active_status" required>
+            <label class="custom-control-label " for="active_status1">{{ 'ROOT.yes' | translate }}</label>
+          </div>
+          <div class="custom-control custom-radio custom-control-inline">
+            <input type="radio" id="active_status2" name="active_status" class="custom-control-input" value="0"
+               formControlName="active_status" required>
+            <label class="custom-control-label" for="active_status2">{{ 'ROOT.no' | translate }}</label>
+          </div>
+          <label
+            *ngIf="fpg.active_status.errors && fpg.active_status.errors.required && (fpg.active_status.touched || fpg.active_status.dirty)"
+            class="error text-danger small form-text">
+            {{ 'CONTENT.please-input' | translate }}{{ 'CONTENT.active-status' | translate }}
+          </label>
+        </div> -->
+        <div class="col-12 form-group mb-0 mt-4 text-right">
+          <div class="btn-group">
+            <button type="button" (click)="closePassingGradeModals()" [disabled]="this.loading"
+              class="btn btn-secondary btn-sm">
+              <i class="icofont icofont-logout"></i> {{ 'ROOT.exit' | translate }}
+            </button>
+            <button type="submit" [class]="this.formType === 'edit' ? 'btn btn-warning btn-sm' : 'btn btn-primary btn-sm'"
+            [disabled]="passingGradeForm.invalid || loading" (click)="createPassingGradeData()">
+            <span *ngIf="this.loading" class="spinner-border spinner-border-sm" role="status"></span>
+            <span *ngIf="this.loading" class="load-text"> Loading...</span>
+            <span *ngIf="!this.loading" class="btn-text">
+            <i [class]="this.formType === 'edit' ? 'ti-pencil' : 'ti-save'"></i> {{ formType === 'edit' ? ('ROOT.edit' | translate) : ('ROOT.save' | translate) }}
+            </span>
+          </button>
+          </div>
+        </div>
+        </div>
+      </form>
+  </div>
+</app-ui-modal>

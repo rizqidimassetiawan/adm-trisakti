@@ -1,0 +1,103 @@
+<div class="row" *ngIf="userType === 1">
+  <div class="col-sm-12">
+    <app-card cardTitle="{{ 'ROOT.home' | translate }}" hidHeader="true" [loading]="loadingAdmin">
+      <div class="row">
+        <div class="col-12 col-lg-6 p-4 text-center middle-content">
+          <img src="assets/images/vector/home-vector.svg"  class="vector-styling center" alt="">
+        </div>
+        <div class="col-12 col-lg-6 p-4 text-left middle-content">
+          <span class="head-home">
+            <h4>{{ 'LOGIN.welcome_to' | translate }} {{ 'CONTENT.app-name' | translate }}</h4>
+            <hr class="head">
+            <p *ngIf="isSuperadmin" class="text-justify">{{ 'CONTENT.welcome-superadmin' | translate }}</p>
+            <p *ngIf="isFacultyAdmin" class="text-justify">{{ 'CONTENT.welcome-facultyadmin' | translate }}</p>
+            <p *ngIf="isUniversityAdmin" class="text-justify">{{ 'CONTENT.welcome-universityadmin' | translate }}</p>
+            <p *ngIf="isParticipantAdmin" class="text-justify">{{ 'CONTENT.welcome-participantadmin' | translate }}</p>
+            <p *ngIf="isAdmissionAdmin" class="text-justify">{{ 'CONTENT.welcome-admissionadmin' | translate }}</p>
+          </span>
+        </div>
+      </div>
+    </app-card>
+  </div>
+</div>
+
+
+<div class="row" *ngIf="userType !== 1">
+  <div class="col-sm-12">
+    <app-card [hidHeader]="true" [options]="false" [loading]="loadtableRegistrationHistory">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="row">
+            <div class="col-12 col-lg-6 p-4 text-center middle-content">
+              <img src="assets/images/vector/home-vector.svg" class="vector-styling center" alt="">
+            </div>
+            <div class="col-12 col-lg-6 p-4 text-left middle-content">
+              <span class="head-home">
+                <h4>{{'CONTENT.halo' | translate}} {{ userFullname }} <br> {{ 'LOGIN.welcome_to' | translate }} {{ 'CONTENT.app-name' | translate }}</h4>
+                <hr class="head">
+                <p class="text-justify welcome-text">
+                  {{ 'CONTENT.welcome' | translate }} <br> <br>
+                  {{ 'CONTENT.welcome-home-1' | translate }} <br> <br>
+                  {{ 'CONTENT.welcome-home-2' | translate }}
+                </p>
+                  <p class="welcome-text text-center register-custom"><b>Tunggu apalagi, Daftar sekarang juga </b><br>
+                  <button class="btn btn-outline-primary btn-sm btn-round has-ripple mt-1" (click)="goToNewRegistration()" >
+                    <i
+                    class="icofont icofont-ui-note"></i> {{'CONTENT.order_form' | translate}}
+                  </button>
+                </p>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </app-card>
+    <app-card cardTitle="{{'CONTENT.sentence_of_dashboard' | translate}}" [hidden]="!isMoreThanOneData" [options]="false">
+        <div class="col-12 col-md-12">
+        <p class="welcome-text mt-2">{{'CONTENT.sentence-of-dashboard-content' | translate}} <br> {{'CONTENT.sentence-of-dashboard-content-2' | translate}}
+          <a routerLink="/registration-history">klik disini
+          </a> {{'CONTENT.info-registration-history' | translate}}
+        </p>
+        <table datatable class="table table-hover" [dtOptions]="dtOptions[6]" [dtTrigger]="dtTrigger6">
+          <thead class="thead-light">
+          <tr>
+            <th scope="col" class="center-table" style="padding-left: 10px">{{ 'CONTENT.no' | translate}}</th>
+            <th scope="col">{{ 'CONTENT.detail-pemesanan' | translate }}</th>
+            <th scope="col" class="center-table">{{ 'CONTENT.approval-status' | translate }}</th>
+          </tr>
+        </thead>
+        <tbody *ngIf="tableData6?.length != 0">
+          <tr *ngFor="let data of tableData6; let i = index;">
+            <th scope="row" class="center-table" style="padding-left: 10px">{{ i+1 }}</th>
+            <td>
+              <div class="d-inline-block">
+                <p class="m-b-0"><b>{{ 'CONTENT.registration-number' | translate }}.
+                    {{data.registration_number}}</b>
+                </p>
+                <p class="text-muted m-b-0">{{ 'CONTENT.selection-path' | translate }} {{data.selection_path ?
+                  data.selection_path : "-" }}</p>
+              </div>
+            </td>
+            <td class="center-table">
+              <div [hidden]="data.transfer_status == '1'">
+                <span class="badge badge-light-success" *ngIf="data.pass_status == 'Lulus'">{{ 'CONTENT.pass' |
+                  translate}}</span>
+              </div>
+              <div [hidden]="data.transfer_status == '1'">
+                <span class="badge badge-light-danger" *ngIf="data.pass_status == 'Tidak Lulus'">{{
+                  'CONTENT.not-pass' | translate}}</span>
+              </div>
+              <div [hidden]="data.transfer_status == '1'">
+                <span class="badge badge-light-secondary " *ngIf="data.pass_status== '-'">{{
+                  'CONTENT.pending_pass' | translate}}</span>
+              </div>
+              <span class="badge badge-light-warning" *ngIf="data.transfer_status == '1'">{{
+                'CONTENT.pass-offered' | translate}}</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      </div>
+    </app-card>
+  </div>
+</div>

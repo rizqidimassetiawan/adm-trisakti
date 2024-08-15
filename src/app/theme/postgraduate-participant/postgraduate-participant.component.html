@@ -1,0 +1,584 @@
+<div class="auth-wrapper row bg-color">
+  <div class="container">
+    <br>
+    <h2>Data Peserta</h2>
+    <br>
+    <div class="table-responsive pb-1">
+      <table *ngIf="dataPostGraduateSpecialization?.length != 0" style="background: #fff" class="table table-striped">
+        <tbody *ngFor="let datasp of dataPostGraduateSpecialization; let i = index;">
+          <tr class="header-tab">
+            <th class="th-colors" colspan="3">Program yang diminati {{ i+1 }}</th>
+          </tr>
+          <tr>
+            <td class="width-td">Program Penyelenggaraan</td>
+            <td class="width-td-1">:</td>
+            <td>{{ datasp.class_type ? datasp.class_type : '-'}}</td>
+          </tr>
+          <tr>
+            <td class="width-td">Program Studi</td>
+            <td class="width-td-1">:</td>
+            <td>{{ datasp.program_study ? datasp.program_study : '-'}}</td>
+          </tr>
+          <tr>
+            <td class="width-td">Konsentrasi</td>
+            <td class="width-td-1">:</td>
+            <td>{{ datasp.specialization_name ? datasp.specialization_name : '-'}}</td>
+          </tr>
+        </tbody>
+      </table>
+      <table *ngIf="dataPostGraduateSpecialization?.length == 0" style="background: #fff" class="table table-striped">
+        <tbody>
+          <tr class="header-tab">
+            <th class="th-colors" colspan="3">Program yang diminati</th>
+          </tr>
+          <tr>
+            <td class="width-td">Program Penyelenggaraan</td>
+            <td class="width-td-1">:</td>
+            <td>-</td>
+          </tr>
+          <tr>
+            <td class="width-td">Program Studi</td>
+            <td class="width-td-1">:</td>
+            <td>-</td>
+          </tr>
+          <tr>
+            <td class="width-td">Konsentrasi</td>
+            <td class="width-td-1">:</td>
+            <td>-</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="row">
+      <div class="col-12 col-lg-2">
+        <div class="center" style="text-align: center;">
+          <img
+            [src]="dataPostGraduatePersonal && dataPostGraduatePersonal.photo_url ? dataPostGraduatePersonal.photo_url : 'https://cdndata.telkomuniversity.ac.id/situ-round.png'"
+            width="180px;">
+          <br>
+          <br>
+        </div>
+      </div>
+      <div class="col-12 col-lg-10 table-responsive pb-1">
+        <table class="table table-striped">
+          <tbody>
+            <tr class="header-tab">
+              <th class="th-colors" colspan="3">Data Pribadi</th>
+            </tr>
+            <tr>
+              <td class="width-td">No. Peserta</td>
+              <td class="width-td-1">:</td>
+              <td>{{ dataPostGraduatePersonal.registration_number ? dataPostGraduatePersonal.registration_number : '-'}}
+              </td>
+            </tr>
+            <tr>
+              <td class="width-td">Nama Lengkap</td>
+              <td class="width-td-1">:</td>
+              <td>{{ dataPostGraduatePersonal.fullname ? dataPostGraduatePersonal.fullname : '-' }}</td>
+            </tr>
+            <tr>
+              <td class="width-td">Kota Kelahiran</td>
+              <td class="width-td-1">:</td>
+              <td>{{ dataPostGraduatePersonal.birth_city ? dataPostGraduatePersonal.birth_city : '-' }}</td>
+            </tr>
+            <tr>
+              <td class="width-td">Tgl/Bln/Tahun</td>
+              <td class="width-td-1">:</td>
+              <td>{{ dataPostGraduatePersonal.birth_date | date: 'dd/MM/yyyy' }}</td>
+            </tr>
+            <tr>
+              <td class="width-td">Jenis Kelamin</td>
+              <td class="width-td-1">:</td>
+              <td>{{ dataPostGraduatePersonal.gender === 'MALE' ? 'Laki-laki' : 'Perempuan' }}</td>
+            </tr>
+            <tr>
+              <td class="width-td">Email</td>
+              <td class="width-td-1">:</td>
+              <td>{{ dataPostGraduatePersonal.email ? dataPostGraduatePersonal.email : '-' }}</td>
+            </tr>
+            <tr>
+              <td class="width-td">No. Telp</td>
+              <td class="width-td-1">:</td>
+              <td>{{ dataPostGraduatePersonal.house_phone_number !== 'null' ?
+                dataPostGraduatePersonal.house_phone_number : '-'
+                }}</td>
+            </tr>
+            <tr>
+              <td class="width-td">HP</td>
+              <td class="width-td-1">:</td>
+              <td>{{ dataPostGraduatePersonal.mobile_phone_number ? dataPostGraduatePersonal.mobile_phone_number : '-'
+                }}</td>
+            </tr>
+            <tr>
+              <td class="width-td">Alamat Rumah/Surat</td>
+              <td class="width-td-1">:</td>
+              <td>{{ dataPostGraduatePersonal.address_detail ? dataPostGraduatePersonal.address_detail : '-' }}</td>
+            </tr>
+            <tr>
+              <td class="width-td">Kota</td>
+              <td class="width-td-1">:</td>
+              <td>{{ dataPostGraduatePersonal.address_city ? dataPostGraduatePersonal.address_city : '-' }}</td>
+            </tr>
+            <tr>
+              <td class="width-td">Kode Pos</td>
+              <td class="width-td-1">:</td>
+              <td>{{ dataPostGraduatePersonal.address_postal_code ? dataPostGraduatePersonal.address_postal_code : '-'
+                }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="table-responsive pb-1">
+      <table *ngIf="dataPostGraduateWorkDataNow?.length != 0" style="background: #fff" class="table table-striped">
+        <tbody *ngFor="let data of dataPostGraduateWorkDataNow; let i = index;">
+          <tr class="header-tab">
+            <th class="th-colors" colspan="3">Pekerjaan (Bagi Peserta yang mempunyai pekerjaan) {{ i + 1}}</th>
+          </tr>
+          <tr>
+            <td class="width-td">Tanggal Mulai Kerja</td>
+            <td class="width-td-1">:</td>
+            <td>{{ data.work_start_date ? data.work_start_date : '-'}}</td>
+          </tr>
+          <tr>
+            <td class="width-td">Nama Instansi</td>
+            <td class="width-td-1">:</td>
+            <td>{{ data.company_name ? data.company_name : '-'}}</td>
+          </tr>
+          <tr>
+            <td class="width-td">jabatan Terakhir</td>
+            <td class="width-td-1">:</td>
+            <td>{{ data.work_position ? data.work_position : '-'}}</td>
+          </tr>
+          <tr>
+            <td class="width-td">Alamat</td>
+            <td class="width-td-1">:</td>
+            <td>{{ data.company_address ? data.company_address : '-'}}</td>
+          </tr>
+          <tr>
+            <td class="width-td">Telp</td>
+            <td class="width-td-1">:</td>
+            <td>{{ data.company_phone_number ? data.company_phone_number : '-'}}</td>
+          </tr>
+        </tbody>
+      </table>
+      <table *ngIf="dataPostGraduateWorkDataNow?.length == 0" style="background: #fff" class="table table-striped">
+        <tbody>
+          <tr class="header-tab">
+            <th class="th-colors" colspan="3">Pekerjaan (Bagi Peserta yang mempunyai pekerjaan)</th>
+          </tr>
+          <tr>
+            <td class="width-td">Masa Kerja</td>
+            <td class="width-td-1">:</td>
+            <td>-</td>
+          </tr>
+          <tr>
+            <td class="width-td">Nama Instansi</td>
+            <td class="width-td-1">:</td>
+            <td>-</td>
+          </tr>
+          <tr>
+            <td class="width-td">jabatan Terakhir</td>
+            <td class="width-td-1">:</td>
+            <td>-</td>
+          </tr>
+          <tr>
+            <td class="width-td">Alamat</td>
+            <td class="width-td-1">:</td>
+            <td>-</td>
+          </tr>
+          <tr>
+            <td class="width-td">Telp</td>
+            <td class="width-td-1">:</td>
+            <td>-</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="table-responsive pb-1">
+      <table class="table table-striped">
+        <tr class="header-tab">
+          <th class="th-colors" colspan="4">Pengalaman Kerja</th>
+        </tr>
+        <tr>
+          <td><b>Perusahaan/Instansi</b></td>
+          <td><b>Jabatan</b></td>
+          <td><b>Bidang Tugas</b></td>
+          <td><b>Masa Kerja</b></td>
+        </tr>
+        <tbody *ngIf="dataPostGraduateWorkDataExperience?.length != 0">
+          <tr *ngFor="let data of dataPostGraduateWorkDataExperience; let i = index;">
+            <td>{{ data.company_name ? data.company_name : '-'}}</td>
+            <td>{{ data.work_position ? data.work_position : '-'}}</td>
+            <td>{{ data.company_name ? data.company_name : '-'}}</td>
+            <td>{{ data.length_work ? data.length_work : '-'}}</td>
+          </tr>
+        </tbody>
+        <tbody *ngIf="dataPostGraduateWorkDataExperience?.length == 0">
+          <tr>
+            <td colspan="4" class="no-data-available text-center">Data tidak ditemukan!</td>
+            <td class="hidden"></td>
+            <td class="hidden"></td>
+            <td class="hidden"></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="table-responsive pb-1">
+        <table style="background: #fff" class="table table-stripped">
+          <tbody>
+            <tr class="header-tab">
+              <th class="th-colors" colspan="3">Pendidikan Formal</th>
+            </tr>
+            <tr>
+              <td class="width-td">Perguruan Tinggi</td>
+              <td class="width-td-1">:</td>
+              <td>{{ dataPostGraduateEducation.school_name ? dataPostGraduateEducation.school_name : '-' }}</td>
+            </tr>
+            <tr>
+              <td class="width-td">Kota</td>
+              <td class="width-td-1">:</td>
+              <td>{{ dataPostGraduateEducation.school_city ? dataPostGraduateEducation.school_city : '-' }}</td>
+            </tr>
+            <tr>
+              <td class="width-td">Jurusan</td>
+              <td class="width-td-1">:</td>
+              <td>{{ dataPostGraduateEducation.education_major ? dataPostGraduateEducation.education_major : '-' }}</td>
+            </tr>
+            <tr>
+              <td class="width-td">Jenjang</td>
+              <td class="width-td-1">:</td>
+              <td>{{ dataPostGraduateEducation.level ? dataPostGraduateEducation.level : '-' }}</td>
+            </tr>
+            <tr>
+              <td class="width-td">Tahun Lulus</td>
+              <td class="width-td-1">:</td>
+              <td>{{ dataPostGraduateEducation.graduate_year ? dataPostGraduateEducation.graduate_year : '-' }}</td>
+            </tr>
+            <tr>
+              <td class="width-td">IPK</td>
+              <td class="width-td-1">:</td>
+              <td>{{ dataPostGraduateEducation.ipk ? dataPostGraduateEducation.ipk : '-' }}</td>
+            </tr>
+            <tr>
+              <td class="width-td">File Transkip Nilai</td>
+              <td class="width-td-1">:</td>
+              <td>
+                <a class="link-document" [hidden]="dataPostGraduateEducation.url_transkrip === null" [href]="dataPostGraduateEducation.url_transkrip" target="_blank">File Transkip Nilai</a>
+                <p [hidden]="dataPostGraduateEducation.url_transkrip !== null">-</p>
+              </td>
+            </tr>
+            <tr>
+              <td class="width-td">File Ijazah</td>
+              <td class="width-td-1">:</td>
+              <td>
+                <a class="link-document" *ngIf="dataPostGraduateEducation.url_ijazah !== null" [href]="dataPostGraduateEducation.url_ijazah" target="_blank">Berkas
+                  Ijazah </a>
+                <p *ngIf="dataPostGraduateEducation.url_ijazah === null">-</p>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    <!-- <div class="table-responsive pb-1">
+          <table class="table table-stripped">
+            <tbody>
+              <tr class="header-tab">
+                <th class="th-colors" colspan="3">Sertifikasi Keprofesian</th>
+              </tr>
+              <tr>
+                <td>Nama Sertifikasi</td>
+                <td>Tanggal</td>
+                <td>File Sertifikasi</td>
+              </tr>
+              <tr>
+                <td>Microsoft Office Specialist</td>
+                <td>2021-02-27</td>
+                <td><a
+                    href="../../../porsimaba/lib/berkasmagister/484535688/Sertifikat Microsoft Office Specialist 484535688 - 211013.jpg"
+                    target="blank">Sertifikat Microsoft Office Specialist 484535688 - 211013.jpg</a></td>
+              </tr>
+            </tbody>
+          </table>
+      </div> -->
+    <div class="table-responsive pb-1">
+      <table class="table table-striped">
+        <tr class="header-tab">
+          <th class="th-colors" colspan="3">Proposal Penelitian</th>
+        </tr>
+        <tbody>
+          <tr>
+            <td class="width-td">Judul Proposal</td>
+            <td class="width-td-1">:</td>
+            <td>{{ dataPostGraduateProposal.title ? dataPostGraduateProposal.title : '-'}}</td>
+          </tr>
+          <tr>
+            <td class="width-td">File Proposal</td>
+            <td class="width-td-1">:</td>
+            <td>
+              <a class="link-document" [hidden]="isProposalData" [href]="dataPostGraduateProposal.url" target="_blank">Berkas Proposal
+                Penelitian - {{ dataPostGraduateProposal.title }}</a>
+              <p [hidden]="!isProposalData">-</p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="table-responsive pb-1">
+      <table class="table table-striped">
+        <tr class="header-tab">
+          <th class="th-colors" colspan="3">Berkas TPA</th>
+        </tr>
+        <tbody>
+          <tr>
+            <td class="width-td">Skor</td>
+            <td class="width-td-1">:</td>
+            <td>{{ dataPostGraduateTPA.score ? dataPostGraduateTPA.score : '-'}}</td>
+          </tr>
+          <tr>
+            <td class="width-td">Tahun</td>
+            <td class="width-td-1">:</td>
+            <td>{{ dataPostGraduateTPA.year ? dataPostGraduateTPA.year : '-'}}</td>
+          </tr>
+          <tr>
+            <td class="width-td">File Sertifikat</td>
+            <td class="width-td-1">:</td>
+            <td>
+              <a class="link-document" [hidden]="isTpaData" [href]="dataPostGraduateTPA.url" target="_blank">Sertifikat TPA</a>
+              <p [hidden]="!isTpaData">-</p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="table-responsive pb-1">
+      <table class="table table-striped">
+        <tr class="header-tab">
+          <th class="th-colors" colspan="3">Sertifikat Bahasa Inggris</th>
+        </tr>
+        <tbody>
+          <tr>
+            <td class="width-td">Skor</td>
+            <td class="width-td-1">:</td>
+            <td>{{ dataPostGraduateToefl.score ? dataPostGraduateToefl.score : '-' }}</td>
+          </tr>
+          <tr>
+            <td class="width-td">Tahun</td>
+            <td class="width-td-1">:</td>
+            <td>{{ dataPostGraduateToefl.year ? dataPostGraduateToefl.year : '-' }}</td>
+          </tr>
+          <tr>
+            <td class="width-td">File Sertifikat</td>
+            <td class="width-td-1">:</td>
+            <td>
+              <a class="link-document" [hidden]="isToeflData" [href]="dataPostGraduateToefl.url" target="_blank">Sertifikat Bahasa Inggris</a>
+              <p [hidden]="!isToeflData">-</p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="table-responsive pb-1">
+      <table *ngIf="dataPostGraduateRecommendation?.length != 0" class="table table-striped">
+        <tbody *ngFor="let data of dataPostGraduateRecommendation; let i = index;">
+          <tr class="header-tab">
+            <th class="th-colors" colspan="3">Rekomendasi {{ i+1}}</th>
+          </tr>
+          <tr>
+            <td class="width-td">Nama Pemberi Rekomendasi</td>
+            <td class="width-td-1">:</td>
+            <td>{{data.name ? data.name : '-'}}</td>
+          </tr>
+          <tr>
+            <td class="width-td">Jabatan Pemberi Rekomendasi</td>
+            <td class="width-td-1">:</td>
+            <td>{{data.position ? data.position : '-'}}</td>
+          </tr>
+          <tr>
+            <td class="width-td">Berapa lama dan dalam kapasitas apa saudara mengenal calon mahasiswa ?
+            </td>
+            <td class="width-td-1">:</td>
+            <td>{{data.long_capacity_knowing_student ? data.long_capacity_knowing_student : '-'}}</td>
+          </tr>
+          <tr>
+            <td class="width-td">Pengetahuan Dalam Bidang Studi yang diminati
+            </td>
+            <td class="width-td-1">:</td>
+            <td>{{data.knowledge ? data.knowledge : '-'}}</td>
+          </tr>
+          <tr>
+            <td class="width-td">Kemampuan intelektual</td>
+            <td class="width-td-1">:</td>
+            <td>{{data.intellectual ? data.intellectual : '-'}}</td>
+          </tr>
+          <tr>
+            <td class="width-td">Kemampuan mengekspresikan diri secara lisan</td>
+            <td class="width-td-1">:</td>
+            <td>{{data.verbal_expression ? data.verbal_expression : '-'}}</td>
+          </tr>
+          <tr>
+            <td class="width-td">Kemampuan mengekspresikan diri secara tertulis</td>
+            <td class="width-td-1">:</td>
+            <td>{{data.written_expression ? data.written_expression : '-'}}</td>
+          </tr>
+          <tr>
+            <td class="width-td">Kemampuan bekerja secara mandiri</td>
+            <td class="width-td-1">:</td>
+            <td>{{data.work_independently ? data.work_independently : '-'}}</td>
+          </tr>
+          <tr>
+            <td class="width-td">Kemampuan bekerjasama</td>
+            <td class="width-td-1">:</td>
+            <td>{{data.work_cooperate ? data.work_cooperate : '-'}}</td>
+          </tr>
+          <tr>
+            <td class="width-td">Kedewasaan (maturity)</td>
+            <td class="width-td-1">:</td>
+            <td>{{data.maturity ? data.maturity : '-'}}</td>
+          </tr>
+          <tr>
+            <td class="width-td">Berikan opini dan keterangan tambahan mengenai kekuatan dan kelemahan Calon Mahasiswa
+              pada
+              kolom berikut (sangat disarankan)</td>
+            <td class="width-td-1">:</td>
+            <td>{{data.opinion ? data.opinion : '-'}}</td>
+          </tr>
+          <tr>
+            <td class="width-td">Hasil Rekomendasi</td>
+            <td class="width-td-1">:</td>
+            <td><b>{{data.recomendation ? data.recomendation : '-'}}</b></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <!-- <div class="table-responsive pb-1">
+        <table class="table table-stripped">
+          <tbody>
+            <tr class="header-tab">
+              <th colspan="2">Penelitian</th>
+            </tr>
+            <tr>
+              <td>Judul Penelitian</td>
+              <td>Analisis Gaya Kepemimpinan Pengurus Dala</td>
+            </tr>
+            <tr>
+              <td>Bidang Ilmu</td>
+              <td>Manajemen Sumber Daya Manusia</td>
+            </tr>
+            <tr>
+              <td>Sumberdana</td>
+              <td>Pribadi</td>
+            </tr>
+            <tr>
+              <td>Jabatan di Penelitian</td>
+              <td>Ketua</td>
+            </tr>
+            <tr>
+              <td>Waktu Penelitian</td>
+              <td>6 Bulan</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="table-responsive pb-1">
+        <table class="table table-stripped">
+          <tbody>
+            <tr class="header-tab">
+              <th colspan="3">Publikasi</th>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="table-responsive pb-1">
+        <table class="table table-stripped">
+          <tbody>
+            <tr class="header-tab">
+              <th colspan="2">Rencana Thesis</th>
+            </tr>
+            <tr>
+              <td>Judul TA</td>
+              <td>Analisis Gaya Kepemimpinan Pengurus Dalam Upaya Meningkatkan Kinerja Karyawan Koperasi Serba Usaha
+                Tandangsari</td>
+            </tr>
+            <tr>
+              <td>Penjelasan TA</td>
+              <td>Penelitian dilakukan di KSU Tandangsari dengan responden 74 karyawan dan 3 orang pengurus. Hasil
+                penelitian ini menunjukkan bahwa gaya kepemimpinan pengurus adalah kepemimpinan partisipatif. Karyawan
+                menilai gaya kepemimpinan pengurus “cukup baik” sedangkan kinerja karyawan dinilai oleh pengurus “kurang
+                baik” artinya kedua variabel masih harus sama-sama dioptimalkan untuk menjadi lebih baik. </td>
+            </tr>
+            <tr>
+              <td>Judul Thesis</td>
+              <td>Pengaruh Customer Relationship Management dan Brand Positioning Terhadap Loyalitas Pelanggan Indihom
+              </td>
+            </tr>
+            <tr>
+              <td>Penjelasan Thesis</td>
+              <td>Semua jenis perusahaan dari berbagai sektor industri bertujuan untuk menghasilkan profit yang tinggi.
+                Profit tersebut tentunya dihasilkan dari aktivitas ekonomi yang dilakukan oleh perusahaan dengan
+                konsumen/pelanggan. Berbagai jenis perusahaan bersaing dan berlomba-loba untuk mengeluarkan penawaran
+                terbaik dan menarik agar dapat mendapatkan minat pelanggan. Adanya berbagai macam persaingan membuat
+                perusahaan harus memiliki loyalitas pelanggan yang tinggi. Mempertahankan pelanggan yang sudah ada lebih
+                baik daripada mencari pelanggan baru. Loyalitas pelanggan adalah suatu bentuk kesetiaan pelanggan
+                terhadap
+                suatu brand baik itu produk maupun jasa. Loyalitas berasal dari kepuasan yang dirasakan oleh pelanggan
+                tersebut, sehingga pelanggan akan melakukan pembelian secara terus-menerus dalam jangka panjang bahkan
+                merekomendasikan produk tersebut kepada orang lain. Loyalitas pelanggan dapat dikatakan sebagai jantung
+                sekaligus kekuatan bagi perusahaan untuk terus melangsungkan kegiatan usaha. Oleh karena itu perusahaan
+                harus memperhatikan hal tersebut agar tujuan perusahaan dapat tercapai.
+                Di era digital ini, internet merupakan salah satu kebutuhan utama masyarakat untuk melakukan berbagai
+                macam aktivitas. Kebutuhan internet yang semakin tinggi membuat berbagai perusahaan penyedia jasa
+                layanan
+                internet bersaing dan berusaha untuk mengeluarkan penawaran terbaik dari sisi harga maupun kualitas
+                untuk
+                memenuhi kebutuhan pelanggan. Begitupun dengan Indihome yang dimiliki PT. Telekomunikasi Indonesia.
+                Indihome sampai saat ini dipandang sebagai market leader. Namun seiring berjalannya waktu pesaing juga
+                semakin banyak bermunculan menawarkan layanan internet yang memiliki kecepatan dan harga yang lebih
+                baik.
+                Tetapi kualitas internet yang baik belum tentu membuat pelanggan akan bertahan dan loyal. Perusahaan
+                harus
+                memberikan nilai tambah kepada pelanggan seperti dengan cara menciptakan hubungan yang baik serta
+                mempengaruhi pemikiran pelanggan agar mereka percaya, berkomitmen serta membuat sebuah produk berada di
+                benak pelanggan dan memiliki arti yang penting agar terjadi kelangsungan usaha secara kontinu.
+                Hal tersebut dapat dilakukan dengan menerapkan Customer Relationship Management (CRM) dan juga melakukan
+                Brand Positioning yang baik kepada masyarakat. Customer Relationship Management merupakan strategi atau
+                usaha-usaha yang dilakukan perusahaan untuk mendapatkan pelanggan baru maupun mempertahankan yang sudah
+                ada agar pelanggan tersebut menjadi loyal. Dengan adanya CRM, maka akan terjalin hubungan antara
+                perusahaan dan pelanggan. Sehingga perusahaan dapat mendapatkan informasi yang berkaitan dengan
+                kebutuhan
+                maupun keluhan yang dirasakan oleh pelanggan. Terpenuhinya kebutuhan dan juga terselesaikannya
+                permasalahan yang dikeluhkan akan menjadikan pelanggan puas dan loyal sehingga tidak akan pindah ke
+                pesaing.
+                Selain dengan CRM, pelanggan juga akan loyal jika perusahaan memiliki brand positioning yang baik di
+                kalangan masyarakat. Brand Positioning adalah strategi yang dilakukan oleh perusahaan untuk memosisikan
+                brand di benak pelanggan agar pelanggan dapat langsung mengenali dan membedakan dengan brand dari
+                pesaing.
+                Brand positioning bertujuan untuk mendapatkan loyalitas pelanggan karena di benak pelanggan posisi
+                sebuah
+                brand sudah jelas, memiliki arti, unggul, terjamin dan mudah dikenali sehingga mereka enggan untuk
+                menggunakan brand yang lain.
+                Menurut Arie Indra (2013:140) menyatakan bahwa positioning dapat secara langsung berpengaruh terhadap
+                kepuasan pelanggan. Loyalitas pelanggan dapat terjadi apabila pelanggan tersebut merasa puas karena
+                harapannya telah terpenuhi.
+                Menurut Thasya Safira (2020:67) menyatakan bahwa salah satu strategi yang mampu menjembatani antara
+                pelanggan dan perusahaan adalah menerapkan suatu konsep yang disebut dengan Customer Relationshop
+                Management yang mengintegrasikan antara people, process dan technology sehingga tercipta suatu
+                komunikasi
+                yang baik dengan pelanggan terutama guna menumbuhkan loyalitas pelanggan kepada perusahaan.
+                Dari pernyataan diatas, maka dapat disimpulkan bahwa customer relationship management dan brand
+                positioning memiliki keterkaitan dengan loyalitas pelanggan. Untuk itu saya tertarik untuk melakukan
+                penelitian dengan topik “Pengaruh Customer Relationship Management dan Brand Positioning Terhadap
+                Loyalitas Pelanggan Indhome”. Penelitian ini bertujuan untuk mengetahui secara lebih mendalam mengenai:
+                (1) Bagaimana customer relationship management Indihome; (2) Bagaimana brand positioning Indihome; (3)
+                Bagaimana loyalitas pelanggan Indihome; (4) Bagaimana pengaruh customer relationship management dan
+                brand
+                positioning terhadap loyalitas pelanggan Indhome. </td>
+            </tr>
+          </tbody>
+        </table>
+      </div> -->
+
+    <br>
+    <br>
+  </div>
+</div>

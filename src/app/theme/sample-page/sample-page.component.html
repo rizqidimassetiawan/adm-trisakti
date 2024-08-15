@@ -1,0 +1,98 @@
+<!-- <div class="row">
+  <div class="col-12">
+    <app-card cardTitle="{{'ROOT.sample_page' | translate}}" cardClass="card-datatable" headerClass="text-center text-md-left" [hidHeader]="false" [options]="true" [loading]="loadTable">
+      <p class="m-t-5 m-b-5 p-2">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+      <form [formGroup]="formPlayers" class="md-float-material form-material" action="javascript:">
+        <div class="col-12">
+          <div class="row">
+            <div class="col-sm-12 col-md-4">
+              <div class="form-group mb-2">
+                <label class="form-label m-b-0 f-w-600">{{ 'ROOT.player_name' | translate }}</label>
+                <ng-select name="name" formControlName="person" [options]="playersOption" [allowClear]="true"
+                  [placeholder]="'ROOT.select_one'|translate" [ngClass]="fp.person.invalid && fp.person.touched?'custom is-invalid':(fp.person.valid?'custom is-valid':'custom')"
+                  [notFoundMsg]="'ROOT.no_data_found'|translate">
+                </ng-select>
+                <label *ngIf="fp.person.errors?.required && fp.person.touched" class="invalid-feedback">Please input position!</label>
+              </div>
+            </div>
+            <div class="col-sm-12 col-md-4">
+              <div class="form-group mb-2">
+                <label class="form-label m-b-0 f-w-600">{{ 'ROOT.position' | translate }}</label>
+                <input type="text" class="form-control" name="position" required formControlName="position" [ngClass]="fp.position.invalid && fp.position.touched?'is-invalid':(fp.position.valid?'is-valid':'')">
+                <label *ngIf="fp.position.errors?.required && fp.position.touched" class="invalid-feedback">Please input position!</label>
+              </div>
+            </div>
+            <div class="col-sm-6 col-md-2">
+              <div class="form-group mb-2">
+                <label class="form-label m-b-0 f-w-600">{{ 'ROOT.country' | translate }}</label>
+                <input type="text" class="form-control" name="country" required formControlName="country" [ngClass]="fp.country.invalid && fp.country.touched?'is-invalid':(fp.country.valid?'is-valid':'')">
+                <label *ngIf="fp.country.errors?.required && fp.country.touched" class="invalid-feedback">Please input country!</label>
+              </div>
+            </div>
+            <div class="col-sm-6 col-md-2">
+              <div class="form-group mb-2">
+                <label class="form-label m-b-0 f-w-600">{{ 'ROOT.nns' | translate }}</label>
+                <input type="number" min="1" max="99" class="form-control" name="number" required formControlName="number" [ngClass]="fp.number.invalid && fp.number.touched?'is-invalid':(fp.number.valid?'is-valid':'')">
+                <label *ngIf="fp.number.errors?.required && fp.number.touched" class="invalid-feedback">Please input number!</label>
+                <label *ngIf="fp.number.errors?.max && fp.number.touched" class="invalid-feedback">Maximum number is 99!</label>
+              </div>
+            </div>
+            <div class="col-12 text-right">
+              <div class="form-group mb-2">
+                <div class="btn-group">
+                  <button type="button" (click)="resetForm()" class="btn btn-warning btn-sm">
+                    <i class="icofont icofont-refresh"></i> {{ 'ROOT.reset' | translate }}
+                  </button>
+                  <button type="submit" class="btn btn-primary btn-sm" [disabled]="formPlayers.invalid">
+                    <i class="ti-save"></i> {{ 'ROOT.save' | translate }}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+      <div class="table-responsive pb-1 p-2">
+        <table datatable [dtOptions]="dtOptions" class="table table-bordered table-hover">
+          <thead class="thead-light">
+            <tr>
+              <th width="10" scope="col" style="padding-left: 10px">No.</th>
+              <th scope="col">ID</th>
+              <th scope="col">Question</th>
+              <th scope="col">Answer</th>
+            </tr>
+          </thead>
+          <tbody *ngIf="dataFaq?.data?.length != 0">
+            <tr *ngFor="let data of dataFaq?.data; let i = index;">
+              <th scope="row" style="padding-left: 10px">{{ dataFaq?.from + i }}</th>
+              <td>{{ data.id }}</td>
+              <td>{{ data.question }}</td>
+              <td>{{ data.answer }}</td>
+            </tr>
+          </tbody>
+          <tbody *ngIf="dataFaq?.data?.length == 0 && !loadTable">
+            <tr>
+              <td colspan="4" class="no-data-available text-center">
+                <div class="col-12 text-center pt-3 pb-1">
+                  <app-no-data-found></app-no-data-found>
+                </div>
+              </td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+            </tr>
+          </tbody>
+          <tbody *ngIf="dataFaq?.data?.length == 0 && loadTable">
+            <tr>
+              <td colspan="4" class="no-data-available text-center">{{ 'ROOT.loading_data' | translate }}....</td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </app-card>
+  </div>
+</div>
+ -->

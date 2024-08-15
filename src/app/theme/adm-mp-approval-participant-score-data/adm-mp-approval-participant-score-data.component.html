@@ -1,0 +1,201 @@
+<!-- <p>Program Data Management works!</p> -->
+<div class="row">
+  <div class="col-md-12">
+    <app-card cardTitle="Bobot Penilaian USM dan Rapor" cardClass="card-datatable"
+      headerClass="text-center text-md-left" [hidHeader]="true" [options]="false" [loading]="loadTablePassingGrade">
+      <form class="md-float-material form-material" action="javascript:" [formGroup]="passingGradeFiltersForm">
+        <app-filter-container [loading]="false">
+          <div class="col-12 col-md-3">
+            <ng-select name="selectionpath" [allowClear]="false" [placeholder]="'CONTENT.selection-path-choosing' | translate"
+              [ngClass]="'filter'" [notFoundMsg]="'ROOT.no_data_found'|translate" [(ngModel)]="selectionPathSelected"
+              [options]="listSelectionPath" (selected)="loadFiterMappingPath($event)"
+              [ngModelOptions]="{standalone: true}"></ng-select>
+          </div>
+          <div class="col-12 col-md-2">
+            <ng-select name="year" [disabled]="!selectionPathSelected" [allowClear]="false"
+              [placeholder]="'CONTENT.selection-year-choosing' | translate" [ngClass]="'filter'"
+              [notFoundMsg]="'ROOT.no_data_found'|translate" [(ngModel)]="mappingPathYearSelected"
+              (selected)="loadFiterStudyProgram($event)" [options]="listSelectionYear"
+              [ngModelOptions]="{standalone: true}"></ng-select>
+          </div>
+          <div class="col-12 col-md-2">
+            <ng-select name="approvaluniversity" [allowClear]="false"
+              [placeholder]="'CONTENT.approval-university' | translate" [ngClass]="'filter'"
+              [notFoundMsg]="'ROOT.no_data_found'|translate" [(ngModel)]="approvalUniversitySelectedFilters"
+              [options]="listApprovalUniversity" [ngModelOptions]="{standalone: true}"></ng-select>
+          </div>
+          <div class="col-12 col-md-3 ml-auto">
+            <div class="row pl-3 pr-3 pt-1">
+              <div class="col-6">
+                <button type="button" class="btn btn-outline-warning btn-sm btn-block"
+                  [disabled]=" !selectionPathSelected || !mappingPathYearSelected "
+                  (click)="resetFilters()">
+                  <i class="icofont icofont-refresh"></i> {{ 'CONTENT.reset-filter' | translate }}
+                </button>
+              </div>
+              <div class="col-6">
+                <button type="button" class="btn btn-outline-info btn-sm btn-block"
+                  [disabled]="!selectionPathSelected || !mappingPathYearSelected"
+                  (click)="applyFilters(studyProgramSelectedFilters, mappingPathYearSelected,approvalUniversitySelectedFilters )">
+                  <i class="icofont icofont-filter"></i> {{ 'CONTENT.apply-filter' | translate }}
+                </button>
+              </div>
+            </div>
+          </div>
+        </app-filter-container>
+      </form>
+      <div *ngIf="isApplyFilter" class="table-responsive pb-6">
+        
+        <table datatable class="table table-hover" [dtOptions]="dtOptions[0]" [dtTrigger]="dtTrigger">
+          <thead class="thead-light">
+            <tr>
+              <th scope="col" class="center-table">No.</th>
+              <th scope="col" class="center-table">{{ 'CONTENT.registration-number' | translate}}</th>
+              <th scope="col">{{ 'CONTENT.name' | translate}}</th>
+              <th scope="col" class="center-table">{{ 'CONTENT.approval-status' | translate}}</th>
+              <th scope="col" class="center-table">{{ 'CONTENT.approval-university-choosing' | translate}}</th>
+              <th scope="col" class="center-table">{{ 'CONTENT.action' | translate}}</th>
+            </tr>
+          </thead>
+          <tbody *ngIf="tablePassingGrade?.length != 0">
+            <tr *ngFor="let data of tablePassingGrade; let i = index;">
+              <td class="center-table">{{i+1}}.</td>
+              <td class="center-table">{{ data.registration_number ? data.registration_number : '-' }}</td>
+              <td>{{ data.fullname ? data.fullname : '-' }}</td>
+              <!-- <td class="center-table">{{ data.study_program_branding_name ? data.study_program_branding_name : '-' }}
+              </td> -->
+              <td class="center-table">
+                <span class="badge badge-success" *ngIf="data.pass_status == true">{{'CONTENT.pass' |
+                  translate}}</span>
+                <span class="badge badge-danger" *ngIf="data.pass_status == false">
+                  {{'CONTENT.not-pass' | translate}}</span>
+                <span class="badge badge-secondary" *ngIf="data.pass_status == null">
+                  {{'CONTENT.not-specified' | translate}}</span>
+              </td>
+              <td class="center-table">
+                <span class="badge badge-light-success" *ngIf="data.approval_university == true">{{'ROOT.accepted' |
+                  translate}}</span>
+                <span class="badge badge-light-danger" *ngIf="data.approval_university == false">
+                  {{'ROOT.rejected' | translate}}</span>
+                <span class="badge badge-light-secondary" *ngIf="data.approval_university == null">
+                  {{'CONTENT.not-specified' | translate}}</span>
+              </td>
+              <td class="center-table">
+                <a aria-label="status" href="javascript:" [placement]="'left'"
+                  (click)="openParticipantScoreModals(data, 'edit')"
+                  [ngbTooltip]="'ROOT.edit' | translate"
+                  class="mr-2">
+                  <i class="icofont icofont-ui-edit f-w-600 f-16 text-warning"></i>
+                </a>
+              </td>
+            </tr>
+          </tbody>
+          <tbody *ngIf="tablePassingGrade?.length == 0 && !loadTablePassingGrade">
+            <tr>
+              <td colspan="6" class="no-data-available text-center">
+                <app-no-data-found message="{{ 'ROOT.no_data_found' | translate }}"></app-no-data-found>              </td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+            </tr>
+          </tbody>
+          <tbody *ngIf="tablePassingGrade?.length == 0 && loadTablePassingGrade">
+            <tr>
+              <td colspan="6" class="no-data-available text-center">
+                <app-no-data-found message="{{ 'ROOT.loading' | translate }}"></app-no-data-found>
+              </td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div *ngIf="!isApplyFilter" class="text-center">
+        <div class="col-12 text-center pt-3 pb-1">
+          <app-no-data-found message="{{ 'CONTENT.choose_approval_filter' | translate }}"></app-no-data-found>
+        </div>
+      </div>
+    </app-card>
+  </div>
+</div>
+
+<app-ui-modal #passingGradeModals [containerClick]="false" dialogClass="modal-dialog-centered modal-l"
+  [hideFooter]="true">
+  <div class="app-modal-header">
+    <h5 class="modal-title">
+      {{ "ROOT.detail" | translate}} {{'CONTENT.approval-participant-score' | translate }}</h5>
+    <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close"
+      (click)="closePassingGradeModals()"><span aria-hidden="true">&times;</span></button>
+  </div>
+  <div class="app-modal-body">
+    <form class="md-float-material form-material" action="javascript:" [formGroup]="passingGradeForm">
+      <div class="row">
+        <div class="col-md-12 form-group mb-2">
+          <label class="form-label mb-0 f-w-600">{{ 'CONTENT.registration-number' | translate }} </label>
+          <input type="text" class="form-control mt-1" name="quota" formControlName="registration_number" readonly>
+        </div>
+        <div class="col-md-12 form-group mb-2">
+          <label class="form-label mb-0 f-w-600">{{ 'CONTENT.name' | translate }} </label>
+          <input type="text" class="form-control mt-1" name="name" formControlName="name" readonly>
+        </div>
+        <div class="col-md-12 form-group mb-2">
+          <label class="form-label mb-1 f-w-600">{{ 'CONTENT.approval-status'| translate}} <span
+            class="required">*</span></label><br>
+          <label class="custom-control custom-radio custom-control-inline mb-0">
+            <input type="radio" id="status_approval1" name="status_approval" class="custom-control-input" value="1"
+              formControlName="status_approval" required (change)="changeRadioButton($event)">
+            <label class="custom-control-label " for="status_approval1">{{ 'CONTENT.pass' | translate }}</label>
+          </label>
+          <div class="custom-control custom-radio custom-control-inline">
+            <input type="radio" id="status_approval2" name="status_approval" class="custom-control-input" value="0" (change)="changeRadioButton($event)"
+               formControlName="status_approval" required>
+            <label class="custom-control-label" for="status_approval2">{{ 'CONTENT.not-pass' | translate }}</label>
+          </div>
+          <label
+            *ngIf="fpg.status_approval.errors && fpg.status_approval.errors.required && (fpg.status_approval.touched || fpg.status_approval.dirty)"
+            class="error text-danger small form-text">
+            {{ 'CONTENT.please-input' | translate }}{{ 'CONTENT.min-SDP2' | translate }}
+          </label>
+        </div>
+        <div *ngIf="isPass" class="col-md-12 form-group mb-2">
+          <label class="form-label mb-1 f-w-600">{{ 'CONTENT.study-program' | translate }} <span
+            class="required">*</span></label>
+            <ng-select placeholder="{{'ROOT.choose'|translate}} {{'CONTENT.study-program'|translate}}" required
+            [notFoundMsg]="'ROOT.no_data_found'|translate" formControlName="study_program"
+            [(ngModel)]="studyprogramApprovedSelected"
+            [ngClass]="!studyprogramApprovedSelected?'filter-dropdown is-invalid':(studyprogramApprovedSelected?'filter-dropdown is-valid':'filter-dropdown')"
+            [options]="listStudyProgramParticipant" (selected)="getSpecializationStudyProgram(studyprogramApprovedSelected)">
+          </ng-select>
+        <label id="validation-religion-error" class="error jquery-validation-error small form-text invalid-feedback">{{ 'ROOT.required' | translate}}</label>
+        </div>
+        <div *ngIf="isPass" class="col-md-12 form-group mb-2">
+          <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.specialization' | translate }} <span
+            class="required">*</span></label> <br>
+            <ng-select [placeholder]="'CONTENT.specialization'|translate" [ngClass]="'custom bg-white'"
+            [notFoundMsg]="'ROOT.no_data_found'|translate" formControlName="specialization_id"
+            [(ngModel)]="specialization" [options]="listSpecialization">
+          </ng-select>
+          <label *ngIf="!specialization" class="error text-danger small form-text">{{ 'CONTENT.please-choose' |
+            translate }}</label>        
+          </div>
+        <div class="col-12 form-group mb-0 mt-4 text-right">
+            <button type="button" (click)="closePassingGradeModals()" [disabled]="this.loading"
+              class="btn btn-secondary btn-sm">
+              <i class="icofont icofont-logout"></i> {{ 'ROOT.exit' | translate }}
+            </button>
+            <button type="button" (click)="createApprovalParticipantScore()" [disabled]="this.loading || passingGradeForm.invalid"
+              class="btn btn-success btn-sm m-1">
+              <span *ngIf="this.loading" class="spinner-border spinner-border-sm" role="status"></span>
+              <span *ngIf="this.loading" class="load-text"> Loading...</span>
+              <span *ngIf="!this.loading" class="btn-text">{{ 'ROOT.submit' | translate }}  <i class="icofont icofont-location-arrow"></i> </span>
+            </button>
+          </div>
+      </div>
+    </form>
+  </div>
+</app-ui-modal>

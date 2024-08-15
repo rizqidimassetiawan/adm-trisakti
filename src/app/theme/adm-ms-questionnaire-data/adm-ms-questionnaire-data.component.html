@@ -1,0 +1,173 @@
+<!-- <p>Questionnaire Data Management works!</p> -->
+<div class="row">
+  <div class="col-sm-12">
+    <app-card cardTitle="{{ 'MENU.questionnaire-data' | translate }}" cardClass="card-datatable"
+      headerClass="text-center text-md-left" [hidHeader]="true" [options]="false"
+      [loading]="loadtableQuestionnaireData">
+      <form class="md-float-material form-material" action="javascript:">
+        <div class="row p-2">
+          <div class="col-md-3">
+            <div class="form-group mb-0">
+              <ng-select name="active_status" [allowClear]="false" [placeholder]="'CONTENT.active-status' | translate"
+                [ngClass]="'custom bg-white'" [notFoundMsg]="'ROOT.no_data_found'|translate" [(ngModel)]="activeStatus"
+                (deselected)="onDeselected('activeStatus')" [options]="listActiveStatusFilters"
+                (selected)="applyFilterQuestionnare(activeStatus)"></ng-select>
+            </div>
+          </div>
+          <div class="col-9 text-center text-md-right">
+            <button class="btn btn-success btn-round has-ripple btn-sm mt-1 p-2"
+              (click)="openformQuistionnaire(null, 'input')">
+              <i class="icofont icofont-plus"></i> {{'CONTENT.add-data' | translate}}
+            </button>
+          </div>
+        </div>
+      </form>
+      <br>
+      <div class="table-responsive pb-1">
+        <table datatable class="table table-bordered table-hover" [dtOptions]="dtOptions[0]" [dtTrigger]="dtTrigger">
+          <thead class="thead-light">
+            <tr>
+              <th scope="col" style="padding-left: 10px">{{ 'CONTENT.no' | translate}}</th>
+              <th scope="col" class="center-table">{{ 'CONTENT.questionnaire-name' | translate}}</th>
+              <th scope="col" class="center-table">{{ 'CONTENT.questionnaire-respondent' | translate}}</th>
+              <th scope="col" class="center-table">{{ 'CONTENT.total-question' | translate}}</th>
+              <th scope="col" class="center-table">{{ 'CONTENT.active-status' | translate}}</th>
+              <th scope="col" class="center-table">{{ 'CONTENT.action' | translate}}</th>
+            </tr>
+          </thead>
+          <tbody *ngIf="tableData?.length != 0">
+            <tr *ngFor="let data of tableData; let i = index;">
+              <th scope="row" style="padding-left: 10px">{{ i+1 }}</th>
+              <td>{{ data.name }}</td>
+              <td class="center-table">{{ data.selection_path_name ? data.selection_path_name : '-'}}</td>
+              <td class="center-table">{{ data.question_total ? data.question_total : '-' }}</td>
+              <td class="center-table">
+                <span
+                  class="badge badge-{{ data.active_status === true ? 'success' : 'danger' }}">{{
+                  data.active_status === true ? ('ROOT.active' | translate) : ('ROOT.nonactive' | translate)
+                  }}
+                </span>
+              </td>
+              <td class="center-table">
+                <button class="btn btn-warning btn-sm btn-round has-ripple" [placement]="'top'"
+                  ngbTooltip="{{'ROOT.edit' | translate}}" (click)="openformQuistionnaire(data, 'edit');">
+                  <i class="icofont icofont-ui-edit"></i> <span class="d-sm-none"> {{'ROOT.edit' | translate}}</span>
+                </button>
+                <button class="btn btn-primary btn-sm btn-round has-ripple m-1" [placement]="'top'"
+                  ngbTooltip="{{'ROOT.detail' | translate}}"
+                  routerLink="/adm-ms-questionnaire-data/questionnaire-data-step/{{data.id}}">
+                  <i class="ti-eye"></i> <span class="d-sm-none"> {{'ROOT.detail' | translate}}</span>
+                </button>
+                <!-- <button class="btn btn-info btn-sm btn-round has-ripple" [placement]="'top'" ngbTooltip="{{'ROOT.detail' | translate}}">
+                    <i class="ti-download"></i> <span class="d-sm-none"> {{'ROOT.detail' | translate}}</span>
+                  </button> -->
+              </td>
+            </tr>
+          </tbody>
+          <tbody *ngIf="tableData?.length == 0 && !loadtableQuestionnaireData">
+            <tr>
+              <td colspan="7" class="no-data-available text-center">Data tidak ditemukan!</td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+          </tbody>
+          <tbody *ngIf="tableData?.length == 0 && loadtableQuestionnaireData">
+            <tr>
+              <td colspan="7" class="no-data-available text-center">Loading Data....</td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </app-card>
+  </div>
+</div>
+
+
+<!-- Forms Modal -->
+<app-ui-modal #questionnaireDataModal [containerClick]="false" dialogClass="modal-dialog-centered modal-l" [loading]="loading"
+  [hideFooter]="true">
+  <div class="app-modal-header">
+    <h5 class="modal-title"> {{ formType === "edit" ? ("ROOT.edit" | translate)
+      : ("ROOT.add" | translate)
+    }} {{ 'CONTENT.questionnaire-data' | translate }}</h5>
+    <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close"
+      (click)="questionnaireDataModal.hide();"><span aria-hidden="true">&times;</span></button>
+  </div>
+  <div class="app-modal-body">
+    <form [formGroup]="questionnaireDataForm" (ngSubmit)="createQuestionnaireData()"
+      class="md-float-material form-material" action="javascript:">
+      <div class="row" [ngSwitch]="edit">
+        <div class="col-sm-12" *ngSwitchDefault>
+          <div class="form-group mb-2">
+            <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.questionnaire-name' | translate }}</label>
+            <input type="text" class="form-control" name="questionnaire-name" required maxlength="50" formControlName="name">
+            <label *ngIf="f.name.errors && f.name.errors.required && (f.name.touched || f.name.dirty)"
+            class="error text-danger small form-text">
+            {{ 'CONTENT.please-input' | translate }}{{ 'CONTENT.questionnaire-name' | translate }}
+          </label>
+          </div>
+          <div class="form-group mb-2">
+            <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.questionnaire-description' | translate }}</label>
+            <input type="text" class="form-control" name="questionnaire-description" maxlength="100" required
+              formControlName="description">
+            <label *ngIf="f.description.errors && f.description.errors.required && (f.description.touched || f.description.dirty)"
+            class="error text-danger small form-text">
+            {{ 'CONTENT.please-input' | translate }}{{ 'CONTENT.questionnaire-description' | translate }}
+          </label>
+          </div>
+          <div class="form-group mb-2">
+            <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.questionnaire-respondent' | translate }}</label>
+            <ng-select [placeholder]="'CONTENT.questionnaire-respondent'|translate" [ngClass]="'custom bg-white'"
+              formControlName="selection_path_id" [(ngModel)]="selectionPath"
+              (deselected)="onDeselected('selectionPath')" [options]="listSelectionPath"></ng-select>
+              <label *ngIf="!selectionPath"
+              class="error text-danger small form-text">
+              {{ 'CONTENT.please-input' | translate }}{{ 'CONTENT.questionnaire-respondent' | translate }}
+            </label>
+          </div>
+          <div class="form-group mb-2">
+            <h6 class="form-label m-b-0 f-w-600">{{ 'CONTENT.active-status'| translate}}</h6> <br>
+            <div class="custom-control custom-radio custom-control-inline">
+              <input type="radio" id="active_status1" name="active_status" class="custom-control-input" value="1"
+                required formControlName="active_status">
+              <label class="custom-control-label " for="active_status1">{{ 'ROOT.yes' | translate }}</label>
+            </div>
+            <div class="custom-control custom-radio custom-control-inline">
+              <input type="radio" id="active_status2" name="active_status" class="custom-control-input" value="0"
+                required formControlName="active_status">
+              <label class="custom-control-label" for="active_status2">{{ 'ROOT.no' | translate }}</label>
+            </div>
+          </div>
+          <div class="form-group mb-0 mt-4 text-right">
+            <div class="btn-group">
+              <button *ngIf="edit == 'input'" type="button" (click)="questionnaireDataModal.hide()"
+                class="btn btn-secondary btn-sm">
+                <i class="icofont icofont-logout"></i> {{ 'ROOT.exit' | translate }}
+              </button>
+              <button type="submit" class="btn btn-primary btn-sm" (click)="questionnaireDataModal.hide()"
+                [disabled]="!questionnaireDataForm.valid || !selectionPath" >
+                <i class="ti-save"></i> {{ 'ROOT.save' | translate }}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="app-modal-footer"></div>
+</app-ui-modal>
+
+<ng-template #showLoading>
+  <div class="d-flex justify-content-center">
+    <div class="spinner-border text-primary" role="status">
+      <span class="sr-only">Loading...</span>
+    </div>
+  </div>
+</ng-template>

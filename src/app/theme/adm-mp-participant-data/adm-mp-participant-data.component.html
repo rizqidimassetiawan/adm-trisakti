@@ -1,0 +1,228 @@
+<!-- <p>Participant Data Management works!</p> -->
+
+<div class="row">
+  <div class="col-sm-12 col-md-12">
+    <app-card cardTitle="{{ 'MENU.participant-data' | translate }}" cardClass="card-datatable"
+      headerClass="text-center text-md-left" [hidHeader]="true" [options]="false" [loading]="loadtableParticipantData">
+      <div class="align-items-center mb-0 ml-0">
+        <div class="col-md-12 mb-1">
+          <form  class="md-float-material form-material" action="javascript:">
+            <div class="row">
+            <div class="col-12 col-md-4">
+              <div class="form-group mb-0">
+                  <label class="form-label mt-2 m-b-0 f-w-600">{{ 'CONTENT.selection-path' | translate }}</label>
+                  <ng-select [allowClear]="false"
+                  [placeholder]="'CONTENT.selection-path-choosing' | translate" [ngClass]="'custom'"
+                  [notFoundMsg]="'ROOT.no_data_found'|translate" [(ngModel)]="selectionPath"
+                  [options]="listSelectionPath" [disabled]="loading"
+                  (selected)="changeYear(selectionPath)" [ngModelOptions]="{standalone: true}"></ng-select>
+                </div>
+              </div>
+              <div class="col-12 col-md-4">
+                <div class="form-group mb-0 ">
+                  <label class="form-label mt-2 m-b-0 f-w-600">{{ 'CONTENT.school-year' | translate }}</label>
+                  <ng-select [allowClear]="false"
+                  [placeholder]="'CONTENT.selection-year-choosing' | translate" [ngClass]="'custom'"
+                  [notFoundMsg]="'ROOT.no_data_found'|translate" [(ngModel)]="selectionYear"
+                  [options]="listSelectionYear" [disabled]="!selectionPath" (selected)="changePaymentStatus($event)" [ngModelOptions]="{standalone: true}"></ng-select>
+                </div>
+              </div>
+              <div class="col-12 col-md-4">
+                <div class="form-group mb-0">
+                  <label class="form-label mt-2 m-b-0 f-w-600">{{ 'CONTENT.payment-status' | translate }}</label>
+                  <ng-select [allowClear]="false"
+                    [placeholder]="'CONTENT.payment-status-choosing' | translate" [ngClass]="'custom'"
+                    [notFoundMsg]="'ROOT.no_data_found'|translate" [(ngModel)]="selectionPaymentStatus"
+                    (selected)="applyFilter()" [options]="listStatusPayment" [disabled]="!selectionYear" [ngModelOptions]="{standalone: true}"></ng-select>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div *ngIf="isApplyFilter" class="row mt-2 pl-1 pr-0">
+          <div class="col-12 col-md-8 text-left text-md-left">
+            <button
+            class="btn btn-outline-success btn-round has-ripple button-margin-top col-12 col-sm-12 col-md-4 mt-3"
+            (click)="downloadExcelData()" [disabled]="loadDownloadData">
+            <span *ngIf="this.loadDownloadData" class="spinner-grow spinner-grow-sm" role="status"></span>
+            <span *ngIf="this.loadDownloadData" class="load-text"> {{'ROOT.loading' | translate}}...</span>
+            <i class="fas fa-cloud-download-alt" *ngIf="!this.loadDownloadData"></i>
+            <span *ngIf="!this.loadDownloadData" class="btn-text">
+              {{ 'ROOT.download' | translate }} {{ 'MENU.participant-data' | translate }}
+            </span>
+          </button>
+          </div>
+          <div class="col-12 col-md-4 text-right text-md-right">
+            <form class="md-float-material form-material" action="javascript:">
+              <div class="row">
+                <div class="col-md-12 p-3">
+                  <div class="input-group">
+                    <input type="search" class="form-control"
+                      [placeholder]="'CONTENT.placeholder-registration-number'| translate" [(ngModel)]="searching"
+                      [ngModelOptions]="{standalone: true}" (keyup.enter)="applyFilter()">
+                    <div class="input-group-append">
+                      <button style="z-index: auto;" class="btn btn-outline-primary" type="button" (click)="applyFilter()"><i
+                          class="fas fa-search"></i></button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      <div *ngIf="!isApplyFilter" class="text-center">
+        <div class="col-12 text-center pt-3 pb-1">
+          <app-no-data-found message="Silakan memilih filter terlebih dahulu"></app-no-data-found>
+        </div>
+      </div>
+      <div *ngIf="isApplyFilter" class="table-responsive pb-1">
+        <table class="table table-boder-radius dataTable">
+          <thead class="thead-light">
+            <tr>
+              <th scope="col" style="padding-left: 10px">{{ 'CONTENT.no' | translate}}</th>
+              <th scope="col" class="center-table">{{ 'CONTENT.registration-number' | translate}}</th>
+              <th scope="col">{{ 'CONTENT.participant-name' | translate}}</th>
+              <th scope="col" class="center-table email-width">{{ 'CONTENT.email' | translate}}</th>
+              <th scope="col" class="center-table">{{ 'CONTENT.phone_number' | translate}}</th>
+              <th scope="col" class="center-table">{{ 'CONTENT.selection-path' | translate}}</th>
+              <th scope="col" class="center-table">{{ 'CONTENT.school-origin' | translate}}</th>
+              <th scope="col" class="center-table">{{ 'CONTENT.payment-status' | translate}}</th>
+              <th scope="col" class="center-table status-width">{{ 'CONTENT.stage_status' | translate}}</th>
+              <th scope="col" class="center-table">{{ 'CONTENT.action' | translate}}</th>
+            </tr>
+          </thead>
+          <tbody *ngIf="dataParticipant?.length != 0">
+            <tr *ngFor="let data of dataParticipant | slice: (currentPage-1) * pageSize; let i = index;">
+              <th scope="row" style="padding-left: 10px">{{ i + from }}</th>
+              <td class="text-center">{{ data.registration_number }}</td>
+              <td>{{ data.fullname }}</td>
+              <td class="email-width">{{ data.email }}</td>
+              <td class="center-table">{{ data.mobile_phone_number ? data.mobile_phone_number : '-' }}</td>
+              <td class="center-table">{{ data.selection_path_name ? data.selection_path_name : '-' }}</td>
+              <td class="center-table">{{ data.schools ? data.schools : '-' }}</td>
+              <td class="center-table">
+                <span class="badge badge-light-success" *ngIf="data.payment_status === 'Lunas'">Lunas</span>
+                <span class="badge badge-light-danger" *ngIf="data.payment_status === 'Belum Lunas'">Belum Lunas</span>
+                <span class="badge badge-light-warning" *ngIf="data.payment_status === 'Kredit'">Kredit</span>
+                <span class="badge badge-light-secondary" *ngIf="data.payment_status === null">Tidak ada</span>
+              </td>
+              <td class="center-table">
+                <span
+                  class="badge badge-{{ data.pass_status == false ? 'danger' : (data.pass_status == 1 ? 'success' : 'secondary') }}">{{
+                  data.pass_status == false ? ('ROOT.not_pass' | translate) : (data.pass_status == 1 ? 'ROOT.pass' :
+                  'CONTENT.pending_pass')
+                  | translate}}
+                </span>
+              </td>
+              <td class="center-table">
+                <button class="btn btn-primary btn-sm btn-round has-ripple" [placement]="'left'"
+                ngbTooltip="{{'CONTENT.detail-participant' | translate}}"
+                  routerLink="/adm-mp-participant-data/participant-data-detail/{{data.registration_number}}">
+                  <i class="icofont icofont-eye"></i> <span class="d-sm-none"> {{'CONTENT.detail-participant' | translate}}</span>
+                </button>
+                <!-- <button class="btn btn-warning btn-sm btn-round has-ripple m-1" (click)="updateSelectionPath(data)"
+                [placement]="'left'"
+                ngbTooltip="{{'CONTENT.change-selection-step' | translate}}">
+                  <i class="icofont icofont-ui-edit"></i> <span class="d-sm-none"> {{'CONTENT.change-selection-step' | translate}}</span>
+                </button> -->
+                <!-- <button class="btn btn-danger btn-sm btn-round has-ripple" (click)="deleteRegSrepCard(data)" [placement]="'left'"
+                ngbTooltip="{{'CONTENT.reset-reg-card' | translate}}">
+                  <i class="icofont icofont-ui-delete"></i> <span class="d-sm-none"> {{'CONTENT.reset-reg-card' | translate}}</span>
+                </button> -->
+              </td>
+            </tr>
+          </tbody>
+          <tbody *ngIf="dataParticipant.length == 0 && !loadtableParticipantData">
+            <tr>
+              <td colspan="8" class="no-data-available text-center">
+                <app-no-data-found message="{{ 'ROOT.no_data_found' | translate }}"></app-no-data-found>
+              </td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+            </tr>
+          </tbody>
+          <tbody *ngIf="dataParticipant.length == 0  && loadtableParticipantData">
+            <tr>
+              <td colspan="8" class="no-data-available text-center">
+                <app-no-data-found message="{{ 'ROOT.loading' | translate }}"></app-no-data-found>
+              </td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+            </tr>
+          </tbody>
+        </table>
+        <ngb-pagination class="d-flex justify-content-center mt-2" [pageSize]="pageSize" [collectionSize]="collectionSize" [boundaryLinks]="true" [maxSize]="5"
+              [(page)]="currentPage" (pageChange)="changePage($event)" [maxSize]="3" [boundaryLinks]="true">
+            </ngb-pagination>
+      </div>
+    </app-card>
+  </div>
+</div>
+
+<app-ui-modal #changeSelectionPathModals [containerClick]="false" dialogClass="modal-dialog-centered modal-l" [loading]="loading" [hideFooter]="true">
+  <div class="app-modal-header">
+    <h5 class="modal-title" >
+      {{ 'CONTENT.change-selection-path' | translate }}</h5>
+    <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close" (click)="changeSelectionPathModals.hide();"><span aria-hidden="true">&times;</span></button>
+  </div>
+  <div class="app-modal-body">
+    <form [formGroup]="changeSelectionPathForm" class="md-float-material form-material" action="javascript:">
+      <div class="row">
+        <div class="col-sm-12">
+          <div class="form-group mb-2">
+            <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.name' | translate }}</label>
+            <input type="text" class="form-control" name="name" formControlName="name" readonly>
+          </div>
+          <div class="form-group mb-2">
+            <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.registration-number' | translate }}</label>
+            <input type="text" class="form-control" name="registration_number" formControlName="registration_number" readonly>
+          </div>
+          <div class="form-group mb-2">
+            <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.selection-path' | translate }}</label>
+            <ng-select name="selectionPath" [placeholder]="'CONTENT.selection-path'|translate" [ngClass]="'custom'" formControlName="selection_path_id" [notFoundMsg]="'ROOT.no_data_found'|translate" [(ngModel)]="selectionPath"  [options]="listSelectionPathChange" (selected)="selectionPathSelected($event)"></ng-select>
+            <label *ngIf="!selectionPath" id="validation-email-error" class="error jquery-validation-error small form-text invalid-feedback">{{ 'CONTENT.please-choose' | translate }}{{ 'CONTENT.exam-type' | translate }}</label>
+          </div>
+          <div class="form-group mb-0 mt-4 text-right">
+            <div class="btn-group">
+              <button type="button" (click)="changeSelectionPathModals.hide()" [disabled]="loading" class="btn btn-secondary btn-sm">
+                <i class="icofont icofont-logout"></i> {{ 'ROOT.cancel' | translate }}
+              </button>
+              <button type="button" class="btn btn-primary btn-sm"
+                [disabled]="!changeSelectionPathForm.valid || loading" (click)="createSelectionPathUpdate()">
+                <span *ngIf="this.loading" class="spinner-border spinner-border-sm" role="status"></span>
+                <span *ngIf="this.loading" class="load-text"> Loading...</span>
+                <span *ngIf="!this.loading" class="btn-text"> <i
+                  class="ti-save"></i> {{ 'ROOT.save' | translate }}</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="app-modal-footer"></div>
+</app-ui-modal>
+
+
+<ng-template #showLoading>
+  <div class="d-flex justify-content-center">
+    <div class="spinner-border text-primary" role="status">
+      <span class="sr-only">Loading...</span>
+    </div>
+  </div>
+</ng-template>

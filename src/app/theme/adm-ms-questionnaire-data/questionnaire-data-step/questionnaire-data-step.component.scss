@@ -1,0 +1,31 @@
+// td {
+
+//     /* css-3 */
+//     white-space: -o-pre-wrap;
+//     word-wrap: break-word;
+//     white-space: pre-wrap;
+//     white-space: -moz-pre-wrap;
+//     white-space: -pre-wrap;
+
+// }
+
+td{
+  table-layout:fixed;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+}
+th{
+  table-layout:fixed;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+}
+.center-table{
+ text-align: center;
+}
+.question-width{
+  max-width: 100px;
+}
+.status-width{
+  max-width: 80px;
+}
+

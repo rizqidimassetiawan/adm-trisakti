@@ -1,0 +1,1266 @@
+<div class="row">
+  <div class="col-sm-12">
+    <app-card hidHeader="false">
+      <wizard #wizard class="arc-wizard" navBarLayout="large-empty-symbols">
+        <!--Wizard Step 1 Data Diri-->
+        <wizard-step stepTitle="{{'CONTENT.biodata' | translate}}" navigationSymbol="1">
+          <!--Data Diri-->
+          <div class="row">
+            <div padding class="col-md-12">
+              <form class="md-float-material form-material" action="javascript:"
+                [formGroup]="registrationParticipantDataForm" (ngSubmit)="createParticipantData()">
+                <div class="row" [ngSwitch]="edit">
+                  <div class="col-sm-12" *ngSwitchDefault>
+                    <app-card cardTitle="{{'CONTENT.biodata' | translate}}" headerClass="text-center text-md-left"
+                      [options]="false" [loading]="loadDataDiri">
+                      <div class="app-body">
+                        <!-- Profile Picture -->
+                        <div class="user-profile user-card mt-5 mb-4">
+                          <div class="card-body py-0">
+                            <div class="user-about-block m-0">
+                              <div class="row">
+                                <div class="col-md-12 text-center mt-n5">
+                                  <div class="change-profile text-center mb-2">
+                                    <div class="dropdown w-auto d-inline-block" ngbDropdown>
+                                      <a class="dropdown-toggle" data-toggle="dropdown" ngbDropdownToggle
+                                        aria-haspopup="true" aria-expanded="false">
+                                        <div class="profile-dp">
+                                          <div class="position-fit d-inline-block">
+                                            <img class="img-radius align-top m-r-15 wid-100 img-cover-fit"
+                                              [src]="photoData.photo_url ? photoData.photo_url : 'https://cdndata.telkomuniversity.ac.id/situ-round.png'"
+                                              alt="User image">
+                                          </div>
+                                          <div class="overlay">
+                                            <span>{{'CONTENT.change' | translate }}</span>
+                                          </div>
+                                        </div>
+                                        <input class="d-none" id="fileInput" type="file"
+                                          accept="image/jpg,image/jpeg,image/png"
+                                          (change)="onUploadImagePhoto($event)" />
+                                        <div class="certificated-badge">
+                                          <i class="icofont icofont-camera bg-icon pointer-clicked"></i>
+                                        </div>
+                                      </a>
+                                      <div class="dropdown-menu" ngbDropdownMenu>
+                                        <a class="dropdown-item" href="javascript:" (click)="openFile()"><i
+                                            class="feather icon-upload-cloud mr-2"></i>{{'CONTENT.change-photo' |
+                                          translate }}</a>
+                                        <a target="_blank" class="dropdown-item" [href]="photoData.photo_url"
+                                          [hidden]="notHavePhoto"><i
+                                            class="feather icon-image mr-2"></i>{{'CONTENT.view-photo' | translate}}</a>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                                <div class="p-4 col-12">
+                                  <app-alert type="warning" [hidden]="!notHavePhoto">
+                                    <h6 class="text-dark text-center">{{ 'CONTENT.photo-info' | translate }}</h6>
+                                    <div class="col-sm-12 text-center">
+                                      <p>{{ 'CONTENT.photo-info-2' | translate }}<br>{{ 'CONTENT.photo-info-3' |
+                                        translate }}.<br>{{ 'CONTENT.photo-info-4' | translate }}.</p>
+                                      <br>
+                                      <p><i>{{ 'CONTENT.photo-info-5' | translate }}</i></p>
+                                    </div>
+                                  </app-alert>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div [hidden]="notHavePhoto">
+                          <span class="required mb-4">* Wajib diisi</span>
+                          <div class="form-group mb-2">
+                            <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.fullname' | translate }} <span
+                                class="required">*</span></label>
+                            <input type="text" class="form-control" name="name" required formControlName="fullname"
+                              [ngClass]="f.fullname.invalid && f.fullname.touched?'is-invalid':(f.fullname.valid?'is-valid':'')"
+                              maxlength="100">
+                            <label
+                              *ngIf="f.fullname.errors && f.fullname.errors.required && (f.fullname.touched || f.fullname.dirty)"
+                              class="error text-danger small form-text">{{ 'ROOT.required' | translate }}</label>
+                            <label
+                              *ngIf="f.fullname.errors && f.fullname.errors.maxlength && (f.fullname.touched || f.fullname.dirty)"
+                              class="error text-danger small form-text">{{ 'CONTENT.validation-fullname' | translate
+                              }}</label>
+                            <label
+                              *ngIf="f.fullname.errors && f.fullname.errors.pattern && (f.fullname.touched || f.fullname.dirty)"
+                              class="error text-danger small form-text">{{ 'CONTENT.letter-only' | translate }}</label>
+                          </div>
+                          <div class="form-row">
+                            <div class="form-group col-md-6">
+                              <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.gender' | translate }} <span
+                                  class="required">*</span></label>
+                              <ng-select [placeholder]="'CONTENT.gender'|translate" required
+                                [notFoundMsg]="'ROOT.no_data_found'|translate" formControlName="gender"
+                                [(ngModel)]="gender"
+                                [ngClass]="!gender?'filter-dropdown is-invalid':(gender?'filter-dropdown is-valid':'filter-dropdown')"
+                                [options]="listGender"></ng-select>
+                              <div *ngIf="submitted && f.gender.errors" class="invalid-feedback">
+                                <div *ngIf="f.gender.errors.required">{{ 'CONTENT.gender' | translate }} {{
+                                  'CONTENT.is-required' | translate }}</div>
+                              </div>
+                            </div>
+                            <div class="form-group col-md-6">
+                              <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.religion' | translate }} <span
+                                  class="required">*</span></label>
+                              <ng-select [placeholder]="'CONTENT.religion'|translate" required
+                                [notFoundMsg]="'ROOT.no_data_found'|translate" formControlName="religion"
+                                [(ngModel)]="religion"
+                                [ngClass]="!religion?'filter-dropdown is-invalid':(religion?'filter-dropdown is-valid':'filter-dropdown')"
+                                [options]="listReligion">
+                              </ng-select>
+                              <label id="validation-religion-error"
+                                class="error jquery-validation-error small form-text invalid-feedback">{{
+                                'CONTENT.please-input' | translate }}{{ 'CONTENT.religion' | translate }}</label>
+                            </div>
+                          </div>
+                          <div class="form-row">
+                            <div class="form-group col-md-6">
+                              <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.country_birth' | translate }} <span
+                                  class="required">*</span></label>
+                              <ng-select [placeholder]="'CONTENT.country_birth'|translate" required
+                                [notFoundMsg]="'ROOT.no_data_found'|translate" formControlName="country_birth"
+                                [(ngModel)]="countryBirth"
+                                [ngClass]="!countryBirth?'filter-dropdown is-invalid':(countryBirth?'filter-dropdown is-valid':'filter-dropdown')"
+                                [options]="listCountryBirth" (ngModelChange)="changeProvinceBirth(countryBirth)">
+                              </ng-select>
+                              <label id="validation-country-birth-error"
+                                class="error jquery-validation-error small form-text invalid-feedback">{{
+                                'CONTENT.please-input' | translate }}{{ 'CONTENT.country_birth' | translate }}</label>
+                            </div>
+                            <div *ngIf="isIndonesiaBirthCountry" class="form-group col-md-6">
+                              <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.province_birth' | translate }} <span
+                                  class="required">*</span></label>
+                              <ng-select [placeholder]="'CONTENT.province_birth'|translate" required
+                                [notFoundMsg]="'ROOT.no_data_found'|translate" formControlName="province_birth"
+                                [(ngModel)]="provinceBirth" [options]="listProvinceBirth"
+                                [ngClass]="!provinceBirth?'filter-dropdown is-invalid':(provinceBirth?'filter-dropdown is-valid':'filter-dropdown')"
+                                (ngModelChange)="loadCityBirthDataFilter(provinceBirth)"></ng-select>
+                              <label id="validation-province-birth-error"
+                                class="error jquery-validation-error small form-text invalid-feedback">{{
+                                'CONTENT.please-input' | translate }}{{ 'CONTENT.province_birth' | translate }}</label>
+                            </div>
+                            <div *ngIf="!isIndonesiaBirthCountry" class="form-group col-md-6">
+                              <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.province_birth' | translate }} <span
+                                  class="required">*</span></label>
+                              <input type="text" [placeholder]="'CONTENT.province_birth'|translate" class="form-control mt-0"
+                                name="province_birth" formControlName="province_birth_other" maxlength="100"
+                                [ngClass]="f.province_birth_other.invalid && f.province_birth_other.touched?'is-invalid':(f.province_birth_other.valid?'is-valid':'')">
+                              <label
+                                *ngIf="f.province_birth_other.errors && f.province_birth_other.errors.required && (f.province_birth_other.touched || f.province_birth_other.dirty)"
+                                class="error text-danger small form-text">{{ 'ROOT.required' | translate }}</label>
+                            </div>
+                          </div>
+                          <div class="form-row mb-0">
+                            <div *ngIf="isIndonesiaBirthCountry" class="form-group col-md-6">
+                              <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.city_birth' | translate }} <span
+                                  class="required">*</span></label>
+                              <ng-select [disabled]="!provinceBirth" [placeholder]="'CONTENT.city_birth'|translate"
+                                required [notFoundMsg]="'ROOT.no_data_found'|translate" formControlName="city_birth"
+                                [(ngModel)]="cityBirth"
+                                [ngClass]="!cityBirth?'filter-dropdown is-invalid':(cityBirth?'filter-dropdown is-valid':'filter-dropdown')"
+                                [options]="listCityBirth"></ng-select>
+                              <label id="validation-city-birth-error"
+                                class="error jquery-validation-error small form-text invalid-feedback">{{
+                                'CONTENT.please-input' | translate }}{{ 'CONTENT.city_birth' | translate }}</label>
+                            </div>
+                            <div *ngIf="!isIndonesiaBirthCountry" class="form-group col-md-6">
+                              <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.city_birth' | translate }} <span
+                                  class="required">*</span></label>
+                              <input type="text" [placeholder]="'CONTENT.city_birth'|translate" class="form-control mt-0"
+                                name="city_birth_other" formControlName="city_birth_other" maxlength="100"
+                                [ngClass]="f.city_birth_other.invalid && f.city_birth_other.touched?'is-invalid':(f.city_birth_other.valid?'is-valid':'')">
+                              <label
+                                *ngIf="f.city_birth_other.errors && f.city_birth_other.errors.required && (f.city_birth_other.touched || f.city_birth_other.dirty)"
+                                class="error text-danger small form-text">{{ 'ROOT.required' | translate }}</label>
+                            </div>
+                            <div class="form-group col-md-6">
+                              <label class="form-label mb-0 f-w-600">{{ 'CONTENT.birthdate' | translate }} <span
+                                  class="required">*</span></label>
+                              <input [textMask]="{mask: maskDateSlash}" type="text" class="form-control mt-0"
+                                formControlName="birthdate" name="birthdate" required
+                                [placeholder]="'CONTENT.date-validation'|translate"
+                                [ngClass]="f.birthdate.invalid && f.birthdate.touched?'is-invalid':(f.birthdate.valid?'is-valid':'')" />
+                              <label
+                                *ngIf="f.birthdate.errors && f.birthdate.errors.required && (f.birthdate.touched || f.birthdate.dirty)"
+                                class="error text-danger small form-text">{{ 'ROOT.required' | translate }}</label>
+                            </div>
+                          </div>
+                          <div class="form-row mt-0">
+                            <div class="form-group col-md-6">
+                              <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.nationality' | translate }} <span
+                                  class="required">*</span></label>
+                              <ng-select [placeholder]="'CONTENT.nationality'|translate" required
+                                [notFoundMsg]="'ROOT.no_data_found'|translate" formControlName="nationality"
+                                [(ngModel)]="nationality"
+                                [ngClass]="!nationality?'filter-dropdown is-invalid':(nationality?'filter-dropdown is-valid':'filter-dropdown')"
+                                [options]="listNationality" (ngModelChange)="changeNationality(nationality)">
+                              </ng-select>
+                              <label id="validation-nationality-error"
+                                class="error jquery-validation-error small form-text invalid-feedback">{{
+                                'CONTENT.please-input' | translate }}{{ 'CONTENT.nationality' | translate }}</label>
+                            </div>
+                            <div class="form-group col-md-6">
+                              <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.country_origin' | translate }} <span
+                                  class="required">*</span></label>
+                              <ng-select [placeholder]="'CONTENT.country_origin'|translate" required
+                                [notFoundMsg]="'ROOT.no_data_found'|translate" formControlName="country_origin"
+                                [(ngModel)]="countryOrigin" [options]="listCountry"
+                                [ngClass]="!countryOrigin?'filter-dropdown is-invalid':(countryOrigin?'filter-dropdown is-valid':'filter-dropdown')">
+                              </ng-select>
+                              <label id="validation-country-origin-error"
+                                class="error jquery-validation-error small form-text invalid-feedback">{{
+                                'CONTENT.please-input' | translate }}{{ 'CONTENT.country_origin' | translate }}</label>
+                            </div>
+                          </div>
+                          <div class="form-row">
+                            <div  *ngIf="isIndonesianNationality" class="form-group col-md-6">
+                              <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.NIK' | translate }}
+                                <i class="icofont icofont-info-circle" [placement]="'right'"
+                                  ngbTooltip="NIK terdapat pada KTP atau Kartu Keluarga"></i><span
+                                  class="required">*</span></label>
+                              <input type="text" class="form-control" name="NIK" required formControlName="NIK"
+                                minlength="16" maxlength="16"
+                                [ngClass]="f.NIK.invalid && f.NIK.touched?'is-invalid':(f.NIK.valid?'is-valid':'')">
+                              <label *ngIf="f.NIK.errors && f.NIK.errors.required && (f.NIK.touched || f.NIK.dirty)"
+                                class="error text-danger small form-text">{{ 'ROOT.required' | translate }}</label>
+                              <label *ngIf="f.NIK.errors && f.NIK.errors.minlength && (f.NIK.touched || f.NIK.dirty)"
+                                class="error text-danger small form-text">{{ 'CONTENT.validation-nik' | translate
+                                }}</label>
+                              <label *ngIf="f.NIK.errors && f.NIK.errors.maxlength && (f.NIK.touched || f.NIK.dirty)"
+                                class="error text-danger small form-text">{{ 'CONTENT.validation-nik' | translate
+                                }}</label>
+                              <label *ngIf="f.NIK.errors && f.NIK.errors.pattern && (f.NIK.touched || f.NIK.dirty)"
+                                class="error text-danger small form-text">{{ 'CONTENT.number-only' | translate }}</label>
+                              </div>
+                            <div *ngIf="!isIndonesianNationality" class="form-group col-md-6">
+                              <div><label class="form-label m-b-0 f-w-600">{{ 'CONTENT.passport_number' | translate
+                                  }}<span class="required">*</span></label></div>
+                              <input type="text" class="form-control" name="passport_number"
+                                formControlName="passport_number" required minlength="7" maxlength="7"
+                                [ngClass]="f.passport_number.invalid && f.passport_number.touched?'is-invalid':(f.passport_number.valid?'is-valid':'')">
+                              <label
+                                *ngIf="f.passport_number.errors && f.passport_number.errors.required && (f.passport_number.touched || f.passport_number.dirty)"
+                                class="error text-danger small form-text">{{ 'ROOT.required' | translate }}</label>
+                              <label
+                                *ngIf="f.passport_number.errors && f.passport_number.errors.minlength && (f.passport_number.touched || f.passport_number.dirty)"
+                                class="error text-danger small form-text">{{ 'CONTENT.validation-passport' | translate
+                                }}</label>
+                              <label
+                                *ngIf="f.passport_number.errors && f.passport_number.errors.maxlength && (f.passport_number.touched || f.passport_number.dirty)"
+                                class="error text-danger small form-text">{{ 'CONTENT.validation-passport' | translate
+                                }}</label>
+                              <label
+                                *ngIf="f.passport_number.errors && f.passport_number.errors.pattern && (f.passport_number.touched || f.passport_number.dirty)"
+                                class="error text-danger small form-text">{{ 'CONTENT.number-only' | translate
+                                }}</label>
+                            </div>
+                            <div *ngIf="!isIndonesianNationality" class="form-group col-md-6">
+                              <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.passport_expired_date' | translate
+                                }}<span class="required">*</span></label>
+                              <input type="date" class="form-control" name="passport_expired_date" max="9999-12-31"
+                                formControlName="passport_expiry_date" required> <label
+                                *ngIf="f.passport_expiry_date.errors && f.passport_expiry_date.errors.required && (f.passport_expiry_date.touched || f.passport_expiry_date.dirty)"
+                                class="error text-danger small form-text">{{ 'ROOT.required' | translate }}</label>
+                            </div>
+                            <div *ngIf="isIndonesianNationality" class="form-group col-md-6">
+                              <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.nis' | translate }}<span
+                                  class="required">*</span></label>
+                              <input type="text" class="form-control" name="NIS" required formControlName="nis"
+                                minlength="8" maxlength="8" placeholder="{{'CONTENT.nis' | translate }}"
+                                [ngClass]="f.nis.invalid && f.nis.touched?'is-invalid':(f.nis.valid?'is-valid':'')">
+                              <label *ngIf="f.nis.errors && f.nis.errors.required && (f.nis.touched || f.nis.dirty)"
+                                class="error text-danger small form-text">{{ 'ROOT.required' | translate }}</label>
+                              <label *ngIf="f.nis.errors && f.nis.errors.minlength && (f.nis.touched || f.nis.dirty)"
+                                class="error text-danger small form-text">{{ 'CONTENT.nis-validation' | translate
+                                }}</label>
+                              <label *ngIf="f.nis.errors && f.nis.errors.maxlength && (f.nis.touched || f.nis.dirty)"
+                                class="error text-danger small form-text">{{ 'CONTENT.nis-validation' | translate
+                                }}</label>
+                              <label *ngIf="f.nis.errors && f.nis.errors.pattern && (f.nis.touched || f.nis.dirty)"
+                                class="error text-danger small form-text">{{ 'CONTENT.number-only' | translate }}</label>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </app-card>
+
+                    <!--Data Alamat-->
+                    <app-card cardTitle="{{'CONTENT.address_data' | translate}}" headerClass="text-center text-md-left"
+                      [options]="false" [loading]="loadDataDiri" [hidden]="notHavePhoto">
+                      <div class="app-body">
+                        <div class="row">
+                          <div class="col-sm-12">
+                            <div class="form-group mb-2">
+                              <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.country' | translate }} <span
+                                  class="required">*</span></label>
+                              <ng-select [placeholder]="'CONTENT.country'|translate" required
+                                [notFoundMsg]="'ROOT.no_data_found'|translate" formControlName="address_country"
+                                [(ngModel)]="country" [options]="listCountry"
+                                [ngClass]="!country?'filter-dropdown is-invalid':(country?'filter-dropdown is-valid':'filter-dropdown')"
+                                (selected)="changeCountryDataforProvince($event)"></ng-select>
+                            </div>
+                            <div *ngIf="!hiddenAddressDetail" class="form-group mb-2">
+                              <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.province' | translate }} <span
+                                  class="required">*</span></label>
+                              <ng-select [placeholder]="'CONTENT.province'|translate" required
+                                [notFoundMsg]="'ROOT.no_data_found'|translate" formControlName="address_province"
+                                [(ngModel)]="province" [options]="listProvince"
+                                [ngClass]="!province?'filter-dropdown is-invalid':(province?'filter-dropdown is-valid':'filter-dropdown')"
+                                (selected)="changeProvinceDataforCity($event)"></ng-select>
+                            </div>
+                            <div *ngIf="!hiddenAddressDetail" class="form-row">
+                              <div class="form-group col-md-6">
+                                <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.city' | translate }} <span
+                                    class="required">*</span></label>
+                                <ng-select [placeholder]="'CONTENT.city'|translate" required
+                                  [notFoundMsg]="'ROOT.no_data_found'|translate" formControlName="address_city"
+                                  [(ngModel)]="city" [options]="listCity"
+                                  [ngClass]="!city?'filter-dropdown is-invalid':(city?'filter-dropdown is-valid':'filter-dropdown')"
+                                  (selected)="changeCityDataforDistrict($event)"></ng-select>
+                              </div>
+                              <div *ngIf="!hiddenAddressDetail" class="form-group col-md-6">
+                                <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.district' | translate }}</label>
+                                <ng-select [placeholder]="'CONTENT.district'|translate"
+                                  [notFoundMsg]="'ROOT.no_data_found'|translate" formControlName="address_district"
+                                  [(ngModel)]="district" [options]="listDistrict"
+                                  [ngClass]="!district?'filter-dropdown is-invalid':(district?'filter-dropdown is-valid':'filter-dropdown')">
+                                </ng-select>
+                              </div>
+                            </div>
+                            <div class="form-group mb-2">
+                              <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.address' | translate }} <span
+                                  class="required">*</span></label>
+                              <textarea class="form-control" formControlName="address_detail" maxlength="150" required
+                                [ngClass]="f.address_detail.invalid && f.address_detail.touched?'is-invalid':(f.address_detail.valid?'is-valid':'')"></textarea>
+                              <label
+                                *ngIf="f.address_detail.errors && f.address_detail.errors.required && (f.address_detail.touched || f.address_detail.dirty)"
+                                class="error text-danger small form-text">{{ 'ROOT.required' | translate }}</label>
+                              <label
+                                *ngIf="f.address_detail.errors && f.address_detail.errors.maxlength && (f.address_detail.touched || f.address_detail.dirty)"
+                                class="error text-danger small form-text">{{ 'CONTENT.validation-address-detail' |
+                                translate }}</label>
+                            </div>
+                            <div *ngIf="!hiddenAddressDetail" class="form-row">
+                              <div class="form-group col-md-6">
+                                <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.zipcode' | translate }}
+                                  <span class="required">*</span></label>
+                                <input type="text" [placeholder]="'CONTENT.zipcode'|translate" class="form-control"
+                                  name="zipcode" maxlength="5" minlength="5" required formControlName="zipcode"
+                                  [ngClass]="f.zipcode.invalid && f.zipcode.touched?'is-invalid':(f.zipcode.valid?'is-valid':'')">
+                                <label
+                                  *ngIf="f.zipcode.errors && f.zipcode.errors.required && (f.zipcode.touched || f.zipcode.dirty)"
+                                  class="error text-danger small form-text">{{ 'ROOT.required' | translate }}</label>
+                                <label
+                                  *ngIf="f.zipcode.errors && f.zipcode.errors.minlength && (f.zipcode.touched || f.zipcode.dirty)"
+                                  class="error text-danger small form-text">{{ 'CONTENT.validation-zipcode' | translate
+                                  }}</label>
+                                <label
+                                  *ngIf="f.zipcode.errors && f.zipcode.errors.pattern && (f.zipcode.touched || f.zipcode.dirty)"
+                                  class="error text-danger small form-text">{{ 'CONTENT.number-only' | translate
+                                  }}</label>
+                              </div>
+                              <div class="form-group col-md-6">
+                                <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.home_number' | translate }}</label>
+                                <input type="text" [placeholder]="'CONTENT.home_number'|translate" class="form-control"
+                                  name="home_number" formControlName="house_phone_number" maxlength="11"
+                                  [ngClass]="f.house_phone_number.invalid && f.house_phone_number.touched?'is-invalid':(f.house_phone_number.valid?'is-valid':'')">
+                                <label
+                                  *ngIf="f.house_phone_number.errors && f.house_phone_number.errors.maxlength && (f.house_phone_number.touched || f.house_phone_number.dirty)"
+                                  class="error text-danger small form-text">{{ 'CONTENT.validation-zipcode' | translate
+                                  }}</label>
+                                <label
+                                  *ngIf="f.house_phone_number.errors && f.house_phone_number.errors.pattern && (f.house_phone_number.touched || f.house_phone_number.dirty)"
+                                  class="error text-danger small form-text">{{ 'CONTENT.number-only' | translate
+                                  }}</label>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </app-card>
+                  </div>
+                  <!-- Disabilitas Data -->
+                  <div class="col-md-6">
+                    <app-card cardTitle="{{'CONTENT.disabilitas-data' | translate}}" headerClass="text-center text-md-left"
+                      [options]="false" [loading]="loadDataDiri" [hidden]="notHavePhoto">
+                      <div class="col-md-12">
+                        <div class="row">
+                          <div class="form-group mb-2 col-md-12">
+                            <label class="form-label mb-1 f-w-600">{{ 'CONTENT.color-blind' | translate }}<span
+                                class="required">*</span></label><br>
+                            <ng-select [(ngModel)]="colorBlind" name="color_blind" [allowClear]="false" [options]="colorBlindList"
+                              [placeholder]="'ROOT.choose' | translate"
+                              [ngClass]="!colorBlind?'filter-dropdown is-invalid':(colorBlind?'filter-dropdown is-valid':'filter-dropdown')"
+                              [notFoundMsg]="'ROOT.no_data_found' | translate" [ngModelOptions]="{ standalone: true }">
+                            </ng-select>
+                            <label *ngIf="!colorBlind" class="error text-danger small form-text">{{ 'ROOT.required' |
+                              translate }}</label>
+                          </div>
+                          <div class="form-group mb-1 col-md-12">
+                            <label class="form-label mb-2 f-w-600">{{ 'CONTENT.special-needs' | translate }}<span class="required"> *</span>
+                            </label><br>
+                            <ng-select [(ngModel)]="specialNeeds" name="special_needs" [allowClear]="false"
+                              formControlName="special_needs" [options]="listOptions" [placeholder]="'ROOT.choose' | translate"
+                              [ngClass]="!specialNeeds?'filter-dropdown is-invalid':(specialNeeds?'filter-dropdown is-valid':'filter-dropdown')"
+                              [notFoundMsg]="'ROOT.no_data_found' | translate" (ngModelChange)="changeSpecialNeeds(specialNeeds)">
+                            </ng-select>
+                            <label *ngIf="!specialNeeds" class="error text-danger small form-text">{{ 'ROOT.required' | translate
+                              }}</label>
+                          </div>
+                          <div class="form-group mb-2 col-md-12">
+                          </div>
+                          <div class="form-group mb-1 col-md-12" *ngIf="showSpecialNeeds">
+                            <input type="text" class="form-control mt-0" formControlName="special_needs_text"
+                              [placeholder]="'CONTENT.mention-special-needs' | translate"
+                              [ngClass]="f.special_needs_text.invalid && f.special_needs_text.touched?'is-invalid':(f.special_needs_text.valid?'is-valid':'')">
+                            <label
+                              *ngIf="f.special_needs_text.errors && f.special_needs_text.errors.required && (f.special_needs_text.touched || f.special_needs_text.dirty)"
+                              class="error text-danger small form-text">{{ 'ROOT.required' | translate }}</label>
+                          </div>
+                        </div>
+                      </div>
+                    </app-card>
+                  </div>
+
+                  <!--Data Kontak-->
+                  <div class="col-md-6">
+                  <app-card cardTitle="{{'CONTENT.contact_data' | translate}}" headerClass="text-center text-md-left"
+                    [options]="false" [loading]="loadDataDiri" [hidden]="notHavePhoto">
+                    <div class="app-body">
+                      <div class="col-sm-12">
+                      <div class="row">
+                          <div class="form-group mb-0 col-md-12">
+                            <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.email' | translate }}</label>
+                            <input type="text" class="form-control" formControlName="email" readonly>
+                          </div>
+                          <div class="form-group mb-1 col-md-12">
+                            <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.phone_number' | translate }} <span
+                                class="required">*</span></label>
+                            <input type="text" class="form-control" required formControlName="mobile_phone_number"
+                              minlength="11" maxlength="13"
+                              [ngClass]="f.mobile_phone_number.invalid && f.mobile_phone_number.touched?'is-invalid':(f.mobile_phone_number.valid?'is-valid':'')">
+                            <label
+                              *ngIf="f.mobile_phone_number.errors && f.mobile_phone_number.errors.required && (f.mobile_phone_number.touched || f.mobile_phone_number.dirty)"
+                              class="error text-danger small form-text">{{ 'ROOT.required' | translate }}</label>
+                            <label
+                              *ngIf="f.mobile_phone_number.errors && f.mobile_phone_number.errors.minlength && (f.mobile_phone_number.touched || f.mobile_phone_number.dirty)"
+                              class="error text-danger small form-text">{{ 'CONTENT.min-length' | translate }}</label>
+                            <label
+                              *ngIf="f.mobile_phone_number.errors && f.mobile_phone_number.errors.pattern && (f.mobile_phone_number.touched || f.mobile_phone_number.dirty)"
+                              class="error text-danger small form-text">{{ 'CONTENT.number-only' | translate
+                              }}</label>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </app-card>
+                </div>
+                </div>
+              </form>
+            </div>
+          </div>
+          <br>
+          <div [hidden]="notHavePhoto" class="col-sm-12 centered-content">
+            <button type="button" class="btn btn-outline-primary btn-sm"
+              [disabled]="!registrationParticipantDataForm.valid || loadDataDiri || !colorBlind || !specialNeeds || submitloader"
+              (click)="createParticipantData()">
+              <span *ngIf="this.submitloader" class="spinner-border spinner-border-sm" role="status"></span>
+              <span *ngIf="this.submitloader" class="load-text"> Loading...</span>
+              <span *ngIf="!this.submitloader" class="btn-text">{{ 'ROOT.next' | translate }} <i
+                  class="icofont icofont-rounded-right"></i></span>
+            </button>
+          </div>
+        </wizard-step>
+
+        <!--Wizard Step 2 Data Pendidikan-->
+        <wizard-step stepTitle="{{'CONTENT.education_data' | translate}}" navigationSymbol="2">
+          <app-card cardTitle="{{'CONTENT.education_data' | translate}}" headerClass="text-center text-md-left"
+            [hidHeader]="false" [options]="false" [loading]="loadtableEducationHistory">
+            <div class="row align-items-center">
+              <div class="col-12 text-center text-md-right">
+                <button class="btn btn-sm btn-outline-success btn-round has-ripple m-2"
+                  (click)="loadInputEducationHistoryData()">
+                  <i class="icofont icofont-plus"></i> {{'ROOT.add' | translate}} {{'CONTENT.education_data' |
+                  translate}}
+                </button>
+              </div>
+            </div>
+            <div class="table-responsive pb-1">
+              <table datatable class="table table-hover" [dtOptions]="dtOptions[0]" [dtTrigger]="dtTrigger">
+                <thead class="thead-light">
+                  <tr>
+                    <th scope="col" class="center-table">{{ 'CONTENT.no' | translate }}</th>
+                    <th scope="col" class="center-table">{{ 'CONTENT.educational_stage' | translate }}</th>
+                    <th scope="col" class="center-table">{{ 'CONTENT.institution_name' | translate }}</th>
+                    <th scope="col" class="center-table">{{ 'CONTENT.department_name' | translate }}</th>
+                    <th scope="col" class="center-table">{{ 'CONTENT.graduate_year' | translate }}</th>
+                    <th scope="col" class="center-table">{{ 'CONTENT.action' | translate }}</th>
+                  </tr>
+                </thead>
+                <tbody *ngIf="tableData?.length != 0">
+                  <tr *ngFor="let data of tableData; let i = index;">
+                    <th scope="row" class="center-table" style="padding-left: 10px">{{ i+1 }}</th>
+                    <td class="center-table">{{ data.level }}</td>
+                    <td class="center-table">{{ data.school_name }}</td>
+                    <td class="center-table">{{ data.major }}</td>
+                    <td scope="col" class="center-table">{{ data.graduate_year }}</td>
+                    <td class="center-table">
+                      <a aria-label="detail" href="javascript:" [placement]="'top'"
+                        ngbTooltip="{{ 'ROOT.detail' | translate }}" class="mr-2"
+                        (click)="loadViewEducationHistory(data)">
+                        <i class="ti-eye f-w-600 f-16 text-c-blue"></i>
+                      </a>
+                      <a aria-label="detail" href="javascript:" [placement]="'top'"
+                        ngbTooltip="{{ 'ROOT.delete' | translate }}" class="mr-2" (click)="deleteEducation(data)">
+                        <i class="ti-trash f-w-600 f-16 text-c-red"></i>
+                      </a>
+                    </td>
+                  </tr>
+                </tbody>
+                <tbody *ngIf="tableData?.length == 0 && !loadtableEducationHistory">
+                  <tr>
+                    <td colspan="6" class="no-data-available text-center">
+                      <app-no-data-found message="{{ 'ROOT.no_data_found' | translate }}"></app-no-data-found>
+                    </td>
+                    <td class="hidden"></td>
+                    <td class="hidden"></td>
+                    <td class="hidden"></td>
+                    <td class="hidden"></td>
+                    <td class="hidden"></td>
+                  </tr>
+                </tbody>
+                <tbody *ngIf="tableData?.length == 0 && loadtableEducationHistory">
+                  <tr>
+                    <td colspan="6" class="no-data-available text-center">
+                      <app-no-data-found message="{{ 'ROOT.loading' | translate }}"></app-no-data-found>
+                    </td>
+                    <td class="hidden"></td>
+                    <td class="hidden"></td>
+                    <td class="hidden"></td>
+                    <td class="hidden"></td>
+                    <td class="hidden"></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </app-card>
+          <br>
+          <div class="col-sm-12 centered-content">
+            <button type="button" class="btn btn-outline-secondary btn-sm m-1" previousStep><i
+                class="icofont icofont-rounded-left"></i> {{ 'ROOT.back' | translate }}</button>
+            <button [hidden]="isEducationDataEmpty" type="button" class="btn btn-outline-primary btn-sm m-1" nextStep>{{
+              'ROOT.next' | translate }} <i class="icofont icofont-rounded-right"></i></button>
+            <button [hidden]="!isEducationDataEmpty" type="button" class="btn btn-outline-primary btn-sm m-1"
+              disabled>{{
+              'ROOT.next' | translate }} <i class="icofont icofont-rounded-right"></i>
+            </button>
+          </div>
+        </wizard-step>
+
+        <!--Wizard Step 3 Data Keluarga-->
+        <wizard-step stepTitle="{{'CONTENT.family_data' | translate}}" navigationSymbol="3">
+          <!--Data Orang Tua-->
+          <app-card cardTitle="{{'CONTENT.parents_data' | translate}}" headerClass="text-center text-md-left"
+            [hidHeader]="false" [options]="false" [loading]="loadtableParentsData">
+            <div class="row align-items-center mb-2 mt-3">
+              <div class="col-12 text-center text-md-right">
+                <button class="btn btn-outline-success btn-sm btn-round has-ripple" (click)="loadInputParentsData()">
+                  <i class="icofont icofont-plus"></i> {{'ROOT.add' | translate}} {{'CONTENT.parents_data' | translate}}
+                </button>
+              </div>
+            </div>
+            <div class="table-responsive">
+              <table datatable id="report-table" class="table table-striped mb-0" [dtOptions]="dtOptions[1]"
+                [dtTrigger]="dtTrigger1">
+                <thead>
+                  <tr>
+                    <th scope="col" class="center-table">{{ 'CONTENT.no' | translate }}</th>
+                    <th scope="col" class="center-table">{{ 'CONTENT.relationship' | translate }}</th>
+                    <th scope="col">{{ 'CONTENT.parent_name' | translate }}</th>
+                    <th scope="col" class="center-table">{{ 'CONTENT.last_education' | translate }}</th>
+                    <th scope="col" class="center-table">{{ 'CONTENT.work_type' | translate }}</th>
+                    <th scope="col" class="center-table">{{ 'CONTENT.action' | translate }}</th>
+                  </tr>
+                </thead>
+                <tbody *ngIf="tableData1?.length != 0">
+                  <tr *ngFor="let data of tableData1; let i = index;">
+                    <th scope="row" class="center-table" style="padding-left: 10px">{{ i+1 }}</th>
+                    <td scope="col" class="center-table">{{ data.relationship }}</td>
+                    <td>{{ data.family_name }}</td>
+                    <td class="center-table">{{ data.education_degree_name }}</td>
+                    <td class="center-table">{{ data.work_type_name }}</td>
+                    <td class="center-table">
+                      <a aria-label="detail" href="javascript:" [placement]="'top'"
+                        ngbTooltip="{{ 'ROOT.detail' | translate }}" class="mr-2" (click)="loadDetailParentsData(data)">
+                        <i class="ti-eye f-w-600 f-16 text-c-blue"></i>
+                      </a>
+                      <a aria-label="detail" href="javascript:" [placement]="'top'"
+                        ngbTooltip="{{ 'ROOT.delete' | translate }}" class="mr-2" (click)="deleteParentsData(data)">
+                        <i class="ti-trash f-w-600 f-16 text-c-red"></i>
+                      </a>
+                    </td>
+                  </tr>
+                </tbody>
+                <tbody *ngIf="tableData1?.length == 0 && !loadtableParentsData">
+                  <tr>
+                    <td colspan="7" class="no-data-available text-center">
+                      <app-no-data-found message="{{ 'ROOT.no_data_found' | translate }}"></app-no-data-found>
+                    </td>
+                    <td class="hidden"></td>
+                    <td class="hidden"></td>
+                    <td class="hidden"></td>
+                    <td class="hidden"></td>
+                    <td class="hidden"></td>
+                  </tr>
+                </tbody>
+                <tbody *ngIf="tableData1?.length == 0 && loadtableParentsData">
+                  <tr>
+                    <td colspan="7" class="no-data-available text-center">
+                      <app-no-data-found message="{{ 'ROOT.loading' | translate }}"></app-no-data-found>
+                    </td>
+                    <td class="hidden"></td>
+                    <td class="hidden"></td>
+                    <td class="hidden"></td>
+                    <td class="hidden"></td>
+                    <td class="hidden"></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </app-card>
+          <div class="col-sm-12 centered-content">
+            <button type="button" class="btn btn-outline-secondary btn-sm" previousStep><i
+                class="icofont icofont-rounded-left"></i> {{ 'ROOT.back' | translate }}</button>
+            <button type="button" class="btn btn-outline-primary btn-sm m-1" nextStep>{{ 'ROOT.next' | translate }} <i
+                class="icofont icofont-rounded-right"></i></button>
+          </div>
+        </wizard-step>
+
+        <!--Wizard Step 4 Data Pekerjaan-->
+        <wizard-step stepTitle="{{'CONTENT.work_data' | translate}}" navigationSymbol="4">
+          <app-alert type="warning" class="text-justify">{{ 'CONTENT.work-history-info' | translate}}</app-alert>
+          <app-card cardTitle="{{'CONTENT.work_data' | translate}}" headerClass="text-center text-md-left"
+            [hidHeader]="false" [options]="false" [loading]="loadtableWorkHistory">
+            <div class="row align-items-center mb-2 mt-3">
+              <div class="col-12 text-center text-md-right">
+                <button class="btn btn-outline-success btn-sm btn-round has-ripple"
+                  (click)="loadInputWorkHistoryData()">
+                  <i class="icofont icofont-plus"></i> {{'ROOT.add' | translate}} {{'CONTENT.work_data' | translate}}
+                </button>
+              </div>
+            </div>
+            <div class="table-responsive">
+              <table datatable id="report-table" class="table table-striped mb-0" [dtOptions]="dtOptions[2]"
+                [dtTrigger]="dtTrigger2">
+                <thead>
+                  <tr>
+                    <th scope="col" class="center-table">{{ 'CONTENT.no' | translate }}</th>
+                    <th scope="col">{{ 'CONTENT.company_name' | translate }}</th>
+                    <th scope="col" class="center-table">{{ 'CONTENT.position' | translate }}</th>
+                    <th scope="col" class="center-table">{{ 'CONTENT.work_start_date' | translate }}</th>
+                    <th scope="col" class="center-table">{{ 'CONTENT.work_end_date' | translate }}</th>
+                    <th scope="col" class="center-table">{{ 'CONTENT.action' | translate }}</th>
+                  </tr>
+                </thead>
+                <tbody *ngIf="tableData2?.length != 0">
+                  <tr *ngFor="let data of tableData2; let i = index;">
+                    <th scope="row" class="center-table" style="padding-left: 10px">{{ i+1 }}</th>
+                    <td>{{ data.company_name }}</td>
+                    <td class="center-table">{{ data.work_position }}</td>
+                    <td class="center-table">{{ data.work_start_date | slice:0:10 | date:'dd/MM/yyyy'}}</td>
+                    <td *ngIf="data.work_end_date === null" class="center-table">-</td>
+                    <td *ngIf="data.work_end_date !== null" class="center-table">{{ data.work_end_date | slice:0:10 |
+                      date:'dd/MM/yyyy'}}</td>
+                    <td class="center-table">
+                      <a aria-label="detail" href="javascript:" [placement]="'top'"
+                        ngbTooltip="{{ 'ROOT.detail' | translate }}" class="mr-2"
+                        (click)="loadDetailWorkHistoryData(data)">
+                        <i class="ti-eye f-w-600 f-16 text-c-blue"></i>
+                      </a>
+                      <a aria-label="detail" href="javascript:" [placement]="'top'"
+                        ngbTooltip="{{ 'ROOT.delete' | translate }}" class="mr-2" (click)="deleteWorkHistoryData(data)">
+                        <i class="ti-trash f-w-600 f-16 text-c-red"></i>
+                      </a>
+                    </td>
+                  </tr>
+                </tbody>
+                <tbody *ngIf="tableData2?.length == 0 && !loadtableWorkHistory">
+                  <tr>
+                    <td colspan="7" class="no-data-available text-center">
+                      <app-no-data-found message="{{ 'ROOT.no_data_found' | translate }}"></app-no-data-found>
+                    </td>
+                    <td class="hidden"></td>
+                    <td class="hidden"></td>
+                    <td class="hidden"></td>
+                    <td class="hidden"></td>
+                    <td class="hidden"></td>
+                  </tr>
+                </tbody>
+                <tbody *ngIf="tableData2?.length == 0 && loadtableWorkHistory">
+                  <tr>
+                    <td colspan="7" class="no-data-available text-center">
+                      <app-no-data-found message="{{ 'ROOT.loading' | translate }}"></app-no-data-found>
+                    </td>
+                    <td class="hidden"></td>
+                    <td class="hidden"></td>
+                    <td class="hidden"></td>
+                    <td class="hidden"></td>
+                    <td class="hidden"></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </app-card>
+          <br>
+          <div class="col-sm-12 centered-content">
+            <button type="button" class="btn btn-outline-secondary btn-sm m-1" previousStep><i
+                class="icofont icofont-rounded-left"></i> {{ 'ROOT.back' | translate }}</button>
+            <button type="button" class="btn btn-outline-success btn-sm m-1" (click)="goToRegistrationStep();">{{
+              'ROOT.finish' | translate }}
+              <i class="icofont icofont-racing-flag-alt"></i>
+            </button>
+          </div>
+        </wizard-step>
+      </wizard>
+    </app-card>
+  </div>
+</div>
+
+<!-- Forms Modal Education -->
+<app-ui-modal #modalStudent dialogClass="modal-dialog-centered modal-l" [containerClick]="false" [hideFooter]="true"
+  [loading]="loadEducationModal">
+  <div class="app-modal-header">
+    <h5 class="modal-title">
+      {{ "ROOT.add" | translate }} {{ 'CONTENT.education_data' | translate }}
+    </h5>
+    <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close"
+      (click)="hideModalEducation()"><span aria-hidden="true">&times;</span></button>
+  </div>
+  <div class="app-modal-body">
+    <form class="md-float-material form-material" action="javascript:" [formGroup]="educationHistoryDataForm"
+      (ngSubmit)="createEducationHistoryData()">
+      <div class="row" [ngSwitch]="edit">
+        <div class="col-sm-12" *ngSwitchDefault>
+          <div class="form-group mb-2">
+            <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.foreign_student' | translate }} <span
+                class="required">*</span> </label>
+            <ng-select [placeholder]="'CONTENT.foreign_student'|translate" formControlName="student_foreign"
+              [(ngModel)]="isForeign" [ngClass]="!isForeign?'filter-dropdown is-invalid':(isForeign?'filter-dropdown is-valid':'filter-dropdown')"
+              [notFoundMsg]="'ROOT.no_data_found'|translate" name="student_foreign" [options]="foreignStudentList"
+              (selected)="changeTypeStudent($event)"></ng-select>
+            <label *ngIf="!isForeign" class="error text-danger small form-text">{{ 'ROOT.required' |
+              translate }}</label>
+          </div>
+          <div [hidden]="!isForeign ">
+            <div class="form-group mb-2">
+              <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.last_education' | translate }} <span
+                  class="required">*</span> </label>
+              <ng-select [placeholder]="'ROOT.choose'|translate" formControlName="education_degree_id"
+                [notFoundMsg]="'ROOT.no_data_found'|translate" name="educationDegree"
+                [(ngModel)]="educationDegreeStudent"
+                [ngClass]="!educationDegreeStudent?'filter-dropdown is-invalid':(educationDegreeStudent?'filter-dropdown is-valid':'filter-dropdown')"
+                [options]="listEducationDegree" (selected)="changeSchool($event)">
+              </ng-select>
+              <label *ngIf="!educationDegreeStudent" class="error text-danger small form-text">{{ 'ROOT.required' |
+                translate }}</label>
+            </div>
+            <div [hidden]="isForeignStudent || hiddenInstitutionandMajor" class="form-group mb-2">
+              <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.city' | translate }} <span class="required">*</span>
+              </label>
+              <ng-select *ngIf="!educationDegreeStudent" [ngClass]="'filter-dropdown'"
+                [placeholder]="'CONTENT.city-education-placeholder'|translate" [disabled]="!educationDegree">
+              </ng-select>
+              <ng-select *ngIf="educationDegreeStudent" [placeholder]="'CONTENT.city'|translate"
+                formControlName="city_edu" [notFoundMsg]="'ROOT.no_data_found'|translate" name="city_edu"
+                [(ngModel)]="cityEdu" [ngClass]="!cityEdu?'filter-dropdown is-invalid':(cityEdu?'filter-dropdown is-valid':'filter-dropdown')"
+                [options]="listCityAll" (selected)="changeSchoolCity(cityEdu)">
+              </ng-select>
+              <label *ngIf="!cityEdu" class="error text-danger small form-text">{{ 'ROOT.required' |
+                translate }}</label>
+            </div>
+            <div [hidden]="isForeignStudent || hiddenInstitutionandMajor" class="form-group mb-2">
+              <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.institution_name' | translate }} <span
+                  class="required">*</span></label>
+              <ng-select *ngIf="cityEdu" [placeholder]="'CONTENT.institution_name'|translate"
+                formControlName="school_id" [notFoundMsg]="'ROOT.no_data_found'|translate" name="school_id"
+                [allowClear]="true" [(ngModel)]="school"
+                [ngClass]="!school?'filter-dropdown is-invalid':(school?'filter-dropdown is-valid':'filter-dropdown')"
+                [disabled]="educationHistoryDataForm.controls.school_detail.value || isViewEducation || !cityEdu"
+                [options]="listSchool">
+              </ng-select>
+              <input type="text" class="form-control" [placeholder]="'CONTENT.institution_name_not_found'|translate"
+                formControlName="school_detail" [readonly]="school || isViewEducation">
+            </div>
+            <div [hidden]="isForeignStudent || hiddenInstitutionandMajor || hiddenMajor" class="form-group mb-2">
+              <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.department_name' | translate }} <span
+                  class="required">*</span></label>
+              <ng-select [placeholder]="'CONTENT.department_name'|translate" formControlName="education_major_id"
+                name="major_id" [(ngModel)]="educationMajor"
+                [ngClass]="!educationMajor?'filter-dropdown is-invalid':(educationMajor?'filter-dropdown is-valid':'filter-dropdown')"
+                [options]="listEducationMajor">
+              </ng-select>
+              <label *ngIf="!educationMajor" class="error text-danger small form-text">{{ 'ROOT.required' |
+                translate }}</label>
+            </div>
+            <div *ngIf="isForeignStudent || hiddenInstitutionandMajor" class="form-group mb-2">
+              <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.institution_name' | translate }} <span
+                  class="required">*</span></label>
+              <input type="text" class="form-control" [placeholder]="'CONTENT.institution_name'|translate"
+                maxlength="100" formControlName="school_detail"
+                [ngClass]="educationHistoryDataForm.controls.school_detail.invalid && educationHistoryDataForm.controls.school_detail.touched?'is-invalid':(educationHistoryDataForm.controls.school_detail.valid?'is-valid':'')">
+              <label
+                *ngIf="educationHistoryDataForm.controls.school_detail.errors && educationHistoryDataForm.controls.school_detail.errors.required && (educationHistoryDataForm.controls.school_detail.touched || educationHistoryDataForm.controls.school_detail.dirty)"
+                class="error text-danger small form-text">{{ 'ROOT.required' | translate }}</label>
+            </div>
+            <div *ngIf="isForeignStudent || hiddenInstitutionandMajor || hiddenMajor" class="form-group mb-2">
+              <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.department_name' | translate }} <span
+                  class="required">*</span></label>
+              <input type="text" class="form-control" required [placeholder]="'CONTENT.department_name'|translate"
+                maxlength="100" formControlName="major_detail"
+                [ngClass]="educationHistoryDataForm.controls.major_detail.invalid && educationHistoryDataForm.controls.major_detail.touched?'is-invalid':(educationHistoryDataForm.controls.major_detail.valid?'is-valid':'')">
+              <label
+                *ngIf="educationHistoryDataForm.controls.major_detail.errors && educationHistoryDataForm.controls.major_detail.errors.required && (educationHistoryDataForm.controls.major_detail.touched || educationHistoryDataForm.controls.major_detail.dirty)"
+                class="error text-danger small form-text">{{ 'ROOT.required' | translate }}</label>
+            </div>
+            <div class="form-group mb-2">
+              <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.graduate_year' | translate }} <span
+                  class="required">*</span></label>
+              <ng-select [placeholder]="'CONTENT.graduate_year'|translate" formControlName="graduate_year"
+                name="graduate_year" [(ngModel)]="educationYears"
+                [ngClass]="!educationYears?'filter-dropdown is-invalid':(educationYears?'filter-dropdown is-valid':'filter-dropdown')"
+                [options]="listYears">
+              </ng-select>
+              <label *ngIf="!educationYears" class="error text-danger small form-text">{{ 'ROOT.required' |
+                translate }}</label>
+            </div>
+          </div>
+          <div class="form-group mb-0 mt-4 text-right">
+            <button type="button" (click)="hideModalEducation()" [disabled]="this.loadingEdu"
+              class="btn btn-secondary btn-sm">
+              <i class="icofont icofont-logout"></i> {{ 'ROOT.exit' | translate }}
+            </button>
+            <button *ngIf="edit == 'input'" type="submit" class="btn btn-success btn-sm ml-2"
+              [disabled]="educationHistoryDataForm.invalid || loadingEdu">
+              <span *ngIf="this.loadingEdu" class="spinner-border spinner-border-sm" role="status"></span>
+              <span *ngIf="this.loadingEdu" class="load-text"> Loading...</span>
+              <span *ngIf="!this.loadingEdu" class="btn-text">{{ 'ROOT.submit' | translate }} <i
+                  class="icofont icofont-location-arrow"></i></span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="app-modal-footer">
+  </div>
+</app-ui-modal>
+
+<!-- Forms View Modal Education -->
+<app-ui-modal #modalViewStudent dialogClass="modal-dialog-centered modal-l" [containerClick]="false" [hideFooter]="true"
+  [loading]="loadEducationModal">
+  <div class="app-modal-header">
+    <h5 class="modal-title">
+      {{"ROOT.detail" | translate }}
+      {{ 'CONTENT.education_data' | translate }}
+    </h5>
+    <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close"
+      (click)="closeModalStudentView()"><span aria-hidden="true">&times;</span></button>
+  </div>
+  <div class="app-modal-body">
+    <form class="md-float-material form-material" action="javascript:" [formGroup]="educationHistoryDataForm">
+      <div class="row">
+        <div class="col-sm-12">
+          <div class="form-group mb-2">
+            <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.foreign_student' | translate }} </label>
+            <input type="text" class="form-control" [placeholder]="'CONTENT.institution_name'|translate"
+              formControlName="student_foreign" readonly>
+          </div>
+          <div class="form-group mb-2">
+            <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.last_education' | translate }}</label>
+            <input type="text" class="form-control" [placeholder]="'CONTENT.last_education'|translate"
+              formControlName="education_degree_id" readonly>
+          </div>
+          <div [hidden]="hiddenCity" class="form-group mb-2">
+            <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.city' | translate }}
+            </label>
+            <input type="text" class="form-control" [placeholder]="'CONTENT.city'|translate" formControlName="city"
+              readonly>
+          </div>
+          <div class="form-group mb-2">
+            <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.institution_name' | translate }}</label>
+            <input type="text" class="form-control" [placeholder]="'CONTENT.institution_name'|translate"
+              formControlName="school_detail" readonly>
+          </div>
+          <div class="form-group mb-2">
+            <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.department_name' | translate }}</label>
+            <input type="text" class="form-control" readonly [placeholder]="'CONTENT.department_name'|translate"
+              formControlName="major_detail">
+          </div>
+          <div class="form-group mb-2">
+            <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.graduate_year' | translate }} </label>
+            <input type="text" class="form-control" [placeholder]="'CONTENT.graduate_year'|translate"
+              formControlName="graduate_year" readonly>
+          </div>
+          <div class="form-group mb-0 mt-4 text-right">
+            <button type="button" (click)="closeModalStudentView()" class="btn btn-secondary btn-sm">
+              <i class="icofont icofont-logout"></i> {{ 'ROOT.exit' | translate }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="app-modal-footer">
+  </div>
+</app-ui-modal>
+
+<!-- Forms Modal add Parents-->
+<app-ui-modal #modalParents dialogClass="modal-dialog-centered modal-lg" [containerClick]="false" [hideFooter]="true">
+  <div class="app-modal-header">
+    <h5 class="modal-title">
+      {{ isViewParentsData ? ("ROOT.detail" | translate) : ("ROOT.add" | translate) }} {{'CONTENT.parents_data' |
+      translate}}</h5>
+    <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close"
+      (click)="modalParentsClose()"><span aria-hidden="true">&times;</span></button>
+  </div>
+  <div class="app-modal-body">
+    <form class="md-float-material form-material" action="javascript:" [formGroup]="parentsDataForm">
+      <div class="row">
+        <div class="form-group col-md-12 mb-1">
+          <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.relationship' | translate }} <span
+              class="required">*</span></label>
+          <ng-select [placeholder]="'CONTENT.relationship'|translate" [notFoundMsg]="'ROOT.no_data_found'|translate"
+            formControlName="relationship_id" [(ngModel)]="familyRelationshipParent"
+            [ngClass]="!familyRelationshipParent?'filter-dropdown is-invalid':(familyRelationshipParent?'filter-dropdown is-valid':'filter-dropdown')"
+            [options]="listFamilyRelationshipParent" [disabled]="isViewParentsData"></ng-select>
+          <label *ngIf="!familyRelationshipParent" class="error text-danger small form-text">{{ 'ROOT.required' |
+            translate }}</label>
+        </div>
+        <div class="form-group col-md-12 mb-1">
+          <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.fullname' | translate }} <span
+              class="required">*</span></label>
+          <input type="text" class="form-control" [placeholder]="'CONTENT.fullname' | translate"
+            formControlName="family_name" maxlength="50" [readonly]="isViewParentsData"
+            [ngClass]="fpf.family_name.invalid && fpf.family_name.touched?'is-invalid':(fpf.family_name.valid?'is-valid':'')">
+          <label
+            *ngIf="fpf.family_name.errors && fpf.family_name.errors.required && (fpf.family_name.touched || fpf.family_name.dirty)"
+            class="error text-danger small form-text">{{ 'ROOT.required' | translate }}</label>
+          <label
+            *ngIf="fpf.family_name.errors && fpf.family_name.errors.pattern && (fpf.family_name.touched || fpf.family_name.dirty)"
+            class="error text-danger small form-text">{{ 'CONTENT.validation-company-name' | translate }}</label>
+        </div>
+        <div class="form-group col-md-6 mb-1">
+          <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.email' | translate }}</label>
+          <input type="email" class="form-control" [placeholder]="'CONTENT.email' | translate" formControlName="email"
+            oninput="setCustomValidity('')" [readonly]="isViewParentsData"
+            pattern="^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)+$"
+            [ngClass]="fpf.email.invalid && fpf.email.touched?'is-invalid':(fpf.email.valid?'is-valid':'')">
+          <label *ngIf="fpf.email.errors && fpf.email.errors.pattern && (fpf.email.touched || fpf.email.dirty)"
+            class="error text-danger small form-text">{{ 'CONTENT.email-match' | translate }}</label>
+        </div>
+        <div class="form-group col-md-6 mb-1">
+          <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.phone_number' | translate }} <span
+              class="required">*</span></label>
+          <input type="text" class="form-control" [placeholder]="'CONTENT.phone_number' | translate"
+            formControlName="mobile_phone_number" minlength="10" maxlength="15" [readonly]="isViewParentsData"
+            [ngClass]="fpf.mobile_phone_number.invalid && fpf.mobile_phone_number.touched?'is-invalid':(fpf.mobile_phone_number.valid?'is-valid':'')">
+          <label
+            *ngIf="fpf.mobile_phone_number.errors && fpf.mobile_phone_number.errors.pattern && (fpf.mobile_phone_number.touched || fpf.mobile_phone_number.dirty)"
+            class="error text-danger small form-text">{{ 'CONTENT.number-only' | translate }}</label>
+          <label
+            *ngIf="fpf.mobile_phone_number.errors && fpf.mobile_phone_number.errors.required && (fpf.mobile_phone_number.touched || fpf.mobile_phone_number.dirty)"
+            class="error text-danger small form-text">{{ 'ROOT.required' | translate }}</label>
+          <label
+            *ngIf="fpf.mobile_phone_number.errors && fpf.mobile_phone_number.errors.minlength && (fpf.mobile_phone_number.touched || fpf.mobile_phone_number.dirty)"
+            class="error text-danger small form-text">{{ 'CONTENT.min-length-phone-parents' | translate }}</label>
+        </div>
+        <div class="form-group col-md-6 mb-1">
+          <label class="form-label m-b-1 f-w-600">{{ 'CONTENT.birth_place' | translate }} <span
+              class="required">*</span></label>
+          <ng-select [placeholder]="'CONTENT.city'|translate" required formControlName="birth_place"
+            [notFoundMsg]="'ROOT.no_data_found'|translate" name="birth-place" [(ngModel)]="birthPlace"
+            [options]="listCityAll" [ngClass]="!birthPlace?'filter-dropdown is-invalid':(birthPlace?'filter-dropdown is-valid':'filter-dropdown')"
+            [disabled]="isViewParentsData">
+          </ng-select>
+          <label *ngIf="!birthPlace" class="error text-danger small form-text">{{ 'ROOT.required' |
+            translate }}</label>
+        </div>
+        <div class="form-group col-md-6 mb-1">
+          <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.birthdate' | translate }} <span
+              class="required">*</span></label>
+          <input type="date" class="form-control" [placeholder]="'CONTENT.birthdate' | translate"
+            formControlName="birth_date" max="9999-12-31" [readonly]="isViewParentsData"
+            [ngClass]="fpf.birth_date.invalid && fpf.birth_date.touched?'is-invalid':(fpf.birth_date.valid?'is-valid':'')">
+          <label
+            *ngIf="fpf.birth_date.errors && fpf.birth_date.errors.required && (fpf.birth_date.touched || fpf.birth_date.dirty)"
+            class="error text-danger small form-text">{{ 'ROOT.required' | translate }}</label>
+        </div>
+        <div class="form-group col-md-6 mb-1">
+          <label class="form-label m-b-1 f-w-600">{{ 'CONTENT.last_education' | translate }} <span
+              class="required">*</span></label>
+          <ng-select [placeholder]="'CONTENT.last_education'|translate" required formControlName="education_degree_id"
+            [notFoundMsg]="'ROOT.no_data_found'|translate" name="educationDegree" [(ngModel)]="educationDegree"
+            [ngClass]="!educationDegree?'filter-dropdown is-invalid':(educationDegree?'filter-dropdown is-valid':'filter-dropdown')"
+            [options]="listEducationDegree" [disabled]="isViewParentsData"></ng-select>
+          <label *ngIf="!educationDegree" class="error text-danger small form-text">{{ 'ROOT.required' |
+            translate }}</label>
+        </div>
+        <div class="form-group col-md-6 mb-1">
+          <label class="form-label m-b-1 f-w-600">{{ 'CONTENT.work_type' | translate }} <span
+              class="required">*</span></label>
+          <ng-select [placeholder]="'CONTENT.work_type' |translate" [notFoundMsg]="'ROOT.no_data_found'|translate"
+            formControlName="work_type_id" [(ngModel)]="workType" [options]="listWorkType"
+            [disabled]="isViewParentsData"
+            [ngClass]="!workType?'filter-dropdown is-invalid':(workType?'filter-dropdown is-valid':'filter-dropdown')">
+          </ng-select>
+          <label *ngIf="!workType" class="error text-danger small form-text">{{ 'ROOT.required' |
+            translate }}</label>
+        </div>
+      </div>
+      <div
+        *ngIf="workType == '1' || workType == '2' || workType == '3' || workType == '4'|| workType == '5'|| workType == '6'|| workType == '8'|| workType == '9'|| workType == '11'"
+        class="row mt-2">
+        <div class="form-group col-md-6 mb-1">
+          <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.company' | translate }}</label>
+          <input type="text" class="form-control" [placeholder]="'CONTENT.company' | translate"
+            formControlName="company_name" maxlength="50" [readonly]="isViewParentsData"
+            [ngClass]="fpf.company_name.invalid && fpf.company_name.touched?'is-invalid':(fpf.company_name.valid?'is-valid':'')">
+          <label
+            *ngIf="fpf.company_name.errors && fpf.company_name.errors.pattern && (fpf.company_name.touched || fpf.company_name.dirty)"
+            class="error text-danger small form-text">{{ 'CONTENT.validation-company-name' | translate
+            }}</label>
+        </div>
+        <div class="form-group col-md-6 mb-1">
+          <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.position' | translate }}</label>
+          <input type="text" class="form-control" [placeholder]="'CONTENT.position' | translate"
+            formControlName="work_position" maxlength="50" [readonly]="isViewParentsData"
+            [ngClass]="fpf.work_position.invalid && fpf.work_position.touched?'is-invalid':(fpf.work_position.valid?'is-valid':'')">
+          <label
+            *ngIf="fpf.work_position.errors && fpf.work_position.errors.pattern && (fpf.work_position.touched || fpf.work_position.dirty)"
+            class="error text-danger small form-text">{{ 'CONTENT.validation-company-name' | translate
+            }}</label>
+        </div>
+        <div class="form-group col-md-6 mb-1">
+          <label class="form-label m-b-1 f-w-600">{{ 'CONTENT.work_field' | translate }} <span
+              class="required">*</span></label>
+          <ng-select [placeholder]="'CONTENT.work_field'|translate" [notFoundMsg]="'ROOT.no_data_found'|translate"
+            formControlName="work_field_id" [(ngModel)]="workField" [options]="listWorkField"
+            [disabled]="isViewParentsData"
+            [ngClass]="!workField?'filter-dropdown is-invalid':(workField?'filter-dropdown is-valid':'filter-dropdown')">
+          </ng-select>
+          <label *ngIf="!workField" class="error text-danger small form-text">{{ 'ROOT.required' |
+            translate }}</label>
+        </div>
+        <div class="form-group col-md-6 mb-1">
+          <label class="form-label m-b-1 f-w-600">{{ 'CONTENT.income_range' | translate }} <span
+              class="required">*</span></label>
+          <ng-select [placeholder]="'CONTENT.income_range'|translate" [notFoundMsg]="'ROOT.no_data_found'|translate"
+            formControlName="work_income_range_id" [(ngModel)]="incomeRange" [options]="listIncomeRange"
+            [disabled]="isViewParentsData"
+            [ngClass]="!incomeRange?'filter-dropdown is-invalid':(incomeRange?'filter-dropdown is-valid':'filter-dropdown')">
+          </ng-select>
+          <label *ngIf="!incomeRange" class="error text-danger small form-text">{{ 'ROOT.required' |
+            translate }}</label>
+        </div>
+      </div>
+      <div class="row">
+        <div class="form-group mb-0 mt-4 text-right col-12">
+          <button type="button" (click)="modalParentsClose()" [disabled]="this.loadingParents"
+            class="btn btn-secondary btn-sm">
+            <i class="icofont icofont-logout"></i> {{ 'ROOT.exit' | translate }}
+          </button>
+          <button *ngIf="!isViewParentsData" type="submit" class="btn btn-success btn-sm m-1"
+            (click)="createParentsData()" [disabled]="parentsDataForm.invalid || this.loadingParents">
+            <span *ngIf="this.loadingParents" class="spinner-border spinner-border-sm" role="status"></span>
+            <span *ngIf="this.loadingParents" class="load-text"> Loading...</span>
+            <span *ngIf="!this.loadingParents" class="btn-text">{{ 'ROOT.submit' | translate }} <i
+                class="icofont icofont-location-arrow"></i></span>
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</app-ui-modal>
+
+<!-- Forms Modal works story-->
+<app-ui-modal #modalWorkStory dialogClass="modal-dialog-centered modal-lg" [containerClick]="false" [hideFooter]="true">
+  <div class="app-modal-header">
+    <h5 class="modal-title">
+      {{
+      this.isViewWorkHistory === true
+      ? ("ROOT.detail" | translate)
+      : ("ROOT.add" | translate)
+      }} {{'CONTENT.work_data' | translate}}
+    </h5>
+    <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close"
+      (click)="modalWorkStoryClose()"><span aria-hidden="true">&times;</span></button>
+  </div>
+  <div class="app-modal-body">
+    <form class="md-float-material form-material" action="javascript:" [formGroup]="workHistoryDataForm"
+      (ngSubmit)="createWorkHistoryData();">
+      <div class="row">
+        <div class="form-group mb-2 col-md-6">
+          <label class="form-label m-b-1 f-w-600">{{ 'CONTENT.work_type' | translate }} <span
+              class="required">*</span></label>
+          <ng-select [placeholder]="'CONTENT.work_type' |translate" required formControlName="work_type_id"
+            [notFoundMsg]="'ROOT.no_data_found'|translate" [(ngModel)]="workType" [options]="listWorkType"
+            [ngClass]="!workType?'filter-dropdown is-invalid':(workType?'filter-dropdown is-valid':'filter-dropdown')"
+            [disabled]="isViewWorkHistory">
+          </ng-select>
+          <label *ngIf="!workType" class="error text-danger small form-text">{{ 'ROOT.required' |
+            translate }}</label>
+        </div>
+        <div class="form-group mb-2 col-md-6">
+          <label class="form-label m-b-1 f-w-600">{{ 'CONTENT.company-field' | translate }} <span
+              class="required">*</span></label>
+          <ng-select [placeholder]="'CONTENT.company-field' |translate" required formControlName="work_field_id"
+            [notFoundMsg]="'ROOT.no_data_found'|translate" [(ngModel)]="workField" [options]="listWorkField"
+            [disabled]="isViewWorkHistory"
+            [ngClass]="!workField?'filter-dropdown is-invalid':(workField?'filter-dropdown is-valid':'filter-dropdown')">
+          </ng-select>
+          <label *ngIf="!workField" class="error text-danger small form-text">{{ 'ROOT.required' |
+            translate }}</label>
+        </div>
+        <div class="form-group mb-2 col-md-12">
+          <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.company_name'| translate }} <span
+              class="required">*</span></label>
+          <input type="text" class="form-control" [placeholder]="'CONTENT.company_name'|translate" required
+            [readonly]="isViewWorkHistory" maxlength="100" formControlName="company_name"
+            [ngClass]="fwh.company_name.invalid && fwh.company_name.touched?'is-invalid':(fwh.company_name.valid?'is-valid':'')">
+          <label
+            *ngIf="fwh.company_name.errors && fwh.company_name.errors.required && (fwh.company_name.touched || fwh.company_name.dirty)"
+            class="error text-danger small form-text">{{ 'ROOT.required' | translate }}</label>
+          <label
+            *ngIf="fwh.company_name.errors && fwh.company_name.errors.maxlength && (fwh.company_name.touched || fwh.company_name.dirty)"
+            class="error text-danger small form-text">{{ 'CONTENT.validation-company-name' | translate
+            }}</label>
+        </div>
+        <div class="form-group mb-2 col-md-12">
+          <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.position' | translate }} <span
+              class="required">*</span></label>
+          <input type="text" class="form-control" [placeholder]="'CONTENT.position' | translate" required
+            [readonly]="isViewWorkHistory" formControlName="work_position" maxlength="100"
+            [ngClass]="fwh.work_position.invalid && fwh.work_position.touched?'is-invalid':(fwh.work_position.valid?'is-valid':'')">
+          <label
+            *ngIf="fwh.work_position.errors && fwh.work_position.errors.required && (fwh.work_position.touched || fwh.work_position.dirty)"
+            class="error text-danger small form-text">{{ 'ROOT.required' | translate }}</label>
+          <label
+            *ngIf="fwh.work_position.errors && fwh.work_position.errors.maxlength && (fwh.work_position.touched || fwh.work_position.dirty)"
+            class="error text-danger small form-text">{{ 'CONTENT.validation-company-name' | translate
+            }}</label>
+        </div>
+        <div class="form-group mb-2 col-md-12">
+          <label class="form-label m-b-1 f-w-600">{{ 'CONTENT.income_range' | translate }} <span
+              class="required">*</span></label>
+          <ng-select [placeholder]="'CONTENT.income_range' |translate" required formControlName="work_income_range_id"
+            [notFoundMsg]="'ROOT.no_data_found'|translate" [(ngModel)]="incomeRange" [options]="listIncomeRange"
+            [disabled]="isViewWorkHistory"
+            [ngClass]="!incomeRange?'filter-dropdown is-invalid':(incomeRange?'filter-dropdown is-valid':'filter-dropdown')">
+          </ng-select>
+          <label *ngIf="!incomeRange" class="error text-danger small form-text">{{ 'ROOT.required' |
+            translate }}</label>
+        </div>
+        <div class="form-group mb-2 col-md-6">
+          <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.start-date' | translate }} <span
+              class="required">*</span></label>
+          <input type="date" class="form-control" [placeholder]="'ROOT.choose_start_date' | translate" required
+            [readonly]="isViewWorkHistory" formControlName="work_start_date" max="9999-12-31"
+            [ngClass]="fwh.work_start_date.invalid && fwh.work_start_date.touched?'is-invalid':(fwh.work_start_date.valid?'is-valid':'')">
+          <label
+            *ngIf="fwh.work_start_date.errors && fwh.work_start_date.errors.required && (fwh.work_start_date.touched || fwh.work_start_date.dirty)"
+            class="error text-danger small form-text">{{ 'ROOT.required' | translate }}</label>
+        </div>
+        <div class="form-group mb-2 col-md-6">
+          <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.end-date' | translate }}</label>
+          <input type="date" class="form-control" [placeholder]="'ROOT.choose_end_date' | translate"
+            [readonly]="isViewWorkHistory" formControlName="work_end_date" max="9999-12-31"
+            [ngClass]="fwh.work_end_date.invalid && fwh.work_end_date.touched?'is-invalid':(fwh.work_end_date.valid?'is-valid':'')">
+          <label id="validation-email-error" class="error jquery-validation-error small form-text invalid-feedback">{{
+            'CONTENT.please-input' |
+            translate }}{{ 'CONTENT.end-date' | translate }}</label>
+        </div>
+        <div class="form-group mb-2 col-md-12">
+          <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.company-phone' | translate }} <span
+              class="required">*</span></label>
+          <input type="text" class="form-control" required [placeholder]="'CONTENT.company-phone' | translate"
+            [readonly]="isViewWorkHistory" formControlName="company_phone_number" maxlength="15"
+            [ngClass]="fwh.company_phone_number.invalid && fwh.company_phone_number.touched?'is-invalid':(fwh.company_phone_number.valid?'is-valid':'')">
+          <label
+            *ngIf="fwh.company_phone_number.errors && fwh.company_phone_number.errors.required && (fwh.company_phone_number.touched || fwh.company_phone_number.dirty)"
+            class="error text-danger small form-text">{{ 'ROOT.required' | translate }}</label>
+          <label
+            *ngIf="fwh.company_phone_number.errors && fwh.company_phone_number.errors.maxlength && (fwh.company_phone_number.touched || fwh.company_phone_number.dirty)"
+            class="error text-danger small form-text">{{ 'CONTENT.validation-company-number' | translate
+            }}</label>
+          <label
+            *ngIf="fwh.company_phone_number.errors && fwh.company_phone_number.errors.pattern && (fwh.company_phone_number.touched || fwh.company_phone_number.dirty)"
+            class="error text-danger small form-text">{{ 'CONTENT.number-only' | translate
+            }}</label>
+        </div>
+        <div class="form-group mb-2 col-md-12">
+          <label class="form-label m-b-1 f-w-600">{{ 'CONTENT.company-address' | translate }} <span
+              class="required">*</span></label>
+          <textarea class="form-control" formControlName="company_address" maxlength="150" required
+            [ngClass]="fwh.company_address.invalid && fwh.company_address.touched?'is-invalid':(fwh.company_address.valid?'is-valid':'')"
+            [readonly]="isViewWorkHistory">
+            </textarea>
+          <label
+            *ngIf="fwh.company_address.errors && fwh.company_address.errors.required && (fwh.company_address.touched || fwh.company_address.dirty)"
+            class="error text-danger small form-text">{{ 'ROOT.required' | translate }}</label>
+          <label
+            *ngIf="fwh.company_address.errors && fwh.company_address.errors.maxlength && (fwh.company_address.touched || fwh.company_address.dirty)"
+            class="error text-danger small form-text">{{ 'CONTENT.validation-company-address' | translate
+            }}</label>
+          </div>
+      </div>
+      <div class="row">
+      <div class="mb-0 text-right col-12">
+        <button type="button" (click)="modalWorkStoryClose()" [disabled]="this.loadingWork"
+          class="btn btn-secondary btn-sm">
+          <i class="icofont icofont-close"></i> {{ 'ROOT.close' | translate }}
+        </button>
+        <button *ngIf="!isViewWorkHistory" type="submit" class="btn btn-success btn-sm m-1"
+          [disabled]="workHistoryDataForm.invalid || this.loadingWork">
+          <span *ngIf="this.loadingWork" class="spinner-border spinner-border-sm" role="status"></span>
+          <span *ngIf="this.loadingWork" class="load-text"> Loading...</span>
+          <span *ngIf="!this.loadingWork" class="btn-text">{{ 'ROOT.submit' | translate }} <i
+              class="icofont icofont-location-arrow"></i></span>
+        </button>
+      </div>
+      </div>
+    </form>
+  </div>
+  <div class="app-modal-footer"></div>
+</app-ui-modal>
+
+<app-ui-modal #modalPreview [containerClick]="false" [dialogClass]="'modal-md'" [hideFooter]="false"
+  [loading]="loadingSaveGambar">
+  <div class="app-modal-header">
+    <h5 class="modal-title">{{'CONTENT.preview-image' | translate}}</h5>
+    <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close"
+      (click)="modalPreview.hide();"><span aria-hidden="true">&times;</span></button>
+  </div>
+  <div class="app-modal-body">
+    <div class="row pb-3">
+      <div class="col-12 text-center">
+        <img id="photo" [src]="previewPhoto" alt="user image" class="img-radius align-top m-r-15 wid-40 img-cover-fit"
+          style="width:150px; height:150px; margin-left:15px; margin-right:15px;">
+      </div>
+    </div>
+    <app-alert type="info" [hidden]="notHavePhoto">
+      <div class="col-sm-12 text-center">
+        <p><b>{{'CONTENT.provision' |translate}}</b> <br>{{ 'CONTENT.photo-info-2' | translate }}<br>{{
+          'CONTENT.photo-info-3' | translate }}.<br>{{ 'CONTENT.photo-info-4' | translate }}. <br><br><i>{{
+            'CONTENT.photo-info-5' | translate }}</i></p>
+      </div>
+    </app-alert>
+    <div class="row align-items-center">
+      <div class="col-12 text-center">
+        <button class="btn btn-success btn-sm btn-round has-ripple" (click)="saveImg()">
+          {{'ROOT.save' | translate}}
+        </button>
+      </div>
+    </div>
+  </div>
+</app-ui-modal>

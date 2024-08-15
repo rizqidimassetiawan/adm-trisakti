@@ -1,0 +1,248 @@
+<!-- <p>Program Data Management works!</p> -->
+<div class="row">
+  <div class="col-md-12">
+    <app-card cardTitle="Bobot Penilaian USM dan Rapor" cardClass="card-datatable"
+      headerClass="text-center text-md-left" [hidHeader]="true" [options]="false"
+      [loading]="loadTablePassingGrade">
+      <form class="md-float-material form-material" action="javascript:" [formGroup]="passingGradeFiltersForm">
+      <app-filter-container [loading]="false">
+          <div class="col-12 col-md-4">
+          <ng-select name="year" [allowClear]="false"
+          [placeholder]="'CONTENT.selection-path-choosing' | translate" [ngClass]="'filter'"
+          [notFoundMsg]="'ROOT.no_data_found'|translate" [(ngModel)]="selectionPathSelected"
+          [options]="listSelectionPath" (selected)="loadFiterMappingPath($event)"  [ngModelOptions]="{standalone: true}"></ng-select>
+        </div>
+        <div class="col-12 col-md-2">
+          <ng-select name="year" [disabled]="!activeStatusPassingGradeSelected" [allowClear]="false" [placeholder]="'CONTENT.selection-year-choosing' | translate"
+            [ngClass]="'filter'" [notFoundMsg]="'ROOT.no_data_found'|translate" [(ngModel)]="mappingPathYearSelected"  [ngModelOptions]="{standalone: true}"
+            [options]="listSelectionYear" (selected)="loadFiterStudyProgram($event)"></ng-select>
+        </div>
+        <div class="col-12 col-md-3">
+          <ng-select name="year" [disabled]="!mappingPathYearSelected" [allowClear]="false" [placeholder]="'CONTENT.selection-study-program-choosing' | translate"
+            [ngClass]="'filter'" [notFoundMsg]="'ROOT.no_data_found'|translate" [(ngModel)]="studyProgramSelectedFilters"
+            [options]="listStudyProgramFilters" [ngModelOptions]="{standalone: true}" (selected)="loadFilterPassingGrade($event)"></ng-select>
+        </div>
+        <div [hidden]="!studyProgramSelectedFilters" class="col-12 col-md-2" >
+          <input type="text" class="form-control passing-grade-text" name="name" formControlName="passing_grade"  [placeholder]="'CONTENT.passing-grade' | translate" >
+        </div>
+        <div class="col-12 col-md-3 ml-auto mt-1">
+          <div class="row pl-3 pr-3">
+            <div class="col-6">
+              <button type="button" class="btn btn-outline-warning btn-sm btn-block" [disabled]="!selectionPathSelected || !mappingPathYearSelected" (click)="resetFilters()">
+                <i class="icofont icofont-refresh"></i> {{ 'CONTENT.reset-filter' | translate }}
+              </button>
+            </div>
+            <div class="col-6">
+              <button type="button" class="btn btn-outline-info btn-sm btn-block" [disabled]="!selectionPathSelected || !mappingPathYearSelected || !studyProgramSelectedFilters " (click)="applyFilters(activeStatusPassingGradeSelected, mappingPathYearSelected)">
+                <i class="icofont icofont-filter"></i> {{ 'CONTENT.apply-filter' | translate }}
+              </button>
+            </div>
+          </div>
+        </div>
+      </app-filter-container>
+    </form>
+      <div *ngIf="isApplyFilter" class="table-responsive pb-6">
+        <div class="row align-items-center p-2">
+         <div class="col-12 text-center text-md-right">
+         </div>
+       </div>
+        <table datatable class="table table-hover" [dtOptions]="dtOptions[0]" [dtTrigger]="dtTrigger">
+          <thead class="thead-light">
+            <tr>
+              <th scope="col" class="center-table" style="padding-left: 10px">{{ 'CONTENT.no' | translate}}
+              </th>
+              <th scope="col" class="center-table">{{ 'CONTENT.registration-number' | translate}}</th>
+              <th scope="col">{{ 'CONTENT.name' | translate}}</th>
+              <th scope="col" class="center-table">{{ 'CONTENT.score' | translate}}</th>
+              <th scope="col" class="center-table">{{ 'CONTENT.status-passing-grade' | translate}}</th>
+              <th scope="col" class="center-table">{{ 'CONTENT.approved-status' | translate}}</th>
+              <th scope="col" class="center-table">{{ 'CONTENT.action' | translate}}</th>
+            </tr>
+          </thead>
+          <tbody *ngIf="tablePassingGrade?.length != 0">
+            <tr *ngFor="let data of tablePassingGrade; let i = index;">
+              <th scope="row" style="padding-left: 10px">{{ i+1 }}</th>
+              <td class="center-table">{{ data.registration_number ? data.registration_number : '-' }}</td>
+              <td>{{ data.fullname ? data.fullname : '-' }}</td>
+              <td class="center-table">{{ data.grade_final ? data.grade_final : '-' }}</td>
+              <td class="center-table">
+                <span class="badge badge-light-success" *ngIf="data.pass_status_grade == true">{{'CONTENT.qualified' |
+                  translate}}</span>
+                <span class="badge badge-light-danger" *ngIf="data.pass_status_grade == false">
+                  {{'CONTENT.not-qualified' | translate}}</span>
+              </td>
+              <td class="center-table">
+                <span class="badge badge-light-success" *ngIf="data.approval_faculty == true">{{'ROOT.accepted' |
+                  translate}}</span>
+                <span class="badge badge-light-danger" *ngIf="data.approval_faculty == false">
+                  {{'ROOT.rejected' | translate}}</span>
+                  <span class="badge badge-light-secondary" *ngIf="data.approval_faculty == null">
+                    {{'CONTENT.not-specified' | translate}}</span>
+              </td>
+              <td class="center-table">
+                <button class="btn btn-outline-warning btn-sm btn-round has-ripple" [placement]="'top'" (click)="openParticipantScoreModals(data, 'edit')"
+                  ngbTooltip="{{'ROOT.edit' | translate}}">
+                  <i class="ti-pencil"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+          <tbody *ngIf="tablePassingGrade?.length == 0 && !loadTablePassingGrade">
+            <tr>
+              <td colspan="7" class="no-data-available text-center">
+                <app-no-data-found message="{{ 'ROOT.no_data_found' | translate }}"></app-no-data-found>
+              </td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+            </tr>
+          </tbody>
+          <tbody *ngIf="tablePassingGrade?.length == 0 && loadTablePassingGrade">
+            <tr>
+              <td colspan="7" class="no-data-available text-center">
+                <app-no-data-found message="{{ 'ROOT.loading' | translate }}"></app-no-data-found>
+              </td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div *ngIf="!isApplyFilter" class="text-center">
+        <div class="col-12 text-center pt-3 pb-1">
+          <app-no-data-found message="{{ 'CONTENT.choose_approval_filter' | translate }}"></app-no-data-found>
+        </div>
+      </div>
+    </app-card>
+  </div>
+</div>
+
+<app-ui-modal #passingGradeModals [containerClick]="false" dialogClass="modal-dialog-centered modal-l" [hideFooter]="true">
+  <div class="app-modal-header">
+    <h5 class="modal-title">
+      {{ "ROOT.edit" | translate}} {{'CONTENT.participant-score' | translate }}</h5>
+    <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close"
+      (click)="closePassingGradeModals()"><span aria-hidden="true">&times;</span></button>
+  </div>
+  <div class="app-modal-body">
+    <form class="md-float-material form-material" action="javascript:" [formGroup]="passingGradeForm">
+      <div class="row">
+        <div class="col-md-12 form-group mb-2">
+          <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.registration-number' | translate }} </label>
+          <input type="text" class="form-control" name="quota" formControlName="registration_number" readonly >
+        </div>
+        <div class="col-md-12 form-group mb-2">
+          <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.name' | translate }} </label>
+          <input type="text" class="form-control" name="name" formControlName="name" readonly >
+        </div>
+        <div class="col-md-12 form-group mb-2">
+          <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.score' | translate }} </label>
+          <input type="text" class="form-control" name="name" formControlName="score" readonly >
+        </div>
+        <div class="col-md-12 form-group mb-2">
+          <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.approval-university-choosing'| translate}} </label> <br>
+          <span class="badge badge-light-success" *ngIf="qualifiedStatus.pass_status_grade == true">{{'CONTENT.qualified' |
+            translate}}</span>
+          <span class="badge badge-light-danger" *ngIf="qualifiedStatus.pass_status_grade == false">
+            {{'CONTENT.not-qualified' | translate}}</span>
+        </div>
+        <div class="col-md-12 form-group mb-2">
+          <label class="form-label mb-1 f-w-600">{{ 'CONTENT.rank-score' | translate }} <span
+            class="required">*</span></label>
+            <ng-select placeholder="{{'ROOT.choose'|translate}} {{'CONTENT.rank-score'|translate}}" required
+            [notFoundMsg]="'ROOT.no_data_found'|translate" formControlName="rank"
+            [(ngModel)]="rankSelected"
+            [ngClass]="!rankSelected?'filter-dropdown is-invalid':(rankSelected?'filter-dropdown is-valid':'filter-dropdown')"
+            [options]="listRank">
+          </ng-select>
+        <label id="validation-religion-error" class="error jquery-validation-error small form-text invalid-feedback">{{ 'ROOT.required' | translate}}</label>
+        </div>
+        <div *ngIf="isMedical" class="col-md-4 form-group mb-2">
+          <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.psikotest' | translate }} <span
+            class="required">*</span></label>
+          <input type="text" class="form-control" name="psikotest" formControlName="psikotest" placeholder="{{'CONTENT.psikotest'|translate}}" 
+          [ngClass]="fpg.psikotest.invalid && fpg.psikotest.touched?'is-invalid':(fpg.psikotest.valid?'is-valid':'')">
+          <label
+          *ngIf="fpg.psikotest.errors && fpg.psikotest.errors.required && (fpg.psikotest.touched || fpg.psikotest.dirty)"
+          class="error text-danger small form-text">
+          {{ 'CONTENT.please-input' | translate }}{{ 'CONTENT.psikotest' | translate }}
+        </label>
+        </div>
+        <div *ngIf="isMedical" class="col-md-4 form-group mb-2">
+          <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.interview' | translate }} <span
+            class="required">*</span></label>
+          <input type="text" class="form-control" name="interview" formControlName="interview" placeholder="{{'CONTENT.interview'|translate}}"
+          [ngClass]="fpg.interview.invalid && fpg.interview.touched?'is-invalid':(fpg.interview.valid?'is-valid':'')">
+          <label
+          *ngIf="fpg.interview.errors && fpg.interview.errors.required && (fpg.interview.touched || fpg.interview.dirty)"
+          class="error text-danger small form-text">
+          {{ 'CONTENT.please-input' | translate }}{{ 'CONTENT.interview' | translate }}
+        </label>
+        </div>
+        <div *ngIf="isMedical" class="col-md-4 form-group mb-2">
+          <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.tpa-score' | translate }} <span
+            class="required">*</span></label>
+          <input type="text" class="form-control" name="tpa" formControlName="tpa" placeholder="{{'CONTENT.tpa-score'|translate}}"
+          [ngClass]="fpg.tpa.invalid && fpg.tpa.touched?'is-invalid':(fpg.tpa.valid?'is-valid':'')">
+          <label
+          *ngIf="fpg.tpa.errors && fpg.tpa.errors.required && (fpg.tpa.touched || fpg.tpa.dirty)"
+          class="error text-danger small form-text">
+          {{ 'CONTENT.please-input' | translate }}{{ 'CONTENT.tpa-score' | translate }}
+        </label>
+        </div>
+        <div *ngIf="isDesign" class="col-md-12 form-group mb-2">
+          <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.drawing-score' | translate }} <span
+            class="required">*</span></label>
+          <input type="text" class="form-control" name="drawing" formControlName="drawing" placeholder="{{'CONTENT.drawing-score'|translate}}"
+          [ngClass]="fpg.drawing.invalid && fpg.drawing.touched?'is-invalid':(fpg.drawing.valid?'is-valid':'')">
+          <label
+            *ngIf="fpg.drawing.errors && fpg.drawing.errors.required && (fpg.drawing.touched || fpg.drawing.dirty)"
+            class="error text-danger small form-text">
+            {{ 'CONTENT.please-input' | translate }}{{ 'CONTENT.drawing-score' | translate }}
+          </label>
+        </div>
+        <div class=" col-md-12 form-group mt-1">
+          <h6 class="form-label mb-1 f-w-600">{{ 'CONTENT.approved-status'| translate}} <span
+            class="required">*</span></h6>
+          <div class="custom-control custom-radio custom-control-inline">
+            <input type="radio" id="status_approval1" name="status_approval" class="custom-control-input" value="1"
+              formControlName="status_approval" required>
+            <label class="custom-control-label " for="status_approval1">{{ 'ROOT.yes' | translate }}</label>
+          </div>
+          <div class="custom-control custom-radio custom-control-inline">
+            <input type="radio" id="status_approval2" name="status_approval" class="custom-control-input" value="0"
+               formControlName="status_approval" required>
+            <label class="custom-control-label" for="status_approval2">{{ 'ROOT.no' | translate }}</label>
+          </div>
+          <label
+            *ngIf="fpg.status_approval.errors && fpg.status_approval.errors.required && (fpg.status_approval.touched || fpg.status_approval.dirty)"
+            class="error text-danger small form-text">
+            {{ 'CONTENT.please-input' | translate }}{{ 'CONTENT.min-SDP2' | translate }}
+          </label>
+        </div>
+        <div class="col-12 form-group mb-0 mt-4 text-right">
+          <div class="btn-group">
+            <button type="button" (click)="closePassingGradeModals()" [disabled]="this.loading"
+              class="btn btn-secondary btn-sm">
+              <i class="icofont icofont-logout"></i> {{ 'ROOT.exit' | translate }}
+            </button>
+            <button type="submit" class="btn btn-primary btn-sm" (click)="createPassingGradeData()"
+            [disabled]="passingGradeForm.invalid || loading">
+            <span *ngIf="this.loading" class="spinner-border spinner-border-sm" role="status"></span>
+            <span *ngIf="this.loading" class="load-text"> Loading...</span>
+            <span *ngIf="!this.loading" class="btn-text">
+            <i class="ti-save"></i> {{ 'ROOT.save' | translate }} </span>
+          </button>
+          </div>
+        </div>
+        </div>
+      </form>
+  </div>
+</app-ui-modal>

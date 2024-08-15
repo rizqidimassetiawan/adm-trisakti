@@ -1,0 +1,10 @@
+ <div class="row">
+   <div class="col-12">
+    <app-card [hidHeader]="true" blockClass="text-center" [loading]="loader">
+      <h6 class="text-center">{{'CONTENT.dashboard' | translate }}</h6>
+      <button class="btn btn-primary btn-sm btn-round has-ripple" (click)="gotoAdmissionDashboard()" >
+        <i class="icofont icofont-bars"></i> {{'CONTENT.go-to-admision-dashboard' | translate}}
+      </button>
+      </app-card>
+   </div>
+ </div>

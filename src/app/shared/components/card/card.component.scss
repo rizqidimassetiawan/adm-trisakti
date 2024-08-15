@@ -1,0 +1,36 @@
+.card.full-card {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  z-index: 99999;
+  border-radius: 0;
+  width: calc(100vw) !important;
+  height: 100vh !important;
+}
+
+.logo.situ-main.rector {
+  width: 85px;
+  position: absolute;
+  bottom: -1px;
+  left: 15px;
+}
+
+a.collapse-expand {
+  color: #888888;
+  top: 7px;
+  position: relative;
+  padding-right: 10px;
+}
+
+.spinner-infinite {
+  display: inline-block;
+  width: 3rem;
+  height: 3rem;
+  vertical-align: text-bottom;
+  margin: 0 auto;
+}
+
+.card .card-header.thin .card-header-right {
+  top: 0px !important;
+}
+

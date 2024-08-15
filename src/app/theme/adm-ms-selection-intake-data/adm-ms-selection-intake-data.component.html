@@ -1,0 +1,162 @@
+<!-- <p>Program Data Management works!</p> -->
+<div class="row">
+  <div class="col-md-12">
+    <app-card [hidHeader]="true" cardTitle="{{ 'MENU.program-data' | translate }}" cardClass="card-datatable"
+      headerClass="text-center text-md-left" [hidHeader]="false" [options]="false" [loading]="loadtableProgramData">
+      <form class="md-float-material form-material" action="javascript:">
+        <div class="row">
+          <div class="col-md-3">
+          </div>
+          <div class="col-9 text-center text-md-right">
+            <button class="btn btn-outline-success btn-sm btn-round has-ripple btn-sm m-2"
+              (click)="showModalInputProgramData(null);">
+              <i class="icofont icofont-plus"></i> {{'CONTENT.add-data' | translate}}
+            </button>
+          </div>
+        </div>
+      </form>
+      <br>
+      <div class="table-responsive pb-1">
+        <table datatable class="table table-hover" [dtOptions]="dtOptions" [dtTrigger]="dtTrigger">
+          <thead class="thead-light">
+            <tr>
+              <th scope="col" style="padding-left: 10px;text-align:center">{{ 'CONTENT.no' | translate}}</th>
+              <th scope="col" class="center-table">{{ 'CONTENT.semester' | translate}}</th>
+              <th scope="col" class="center-table">{{ 'CONTENT.school-year' | translate}}</th>
+              <th scope="col" class="center-table">{{ 'CONTENT.selection-path' | translate}}</th>
+              <th scope="col" class="width">{{ 'CONTENT.description' | translate}}</th>
+              <th scope="col" class="center-table">{{ 'CONTENT.action' | translate}}</th>
+            </tr>
+          </thead>
+          <tbody *ngIf="tableData?.length != 0">
+            <tr *ngFor="let data of tableData; let i = index;">
+              <th scope="row" style="padding-left: 10px; text-align:center ">{{ i+1 }}</th>
+              <td class="center-table">{{ data.semester === '1' ? ['CONTENT.odd' | translate] : ['CONTENT.even' | translate] }}</td>
+              <td class="center-table">{{ data.year }}</td>
+              <td class="center-table">{{ data.selection_path }}</td>
+              <td>{{ data.notes }}</td>
+              <td class="center-table">
+                <button class="btn btn-outline-warning btn-sm btn-round has-ripple" [placement]="'top'"
+                  ngbTooltip="{{'ROOT.edit' | translate}}" (click)="loadDetailProgramData(data);">
+                  <i class="icofont icofont-ui-edit"></i> <span class="d-sm-none"> {{'ROOT.edit' | translate}}</span>
+                </button>
+                <button class="btn btn-outline-danger btn-sm btn-round has-ripple m-1" (click)="deleteIntakeData(data);">
+                  <i class="icofont icofont-ui-delete"></i> <span class="d-sm-none"> {{'ROOT.delete' |
+                    translate}}</span>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+          <tbody *ngIf="tableData?.length == 0 && !loadtableProgramData">
+            <tr>
+              <td colspan="6" class="no-data-available text-center">Data tidak ditemukan!</td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+            </tr>
+          </tbody>
+          <tbody *ngIf="tableData?.length == 0 && loadtableProgramData">
+            <tr>
+              <td colspan="6" class="no-data-available text-center">Loading Data....</td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+              <td class="hidden"></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </app-card>
+  </div>
+</div>
+
+<!-- Forms Modal -->
+<app-ui-modal #myPersistenceModal [containerClick]="false" dialogClass="modal-dialog-centered modal-l"
+  [loading]="loading" [hideFooter]="true">
+  <div class="app-modal-header">
+    <h5 class="modal-title">
+      {{
+      edit === "edit"
+      ? ("ROOT.edit" | translate)
+      : ("ROOT.add" | translate)
+      }}
+      {{ 'CONTENT.semester-intake' | translate }}</h5>
+    <button type="button" class="close basic-close" data-dismiss="modal" aria-label="Close"
+      (click)="myPersistenceModal.hide();"><span aria-hidden="true">&times;</span></button>
+  </div>
+  <div class="app-modal-body">
+    <form [formGroup]="selectionIntakeForm" (ngSubmit)="createMappingYearIntake()" class="md-float-material form-material"
+      action="javascript:">
+      <div class="row" [ngSwitch]="edit">
+        <div class="col-md-12" *ngSwitchDefault>
+          <div class="form-group mb-2">
+            <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.selection-path' | translate }}</label>
+            <ng-select name="mappingPathYear" formControlName="mappingPathYear"
+            [placeholder]="'CONTENT.selection-path'|translate" [ngClass]="'custom'"
+            [notFoundMsg]="'ROOT.no_data_found'|translate" [(ngModel)]="mappingPathYear"
+            [options]="listMappingPathYear"></ng-select>
+            <label
+          *ngIf="!mappingPathYear"
+          class="error text-danger small form-text">{{ 'CONTENT.please-input' | translate }}{{ 'CONTENT.semester' | translate }}</label>
+          </div>
+          <div class="form-group mb-2">
+            <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.semester' | translate }}</label>
+            <ng-select name="semester" formControlName="semester"
+            [placeholder]="'CONTENT.semester'|translate" [ngClass]="'custom bg-white'"
+            [notFoundMsg]="'ROOT.no_data_found'|translate" [(ngModel)]="selectedSemester"
+            [options]="listSemester"></ng-select>
+            <label
+          *ngIf="!selectedSemester"
+          class="error text-danger small form-text">{{ 'CONTENT.please-input' | translate }}{{ 'CONTENT.semester' | translate }}</label>
+          </div>
+          <div class="form-group mb-2">
+            <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.school-year' | translate }}</label>
+            <input type="text" class="form-control" name="school_year" maxlength="9"
+                  [placeholder]="'CONTENT.placeholder-school-year' | translate" formControlName="school_year" required>
+                <label
+                  *ngIf="f.school_year.errors && f.school_year.errors.required && (f.school_year.touched || f.school_year.dirty)"
+                  class="error text-danger small form-text">{{ 'CONTENT.please-input' | translate }}{{
+                  'CONTENT.school-year'
+                  | translate }}
+                </label>
+            </div>
+          <div class="form-group mb-2">
+            <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.description' | translate }}</label>
+            <input type="text" class="form-control" name="description" maxlength="150"
+                  [placeholder]="'CONTENT.placeholder-description' | translate" formControlName="description" required>
+                <label
+                  *ngIf="f.description.errors && f.description.errors.required && (f.description.touched || f.description.dirty)"
+                  class="error text-danger small form-text">{{ 'CONTENT.please-input' | translate }}{{
+                  'CONTENT.description'
+                  | translate }}
+                </label>
+            </div>
+          <div class="form-group mb-0 mt-4 text-right">
+            <div class="btn-group">
+              <button *ngIf="edit == 'input'" type="button" (click)="myPersistenceModal.hide()"
+                class="btn btn-secondary btn-sm">
+                <i class="icofont icofont-logout"></i> {{ 'ROOT.cancel' | translate }}
+              </button>
+              <button type="submit" class="btn btn-primary btn-sm"
+                [disabled]="!selectionIntakeForm.valid">
+                <i class="ti-save"></i> {{ 'ROOT.save' | translate }}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="app-modal-footer"></div>
+</app-ui-modal>
+
+<ng-template #showLoading>
+  <div class="d-flex justify-content-center">
+    <div class="spinner-border text-primary" role="status">
+      <span class="sr-only">Loading...</span>
+    </div>
+  </div>
+</ng-template>

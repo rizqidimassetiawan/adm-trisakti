@@ -1,0 +1,71 @@
+<div class="row">
+    <div class="col-md-12">
+        <app-card cardTitle="{{'MENU.registration_history' | translate}}" headerClass="text-center text-md-left"
+        [hidHeader]="true" [options]="false" [loading]="loadNewStudentTable">
+              <div class="table-responsive pb-1 mt-2">
+                <table datatable class="table table-striped mb-0" [dtOptions]="dtOptions[0]" [dtTrigger]="dtTrigger">
+                  <thead>
+                    <tr>
+                      <th scope="col" style="text-align:center">{{ 'CONTENT.no' | translate }}</th>
+                      <th scope="col">{{ 'CONTENT.registration-number' | translate }}</th>
+                      <th scope="col" style="text-align:center">{{ 'CONTENT.selection-path' | translate }}</th>
+                      <th scope="col" style="text-align:center">{{ 'CONTENT.status-registration' | translate }}</th>
+                      <th scope="col" style="text-align:center">{{ 'CONTENT.status-kelengkapan-data' | translate }}</th>
+                      <th scope="col" style="text-align:center">{{ 'CONTENT.action' | translate }}</th>
+                    </tr>
+                  </thead>
+                  <tbody *ngIf="tableNewStudent?.length != 0">
+                    <tr *ngFor="let data of tableNewStudent; let i = index;">
+                      <th scope="row" style="padding-left: 10px; text-align:center ">{{i+1}}</th>
+                      <td>
+                        {{data.registration_number}}
+                      </td>
+                      <td class="text-center">
+                        {{data.selection_path_name}}
+                      </td>
+                      <td class="text-center">
+                        <span class="badge badge-light-success" *ngIf="data.status_registration_name === 'Lengkap'"><i class="icofont icofont-tick-mark"></i> {{ 'CONTENT.complete' | translate}}</span>
+                        <span class="badge badge-light-danger" *ngIf="data.status_registration_name === 'Belum Lengkap'"><i class="icofont icofont-error"></i> {{ 'CONTENT.not-complete' | translate}}</span>
+                      </td>
+                      <td class="text-center">
+                        <span class="badge badge-light-success" *ngIf="data.completeness_registration_name === 'Lengkap'"><i class="icofont icofont-tick-mark"></i> {{ 'CONTENT.complete' | translate}}</span>
+                        <span class="badge badge-light-danger" *ngIf="data.completeness_registration_name === 'Belum Lengkap'"><i class="icofont icofont-error"></i> {{ 'CONTENT.not-complete' | translate}}</span>
+                      </td>
+                      <td class="text-center">
+                        <button class="btn btn-outline-primary btn-sm btn-round has-ripple" [placement]="'top'"
+                          ngbTooltip="{{'CONTENT.complete-new-student-info' | translate}}" routerLink="/new-student-registration/new-student-registration-detail/{{data.registration_number}}/{{data.id}}">
+                          <i class="icofont icofont-id"></i> {{'CONTENT.complete-new-student-data' |
+                            translate}}
+                        </button>
+                      </td>
+                    </tr>
+                  </tbody>
+                  <tbody *ngIf="tableNewStudent?.length == 0 && !loadNewStudentTable">
+                    <tr>
+                      <td colspan="6" class="no-data-available text-center">
+                        <app-no-data-found message="{{ 'ROOT.no_data_found' | translate }}"></app-no-data-found>
+                      </td>
+                      <td class="hidden"></td>
+                      <td class="hidden"></td>
+                      <td class="hidden"></td>
+                      <td class="hidden"></td>
+                      <td class="hidden"></td>
+                    </tr>
+                  </tbody>
+                  <tbody *ngIf="tableNewStudent?.length == 0 && loadNewStudentTable">
+                    <tr>
+                      <td colspan="6" class="no-data-available text-center">
+                        <app-no-data-found message="{{ 'ROOT.loading' | translate }}"></app-no-data-found>
+                      </td>
+                      <td class="hidden"></td>
+                      <td class="hidden"></td>
+                      <td class="hidden"></td>
+                      <td class="hidden"></td>
+                      <td class="hidden"></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+        </app-card>
+    </div>
+</div>
