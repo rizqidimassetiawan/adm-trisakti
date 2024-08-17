@@ -1,0 +1,34 @@
+version: '2'
+services:
+  database:
+    restart: always
+    image: mysql:8.0.31-oracle
+    container_name: vista-database
+    environment:
+      MYSQL_ROOT_PASSWORD: "@@@udanup"
+      MYSQL_DATABASE: vista_db
+    volumes:
+      - ./docker/database:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    command:
+      [
+        'mysqld',
+        '--character-set-server=utf8mb4',
+        '--collation-server=utf8mb4_unicode_ci',
+        '--default-time-zone=+07:00'
+      ]
+  # app:
+  #   # user: "1000:1000"
+  #   build:
+  #     context: ./
+  #     dockerfile: docker/node.dockerfile
+  #   container_name: vista-app
+  #   image: vista-app
+  #   volumes:
+  #     - /opt/docker/vista-app/storage:/var/www/storage
+  #   depends_on:
+  #     - database
+  #   restart: always
+  #   ports:
+  #     - "3000:3000"

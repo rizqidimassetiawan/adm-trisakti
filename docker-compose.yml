@@ -1,0 +1,13 @@
+version: '2'
+services:
+  app:
+    build:
+      context: ./
+      dockerfile: docker/node.dockerfile
+    container_name: trisakti-app
+    image: trisakti-app
+    # volumes:
+    #   - /opt/docker/trisakti-app/storage:/var/www/storage
+    restart: always
+    ports:
+      - "8585:8585"
