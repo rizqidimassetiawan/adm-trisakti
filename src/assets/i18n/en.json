@@ -186,6 +186,8 @@
     "from_reg_payment": "Payment of Registration Form",
     "fullname": "Fullname",
     "gender": "Gender",
+    "MALE": "MALE",
+    "FEMALE": "FEMALE",
     "go-to-admision-dashboard": "Admission Dashboard",
     "gpa": "Final Score",
     "graduate_year": "Graduated Year",

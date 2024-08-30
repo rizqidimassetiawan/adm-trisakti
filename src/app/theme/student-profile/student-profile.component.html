@@ -177,7 +177,7 @@
                             <div class="form-group col-md-6">
                               <label class="form-label mb-0 f-w-600">{{ 'CONTENT.birthdate' | translate }} <span
                                   class="required">*</span></label>
-                              <input [textMask]="{mask: maskDateSlash}" type="text" class="form-control mt-0"
+                              <input type="date" class="form-control mt-0"
                                 formControlName="birthdate" name="birthdate" required
                                 [placeholder]="'CONTENT.date-validation'|translate"
                                 [ngClass]="f.birthdate.invalid && f.birthdate.touched?'is-invalid':(f.birthdate.valid?'is-valid':'')" />
