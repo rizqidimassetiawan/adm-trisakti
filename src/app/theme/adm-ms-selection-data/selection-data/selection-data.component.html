@@ -146,7 +146,7 @@
               </div>
             </div>
           </app-card>
-          <app-card cardClass="card-datatable" cardTitle="{{ 'CONTENT.exam-psikotest' | translate }}" [options]="false"
+          <!-- <app-card cardClass="card-datatable" cardTitle="{{ 'CONTENT.exam-psikotest' | translate }}" [options]="false"
             [loading]="loadtableExamPsikotest">
             <div class="row">
               <div class="col-12 col-md-12">
@@ -358,7 +358,7 @@
                 </div>
               </div>
             </div>
-          </app-card>
+          </app-card> -->
           <div class="col text-center mt-3">
             <button type="button" class="btn btn-secondary btn-sm" previousStep><i
                 class="icofont icofont-curved-left"></i> {{'ROOT.back' | translate}}</button>
@@ -722,8 +722,33 @@
         <div class="col-sm-12">
           <div class="form-group mb-2">
             <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.exam_type' | translate }}</label>
-            <input type="text" class="form-control" [placeholder]="'CONTENT.exam_type' | translate" required
-              formControlName="exam_type" readonly>
+            <!-- <input type="text" class="form-control" [placeholder]="'CONTENT.exam_type' | translate" required
+              formControlName="exam_type" readonly> -->
+              <ng-select [(ngModel)]="exampSheduler" name="exam_type" [allowClear]="true" [options]="listSettingUjianId"
+                  [placeholder]="'ROOT.choose' | translate" [ngClass]="'custom bg-white'"
+                  [notFoundMsg]="'ROOT.no_data_found' | translate" [ngModelOptions]="{ standalone: true }"
+                  (selected)="examStatusChanged($event)">
+                </ng-select>
+                
+          </div>
+          <div class="form-row" *ngIf="exampSheduler != 1">
+            <div class="form-group col-md-6">
+              <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.range-time' | translate }}</label>
+              <input type="time" class="form-control" required formControlName="start_date">
+              <label
+                *ngIf="fps.start_date.errors && fps.start_date.errors.required && (fps.start_date.touched || fps.start_date.dirty)"
+                class="error text-danger small form-text">
+                {{ 'CONTENT.please-input' | translate }}{{ 'CONTENT.range-time' | translate }}
+              </label>
+            </div>
+            <div class="form-group col-md-6">
+              <label class="form-label m-b-0 f-w-600"></label>
+              <input type="time" class="form-control" required formControlName="end_date" step="900">
+              <label *ngIf="fps.end_date.errors && fps.end_date.errors.required && (fps.end_date.touched || fps.end_date.dirty)"
+                class="error text-danger small form-text">
+                {{ 'CONTENT.please-input' | translate }}{{ 'CONTENT.range-time' | translate }}
+              </label>
+            </div>
           </div>
           <div class="form-group mb-2">
             <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.exam-date' | translate }} <span class="required">*</span></label>
@@ -843,10 +868,7 @@
         <div class="col-sm-12">
           <app-alert *ngIf="formType == 'edit'" type="warning" class="text-justify">
             {{ 'CONTENT.warning' | translate}} <br> {{ 'CONTENT.info-cbt-data' | translate}}</app-alert>
-          <div class="form-group mb-2">
-            <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.session' | translate }}</label>
-            <input type="text" class="form-control" name="session" formControlName="session" readonly>
-          </div>
+         
           <div class="form-group mb-2">
             <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.start-time' | translate }} <span
               class="required">*</span></label>

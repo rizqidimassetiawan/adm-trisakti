@@ -214,7 +214,43 @@ const AdminUniversity = [
     classes: 'nav-item',
     icon: 'icofont icofont-users-alt-2',
     children: []
-  }
+  },
+  {
+    id: 9,
+    title: 'MENU.manage-master-data',
+    type: 'collapse',
+    classes: 'nav-item',
+    icon: 'icofont icofont-users-alt-2',
+    children: [
+      {
+        id: 'adm-mr-new-student-data',
+        title: 'MENU.manage-master-mapping',
+        type: 'collapse',
+        classes: 'nav-item',
+        icon: 'icofont icofont-site-map',
+        children: [
+          {
+            id: 'adm-mr-new-student-data',
+            title: 'MENU.mapping-doc-kategory',
+            type: 'item',
+            url: '/adm-map-prodi-category-document',
+            classes: 'nav-item',
+            hidden: false,
+            breadcrumbs: true,
+          },
+          {
+            id: 'adm-mr-new-student-data',
+            title: 'MENU.mapping-category-prody',
+            type: 'item',
+            url: '/adm-mr-new-student-data',
+            classes: 'nav-item',
+            hidden: false,
+            breadcrumbs: true,
+          }
+        ]
+      },
+    ]
+  },
 ];
 
 const AdminNewStudent = [

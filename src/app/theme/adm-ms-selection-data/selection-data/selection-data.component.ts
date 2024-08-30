@@ -80,6 +80,7 @@ export class SelectionDataComponent implements OnInit {
   public categoryId: string;
   public listExamType: any;
   public listCategoryId: Array<any>;
+  public listSettingUjianId: Array<any>;
   public listMedical: Array<any>;
   public isLocHidden: boolean;
   public hiddenTime: boolean;
@@ -380,6 +381,56 @@ export class SelectionDataComponent implements OnInit {
       {
         value: '2',
         label: 'CBT'
+      },
+      {
+        value: '3',
+        label: 'Beasiswa'
+      },
+      {
+        value: '4',
+        label: 'Portofolio'
+      },
+      {
+        value: '5',
+        label: 'Transfer'
+      },
+      {
+        value: '6',
+        label: 'Perolehan Credit'
+      },
+      {
+        value: '7',
+        label: 'UTBK'
+      }
+    ];
+    this.listSettingUjianId = [
+      {
+        value: '1',
+        label: 'Pengaturan jadwal ujian CBT'
+      },
+      {
+        value: '2',
+        label: 'Pengaturan jadwal ujian Psikotes'
+      },
+      {
+        value: '3',
+        label: 'Pengaturan jadwal ujian wawancara'
+      },
+      {
+        value: '4',
+        label: 'Pengaturan jadwal ujian TPA'
+      },
+      {
+        value: '5',
+        label: 'Transfer'
+      },
+      {
+        value: '6',
+        label: 'Perolehan Credit'
+      },
+      {
+        value: '7',
+        label: 'UTBK'
       }
     ];
     this.listMedical = [
