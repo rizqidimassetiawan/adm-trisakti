@@ -588,7 +588,7 @@ export class StudentProfileComponent implements OnInit {
           this.notHavePhoto = false;
         }
         this.loadDataDiri = false;
-        const changeBirthDateFormat = res.birth_date && moment(res.birth_date).format('DD-MM-YYYY');
+        const changeBirthDateFormat = res.birth_date && moment(res.birth_date).format('YYYY-MM-DD');
         this.registrationParticipantDataForm.patchValue({ fullname: res.fullname });
         this.registrationParticipantDataForm.patchValue({ birthdate: changeBirthDateFormat });
         this.registrationParticipantDataForm.patchValue({ NIK: res.identify_number });
