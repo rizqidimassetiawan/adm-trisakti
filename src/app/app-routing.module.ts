@@ -36,6 +36,11 @@ const routes: Routes = [
         data: {animation: '2'}
       },
       {
+        path: 'adm-map-prodi-category-document',
+        loadChildren: './theme/adm-map-prodi-category-document/adm-map-prodi-category-document.module#AdmMapProdiCategoryDocumentModule',
+        data: {animation: '2'}
+      },
+      {
         path: 'new-registration',
         loadChildren: './theme/new-registration/new-registration.module#NewRegistrationModule',
         data: {animation: '2'}
