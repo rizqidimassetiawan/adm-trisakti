@@ -1,10 +1,15 @@
 import { Component, OnInit, ViewChild,QueryList, ViewChildren } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { BroadcasterService } from 'src/app/_services/broadcaster.service';
 import { AdminManagementService } from 'src/app/_services/admin-management.service';
 import { ParticipantService } from 'src/app/_services/participant.service';
+import { FormGroup, FormBuilder, FormControl, Validators,FormArray } from '@angular/forms';
 import { DataTableDirective } from 'angular-datatables';
-import { Subject } from 'rxjs';
+import { Location } from '@angular/common';
+import { MapCategoryDocumentService } from 'src/app/_services/map-category-document.service';
+import { Observable } from 'rxjs';
+
 
 @Component({
   selector: 'app-adm-map-prodi-category-document',
@@ -12,21 +17,26 @@ import { Subject } from 'rxjs';
   styleUrls: ['./adm-map-prodi-category-document.component.scss']
 })
 export class AdmMapProdiCategoryDocumentComponent implements OnInit {
-
+  
   public loader: boolean;
   public loading: boolean;
   public loadChartParticipantPerSelectionPath: boolean;
   public chartParticipantPerSelectionPath: any;
   public selectionPathActive: any;
+  public documentRequirementsForm: FormGroup;
   public selectionPathNonActive: any;
   public programActive: any;
   public programNonActive: any;
   public userData: any;
-  public userFullname: any;
   public userType: any;
   public activeProgramStudy: any;
   public participantFlag: any;
   public listMappingPathYear: any;
+  public documents: any = [];
+  public checkedDocuments : any = [];
+  public listSelectionProdi: any;
+  public listSelectionMap: any;
+  public selectionProdiSelected: any;
 
   // Filters
   public selectedSelectionPath: any;
@@ -38,258 +48,135 @@ export class AdmMapProdiCategoryDocumentComponent implements OnInit {
   dtElements: QueryList<DataTableDirective>;
   dtOptions: any = [];
 
-  public dataTableProgram: any;
-  public loadtableParticipantPerSelectionPath: boolean;
-  public tableData: Array<any>;
-  public dtTrigger = new Subject();
-
-  public loadtableParticipantPerStudyProgram: boolean;
-  public tableData1: Array<any>;
-  public dtTrigger1 = new Subject();
-
-  public loadtableParticipantPerProvince: boolean;
-  public tableData2: Array<any>;
-  public dtTrigger2 = new Subject();
-
-  public loadtablePINBuyer: boolean;
-  public tableData3: Array<any>;
-  public dtTrigger3 = new Subject();
-
-  public loadtableParticipantperStep: boolean;
-  public tableData4: Array<any>;
-  public dtTrigger4 = new Subject();
-
-  public loadtableActiveProgramStudy: boolean;
-  public tableData5: Array<any>;
-  public dtTrigger5 = new Subject();
-
-  public loadtableRegistrationHistory: boolean;
-  public tableData6: Array<any>;
-  public dtTrigger6 = new Subject();
-
-  public loadtableCityParticipant: boolean;
-  public tableDataKota: Array<any>;
-  public dtTriggerKota = new Subject();
-
-  public loadtableSchoolParticipant: boolean;
-  public tableDataSchool: Array<any>;
-  public dtTriggerSchool = new Subject();
-
-  public chartParticipantperGender: any;
-  public loadParticipantperGender: boolean;
-  public isMoreThanOneData: boolean;
+ 
 
   constructor(
     public translateService: TranslateService,
     private broadcasterService: BroadcasterService,
     private chartService: AdminManagementService,
-    private userService: ParticipantService
+    private userService: ParticipantService,
+    private fb: FormBuilder,
+    private location: Location,
+    private mapCategoryDocumentService: MapCategoryDocumentService
+    // private mapCategoryDocumentService: MapCategoryDocumentService
   ) {
     translateService.setDefaultLang(localStorage.getItem('lang'));
     broadcasterService.changeLangBroadcast$.subscribe(res => {
       translateService.setDefaultLang(res.lang);
     });
+    this.documentRequirementsForm = this.fb.group({
+      selectionProdi: [''],
+      selectedDocuments: this.fb.array([]) // FormArray untuk checkbox
+    });
     this.programActive = 0;
     this.selectionPathActive = 0;
     this.loader = false;
     this.loading = false;
-    this.loadtableCityParticipant = false;
-    this.isMoreThanOneData = false;
     // this.selectedSelectionPath = '';
     this.selectedSelectionPathParticipant = '';
+
+    
   }
 
   ngOnInit() {
     this.loadProfile();
-    // if (this.userType == 1) {
-    //   this.dtOptions[0] = {
-    //     pagingType: 'full_numbers',
-    //     pageLength: 10,
-    //     processing: true,
-    //     // retrieve: true,
-    //     destroy: true,
-    //     language: {
-    //       info: 'Show _START_ to _END_ from _TOTAL_ data',
-    //       zeroRecords: 'No data found!',
-    //       emptyTable: 'No data found!',
-    //       lengthMenu: 'Show _MENU_ data',
-    //       processing: 'Loading data. . . . .',
-    //       infoFiltered: '',
-    //       infoEmpty: ''
-    //     },
-    //     order: [[0, 'asc']],
-    //     initComplete: () => { }
-    //   };
-    //   this.dtOptions[1] = {
-    //     pagingType: 'full_numbers',
-    //     pageLength: 10,
-    //     processing: true,
-    //     // retrieve: true,
-    //     destroy: true,
-    //     language: {
-    //       info: 'Show _START_ to _END_ from _TOTAL_ data',
-    //       zeroRecords: 'No data found!',
-    //       emptyTable: 'No data found!',
-    //       lengthMenu: 'Show _MENU_ data',
-    //       processing: 'Loading data. . . . .',
-    //       infoFiltered: '',
-    //       infoEmpty: ''
-    //     },
-    //     order: [[0, 'asc']],
-    //     initComplete: () => {
-    //     }
-    //   };
-    //   this.dtOptions[2] = {
-    //     pagingType: 'full_numbers',
-    //     pageLength: 10,
-    //     processing: true,
-    //     // retrieve: true,
-    //     destroy: true,
-    //     language: {
-    //       info: 'Show _START_ to _END_ from _TOTAL_ data',
-    //       zeroRecords: 'No data found!',
-    //       emptyTable: 'No data found!',
-    //       lengthMenu: 'Show _MENU_ data',
-    //       processing: 'Loading data. . . . .',
-    //       infoFiltered: '',
-    //       infoEmpty: ''
-    //     },
-    //     order: [[0, 'asc']],
-    //     initComplete: () => {
-    //     }
-    //   };
-    //   this.dtOptions[3] = {
-    //     pagingType: 'full_numbers',
-    //     pageLength: 10,
-    //     processing: true,
-    //     // retrieve: true,
-    //     destroy: true,
-    //     language: {
-    //       info: 'Show _START_ to _END_ from _TOTAL_ data',
-    //       zeroRecords: 'No data found!',
-    //       emptyTable: 'No data found!',
-    //       lengthMenu: 'Show _MENU_ data',
-    //       processing: 'Loading data. . . . .',
-    //       infoFiltered: '',
-    //       infoEmpty: ''
-    //     },
-    //     order: [[0, 'asc']],
-    //     initComplete: () => {
-    //     }
-    //   };
-    //   this.dtOptions[4] = {
-    //     pagingType: 'full_numbers',
-    //     pageLength: 10,
-    //     processing: true,
-    //     // retrieve: true,
-    //     destroy: true,
-    //     language: {
-    //       info: 'Show _START_ to _END_ from _TOTAL_ data',
-    //       zeroRecords: 'No data found!',
-    //       emptyTable: 'No data found!',
-    //       lengthMenu: 'Show _MENU_ data',
-    //       processing: 'Loading data. . . . .',
-    //       infoFiltered: '',
-    //       infoEmpty: ''
-    //     },
-    //     order: [[0, 'asc']],
-    //     initComplete: () => {
-    //     }
-    //   };
+    this.loadDokument();
+    this.mapCategoryDocumentService.getListProdi().subscribe(item => {
+       this.listSelectionProdi = item.data.map((e)=>{
+        return { value : e.id, label : e.nama_prodi}
+       })
+    })
+    this.mapCategoryDocumentService.getListMap().subscribe(item => {
+       this.listSelectionMap = item.datas
+      //  this.listSelectionMap = item.data.map((e)=>{
+      //   return { value : e.id, label : e.nama_prodi}
+      //  })
+    })
+    
+  }
 
-    //   this.dtOptions[7] = {
-    //     pagingType: 'full_numbers',
-    //     pageLength: 10,
-    //     processing: true,
-    //     // retrieve: true,
-    //     destroy: true,
-    //     language: {
-    //       info: 'Show _START_ to _END_ from _TOTAL_ data',
-    //       zeroRecords: 'No data found!',
-    //       emptyTable: 'No data found!',
-    //       lengthMenu: 'Show _MENU_ data',
-    //       processing: 'Loading data. . . . .',
-    //       infoFiltered: '',
-    //       infoEmpty: ''
-    //     },
-    //     order: [[0, 'asc']],
-    //     initComplete: () => {
-    //     }
-    //   };
-    //   this.dtOptions[8] = {
-    //     pagingType: 'full_numbers',
-    //     pageLength: 10,
-    //     processing: true,
-    //     // retrieve: true,
-    //     destroy: true,
-    //     language: {
-    //       info: 'Show _START_ to _END_ from _TOTAL_ data',
-    //       zeroRecords: 'No data found!',
-    //       emptyTable: 'No data found!',
-    //       lengthMenu: 'Show _MENU_ data',
-    //       processing: 'Loading data. . . . .',
-    //       infoFiltered: '',
-    //       infoEmpty: ''
-    //     },
-    //     order: [[0, 'asc']],
-    //     initComplete: () => {
-    //     }
-    //   };
-    //   this.loadReportingSelectionPath();
-    //   this.loadReportingParticipantPerSelectionPath();
-    //   this.loadReportingParticipantPerStudyProgram();
-    //   this.loadReportingParticipantPerProvince();
-    //   this.loadReportingParticipantPerCity();
-    //   this.loadReportingParticipantPerSchool();
-    //   this.loadReportingParticipantPerGender();
-    //   this.loadReportingSelectionPath();
-    //   this.loadReportingPINBuyer();
-    //   this.loadReportingProgram();
-    //   this.loadReportingParticipantperStep();
-    //   this.loadReportingActiveProgramStudy();
-    //   // filters
-    //   this.getSelectionPathFilters();
-    //   this.getMappingPathYearFilters();
+  loadDokument(){
+    this.mapCategoryDocumentService.getListDocument().subscribe(item => {
+       this.documents = item.data;
+    })
+  }
+
+  isChecked(documentId: number): boolean {
+    return this.checkedDocuments.includes(documentId);
+  }
+
+
+  simpanMapping(){
+    let data = {
+      'prodi_id' : this.selectionProdiSelected,
+      'documents_id' : this.documentRequirementsForm.value.selectedDocuments
+    }
+    
+    const filePath = 'assets/fake-data/db.json';
+    // if (typeof window === 'undefined') {
+    //   // Server-side code
+    //   const fs = require('fs');
+    //   // ...
     // }
-    // else {
-    //   this.dtOptions[5] = {
-    //     pagingType: 'full_numbers',
-    //     pageLength: 10,
-    //     processing: true,
-    //     retrieve: true,
-    //     language: {
-    //       info: 'Show _START_ to _END_ from _TOTAL_ data',
-    //       zeroRecords: 'No data found!',
-    //       emptyTable: 'No data found!',
-    //       lengthMenu: 'Show _MENU_ data',
-    //       processing: 'Loading data. . . . .',
-    //       infoFiltered: '',
-    //       infoEmpty: ''
-    //     },
-    //     order: [[0, 'asc']],
-    //     initComplete: () => {
-    //     }
-    //   };
-    //   this.dtOptions[6] = {
-    //     pagingType: 'full_numbers',
-    //     pageLength: 10,
-    //     processing: true,
-    //     retrieve: true,
-    //     language: {
-    //       info: 'Show _START_ to _END_ from _TOTAL_ data',
-    //       zeroRecords: 'No data found!',
-    //       emptyTable: 'No data found!',
-    //       lengthMenu: 'Show _MENU_ data',
-    //       processing: 'Loading data. . . . .',
-    //       infoFiltered: '',
-    //       infoEmpty: ''
-    //     },
-    //     order: [[0, 'asc']],
-    //     initComplete: () => {
-    //     }
-    //   };
-    //   this.loadReportingRegistrationHistory();
-    // }
+    // const newArray = ['item1', 'item2', 'item3'];
+
+    // // Read the JSON file
+    // fs.readFile(filePath, 'utf8', (err, data) => {
+    //   if (err) {
+    //     console.error('Error reading the file:', err);
+    //     return;
+    //   }
+
+    //   try {
+    //     // Parse the JSON data
+    //     const json = JSON.parse(data);
+
+    //     // Insert the array (assuming we want to add to an existing array)
+    //     json.items = newArray;
+
+    //     // Convert the JSON object back to a string
+    //     const updatedData = JSON.stringify(json, null, 2);
+
+    //     // Write the modified data back to the file
+    //     fs.writeFile(filePath, updatedData, 'utf8', (err) => {
+    //       if (err) {
+    //         console.error('Error writing to the file:', err);
+    //         return;
+    //       }
+    //       console.log('Array inserted successfully!');
+    //     });
+    //   } catch (parseError) {
+    //     console.error('Error parsing JSON:', parseError);
+    //   }
+    // });
+
+  }
+
+  onCheckboxChange(event: any) {
+    const selectedDocuments = this.documentRequirementsForm.controls['selectedDocuments'] as FormArray;
+
+    if (event.target.checked) {
+      selectedDocuments.push(new FormControl(event.target.value));
+    } else {
+      const index = selectedDocuments.controls.findIndex(x => x.value === event.target.value);
+      selectedDocuments.removeAt(index);
+    }
+  }
+
+  filteredData: any[] = [];
+
+  searchByProdiFk(prodi_fk:any) {
+    this.filteredData = this.listSelectionMap.filter(item => item.prodi_fk === prodi_fk.value);
+    if (this.filteredData.length > 0) {
+        this.filteredData.forEach(element => {
+          this.documents.forEach(el => {
+            if(element.dokumen_fk == el.id){
+              el.prodi_fk = element.prodi_fk
+            }
+          });
+        });
+      } 
+      console.log( this.documents)
   }
 
   loadProfile() {
@@ -316,10 +203,9 @@ export class AdmMapProdiCategoryDocumentComponent implements OnInit {
     }
   }
 
-  gotoAdmissionDashboard() {
-    window.open('https://dev-fe.trisakti.ac.id/dashboard/login', "_blank");
+  goBack(): void {
+    this.location.back();
   }
-
 
 
 }

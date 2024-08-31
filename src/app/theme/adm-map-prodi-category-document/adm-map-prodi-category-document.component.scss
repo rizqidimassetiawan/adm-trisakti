@@ -18,3 +18,12 @@ th {
   display: inline-flex;
   text-align: center;
 }
+
+.divider{
+ border-bottom: 1px solid rgba(0, 0, 0, 0.125); 
+}
+
+.set-center{
+  display: flex;
+  justify-content:space-around;
+}

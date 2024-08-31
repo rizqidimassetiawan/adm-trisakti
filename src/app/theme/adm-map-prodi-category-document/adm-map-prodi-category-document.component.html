@@ -1,10 +1,47 @@
 <div class="row">
    <div class="col-12">
-    <app-card [hidHeader]="true" blockClass="text-center" [loading]="loader">
-      <h6 class="text-center">{{'CONTENT.dashboard' | translate }}</h6>
-      <button class="btn btn-primary btn-sm btn-round has-ripple" (click)="gotoAdmissionDashboard()" >
-        <i class="icofont icofont-bars"></i> {{'CONTENT.go-to-admision-dashboard' | translate}}
-      </button>
-      </app-card>
+    <app-card cardTitle="Mapping Prodi to Dokumen" cardClass="card-datatable" headerClass="text-center text-md-left"
+      [hidHeader]="false" [options]="false" [loading]="loader">
+      <form class="md-float-material form-material" [formGroup]="documentRequirementsForm">
+        <div class="row">
+          <div class="col-12 col-md-3 pl-5">
+            <label class="label">Pilih Prodi</label>
+            <ng-select [(ngModel)]="selectionProdiSelected" name="year" [allowClear]="true" [options]="listSelectionProdi"
+               [ngClass]="'filter'" [ngModelOptions]="{ standalone: true }" (selected)="searchByProdiFk($event)"></ng-select>
+          </div>
+
+          <div class="col-9" style="align-self: center;">
+            <div class="row">
+              <div class="col-10 text-md-right">
+                <button class="btn btn-secondary btn-sm btn-round has-ripple btn-sm "
+                  (click)="goBack()">
+                  <i class="icofont icofont-arrow-left pr-3"></i> Kembali
+                </button>
+              </div>
+              <div class="col-2 text-md-left">
+                <button class="btn btn-outline-success btn-sm btn-round has-ripple btn-sm "
+                  (click)="simpanMapping()">
+                  <i class="icofont icofont-save pr-2"></i> Simpan
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row set-center">
+            <div class="col-12 col-md-5 divider"></div>
+            <span class="badge badge-success" style="position: relative;top: 8px;">List Dokumen</span>
+            <div class="col-12 col-md-5 divider"></div>
+        </div>
+        <div class="row p-4">
+          <div class="col-12 col-md-4 pt-2" *ngFor="let document of documents; let i = index">
+            <div class="custom-control custom-switch">
+              <input type="checkbox" style="cursor: pointer;" class="custom-control-input" [id]="'customSwitch' + i" [value]="document.id"
+                (change)="onCheckboxChange($event)" [checked]="selectionProdiSelected != null && document.prodi_fk == selectionProdiSelected">
+              <label class="custom-control-label" [for]="'customSwitch' + i" style="cursor: pointer;">{{ document.title }}</label>
+            </div>
+          </div>
+        </div>
+      </form>
+    </app-card>
    </div>
  </div>
