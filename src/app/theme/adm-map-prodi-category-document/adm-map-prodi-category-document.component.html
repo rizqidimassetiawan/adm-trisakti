@@ -6,7 +6,7 @@
         <div class="row">
           <div class="col-12 col-md-3 pl-5">
             <label class="label">Pilih Prodi</label>
-            <ng-select [(ngModel)]="selectionProdiSelected" name="year" [allowClear]="true" [options]="listSelectionProdi"
+            <ng-select [(ngModel)]="selectionProdiSelected" name="year" [options]="listSelectionProdi"
                [ngClass]="'filter'" [ngModelOptions]="{ standalone: true }" (selected)="searchByProdiFk($event)"></ng-select>
           </div>
 
@@ -35,9 +35,25 @@
         <div class="row p-4">
           <div class="col-12 col-md-4 pt-2" *ngFor="let document of documents; let i = index">
             <div class="custom-control custom-switch">
-              <input type="checkbox" style="cursor: pointer;" class="custom-control-input" [id]="'customSwitch' + i" [value]="document.id"
+              <input type="checkbox" style="cursor: pointer;" [disabled]="!selectionProdiSelected" class="custom-control-input" [id]="'customSwitch' + i" [value]="document.id"
                 (change)="onCheckboxChange($event)" [checked]="selectionProdiSelected != null && document.prodi_fk == selectionProdiSelected">
               <label class="custom-control-label" [for]="'customSwitch' + i" style="cursor: pointer;">{{ document.title }}</label>
+            </div>
+            <div class="row pt-2 pl-5 pr-5 pb-3">
+              <div class="col-6">
+                <label class="custom-control custom-radio custom-control-inline mb-0">
+                  <input type="radio" class="custom-control-input" [name]="'radioGroup' + document.id" value="1" [disabled]="!document.isChecked" 
+                    (change)="onRadioChange($event, document.id)" [checked]="selectionProdiSelected != null && document.selectedStatus === 1">
+                  <label class="custom-control-label">Optional</label>
+                </label>
+              </div>
+              <div class="col-6">
+                <label class="custom-control custom-radio custom-control-inline mb-0">
+                  <input type="radio" class="custom-control-input" [name]="'radioGroup' + document.id" value="2" [disabled]="!document.isChecked"
+                    (change)="onRadioChange($event, document.id)" [checked]="selectionProdiSelected != null && document.selectedStatus === 2">
+                  <label class="custom-control-label ">Required</label>
+                </label>
+              </div>
             </div>
           </div>
         </div>

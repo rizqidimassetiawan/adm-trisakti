@@ -33,6 +33,8 @@ export class AdmMapProdiCategoryDocumentComponent implements OnInit {
   public participantFlag: any;
   public listMappingPathYear: any;
   public documents: any = [];
+  public terpilih: { dokumen_id: number, sifatdokumen: number }[] = [];
+  public filteredData: any[] = [];
   public checkedDocuments : any = [];
   public listSelectionProdi: any;
   public listSelectionMap: any;
@@ -66,6 +68,7 @@ export class AdmMapProdiCategoryDocumentComponent implements OnInit {
     });
     this.documentRequirementsForm = this.fb.group({
       selectionProdi: [''],
+      sifatDokumen: this.fb.array([]),
       selectedDocuments: this.fb.array([]) // FormArray untuk checkbox
     });
     this.programActive = 0;
@@ -100,83 +103,128 @@ export class AdmMapProdiCategoryDocumentComponent implements OnInit {
        this.documents = item.data;
     })
   }
+  
 
-  isChecked(documentId: number): boolean {
-    return this.checkedDocuments.includes(documentId);
-  }
+// onRadioChange(event: Event, documentId: number) {
+//     const input = event.target as HTMLInputElement;
+//     const status = input.value;
 
+//     const document = this.documents.find(doc => doc.id === documentId);
+//     if (document) {
+//       document.selectedStatus = status;
+//     }
 
-  simpanMapping(){
-    let data = {
-      'prodi_id' : this.selectionProdiSelected,
-      'documents_id' : this.documentRequirementsForm.value.selectedDocuments
+//     console.log(document)
+//   }
+
+  simpanMapping() {
+
+    if(this.terpilih.length == 0){
+      this.broadcasterService.notifBroadcast(true, {
+          title: "Gagal",
+          msg: "Mapping Dokumen Tidak Boleh Kosong !",
+          timeout: 3000,
+          theme: "default",
+          position: "top-right",
+          type: "error",
+        });
+        return
     }
-    
-    const filePath = 'assets/fake-data/db.json';
-    // if (typeof window === 'undefined') {
-    //   // Server-side code
-    //   const fs = require('fs');
-    //   // ...
-    // }
-    // const newArray = ['item1', 'item2', 'item3'];
+    const result = {
+      prodi: this.selectionProdiSelected,
+      terpilih: this.terpilih
+    };
 
-    // // Read the JSON file
-    // fs.readFile(filePath, 'utf8', (err, data) => {
-    //   if (err) {
-    //     console.error('Error reading the file:', err);
-    //     return;
-    //   }
-
-    //   try {
-    //     // Parse the JSON data
-    //     const json = JSON.parse(data);
-
-    //     // Insert the array (assuming we want to add to an existing array)
-    //     json.items = newArray;
-
-    //     // Convert the JSON object back to a string
-    //     const updatedData = JSON.stringify(json, null, 2);
-
-    //     // Write the modified data back to the file
-    //     fs.writeFile(filePath, updatedData, 'utf8', (err) => {
-    //       if (err) {
-    //         console.error('Error writing to the file:', err);
-    //         return;
-    //       }
-    //       console.log('Array inserted successfully!');
-    //     });
-    //   } catch (parseError) {
-    //     console.error('Error parsing JSON:', parseError);
-    //   }
-    // });
+    console.log(result);
 
   }
 
-  onCheckboxChange(event: any) {
-    const selectedDocuments = this.documentRequirementsForm.controls['selectedDocuments'] as FormArray;
+   onCheckboxChange(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const isChecked = input.checked;
+    const documentId = Number(input.value);
 
-    if (event.target.checked) {
-      selectedDocuments.push(new FormControl(event.target.value));
+    if (isChecked) {
+      // Jika checkbox di-check, tambahkan dokumen ke array 'terpilih'
+      const document = this.documents.find(doc => doc.id === documentId);
+      if (document) {
+        this.terpilih.push({
+          dokumen_id: documentId,
+          sifatdokumen: document.selectedStatus || 0 // Default to 0 if no status is selected
+        });
+        document.isChecked = true; // Track checkbox state
+      }
     } else {
-      const index = selectedDocuments.controls.findIndex(x => x.value === event.target.value);
-      selectedDocuments.removeAt(index);
+      // Jika checkbox di-uncheck, hapus dokumen dari array 'terpilih'
+      this.terpilih = this.terpilih.filter(doc => doc.dokumen_id !== documentId);
+
+      // Reset status dokumen dan nonaktifkan radio button
+      const document = this.documents.find(doc => doc.id === documentId);
+      if (document) {
+        document.selectedStatus = 0; // Reset status
+        document.isChecked = false; // Track checkbox state
+      }
     }
   }
 
-  filteredData: any[] = [];
+   onRadioChange(event: Event, documentId: number) {
+    const input = event.target as HTMLInputElement;
+    const status = Number(input.value);
+
+    const document = this.documents.find(doc => doc.id === documentId);
+    if (document) {
+      document.selectedStatus = status;
+
+      // Perbarui status dokumen di array 'terpilih'
+      const index = this.terpilih.findIndex(doc => doc.dokumen_id === documentId);
+      if (index !== -1) {
+        this.terpilih[index].sifatdokumen = status;
+      } else {
+        // Jika dokumen belum ada dalam 'terpilih', tambahkan
+        this.terpilih.push({
+          dokumen_id: documentId,
+          sifatdokumen: status
+        });
+      }
+    }
+  }
 
   searchByProdiFk(prodi_fk:any) {
-    this.filteredData = this.listSelectionMap.filter(item => item.prodi_fk === prodi_fk.value);
+    this.selectionProdiSelected = prodi_fk.value;
+    
+    this.filteredData = this.listSelectionMap.filter(item => item.prodi_fk === prodi_fk.value);  
     if (this.filteredData.length > 0) {
-        this.filteredData.forEach(element => {
-          this.documents.forEach(el => {
-            if(element.dokumen_fk == el.id){
-              el.prodi_fk = element.prodi_fk
+        this.documents.forEach(doc => {
+        const match = this.filteredData.find(element => element.dokumen_fk === doc.id);
+          if (match) {
+            doc.prodi_fk = match.prodi_fk
+            doc.isChecked = true
+            doc.selectedStatus = match.selectedStatus
+            // Update or add to terpilih
+            const existingIndex = this.terpilih.findIndex(d => d.dokumen_id === doc.id);
+            if (existingIndex !== -1) {
+              this.terpilih[existingIndex].sifatdokumen = doc.selectedStatus;
+            } else {
+              this.terpilih.push({
+                dokumen_id: doc.id,
+                sifatdokumen: doc.selectedStatus
+              });
             }
-          });
+          }else{
+            doc.isChecked = false
+            doc.selectedStatus = 0 
+          }
         });
-      } 
-      console.log( this.documents)
+    }else{
+        this.documents.forEach(doc => {
+          doc.selectedStatus = 0 // Reset status
+          doc.isChecked = false
+        });
+        this.terpilih = [];
+    }
+
+    console.log(this.documents)
+
   }
 
   loadProfile() {
@@ -198,7 +246,6 @@ export class AdmMapProdiCategoryDocumentComponent implements OnInit {
       });
     }
     else {
-      //as admin
       this.userType = 1;
     }
   }
