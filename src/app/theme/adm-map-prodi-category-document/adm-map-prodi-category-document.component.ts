@@ -1,10 +1,15 @@
 import { Component, OnInit, ViewChild,QueryList, ViewChildren } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { BroadcasterService } from 'src/app/_services/broadcaster.service';
 import { AdminManagementService } from 'src/app/_services/admin-management.service';
 import { ParticipantService } from 'src/app/_services/participant.service';
+import { FormGroup, FormBuilder, FormControl, Validators,FormArray } from '@angular/forms';
 import { DataTableDirective } from 'angular-datatables';
-import { Subject } from 'rxjs';
+import { Location } from '@angular/common';
+import { MapCategoryDocumentService } from 'src/app/_services/map-category-document.service';
+import { Observable } from 'rxjs';
+
 
 @Component({
   selector: 'app-adm-map-prodi-category-document',
@@ -12,21 +17,28 @@ import { Subject } from 'rxjs';
   styleUrls: ['./adm-map-prodi-category-document.component.scss']
 })
 export class AdmMapProdiCategoryDocumentComponent implements OnInit {
-
+  
   public loader: boolean;
   public loading: boolean;
   public loadChartParticipantPerSelectionPath: boolean;
   public chartParticipantPerSelectionPath: any;
   public selectionPathActive: any;
+  public documentRequirementsForm: FormGroup;
   public selectionPathNonActive: any;
   public programActive: any;
   public programNonActive: any;
   public userData: any;
-  public userFullname: any;
   public userType: any;
   public activeProgramStudy: any;
   public participantFlag: any;
   public listMappingPathYear: any;
+  public documents: any = [];
+  public terpilih: { dokumen_id: number, sifatdokumen: number }[] = [];
+  public filteredData: any[] = [];
+  public checkedDocuments : any = [];
+  public listSelectionProdi: any;
+  public listSelectionMap: any;
+  public selectionProdiSelected: any;
 
   // Filters
   public selectedSelectionPath: any;
@@ -38,258 +50,181 @@ export class AdmMapProdiCategoryDocumentComponent implements OnInit {
   dtElements: QueryList<DataTableDirective>;
   dtOptions: any = [];
 
-  public dataTableProgram: any;
-  public loadtableParticipantPerSelectionPath: boolean;
-  public tableData: Array<any>;
-  public dtTrigger = new Subject();
-
-  public loadtableParticipantPerStudyProgram: boolean;
-  public tableData1: Array<any>;
-  public dtTrigger1 = new Subject();
-
-  public loadtableParticipantPerProvince: boolean;
-  public tableData2: Array<any>;
-  public dtTrigger2 = new Subject();
-
-  public loadtablePINBuyer: boolean;
-  public tableData3: Array<any>;
-  public dtTrigger3 = new Subject();
-
-  public loadtableParticipantperStep: boolean;
-  public tableData4: Array<any>;
-  public dtTrigger4 = new Subject();
-
-  public loadtableActiveProgramStudy: boolean;
-  public tableData5: Array<any>;
-  public dtTrigger5 = new Subject();
-
-  public loadtableRegistrationHistory: boolean;
-  public tableData6: Array<any>;
-  public dtTrigger6 = new Subject();
-
-  public loadtableCityParticipant: boolean;
-  public tableDataKota: Array<any>;
-  public dtTriggerKota = new Subject();
-
-  public loadtableSchoolParticipant: boolean;
-  public tableDataSchool: Array<any>;
-  public dtTriggerSchool = new Subject();
-
-  public chartParticipantperGender: any;
-  public loadParticipantperGender: boolean;
-  public isMoreThanOneData: boolean;
+ 
 
   constructor(
     public translateService: TranslateService,
     private broadcasterService: BroadcasterService,
     private chartService: AdminManagementService,
-    private userService: ParticipantService
+    private userService: ParticipantService,
+    private fb: FormBuilder,
+    private location: Location,
+    private mapCategoryDocumentService: MapCategoryDocumentService
+    // private mapCategoryDocumentService: MapCategoryDocumentService
   ) {
     translateService.setDefaultLang(localStorage.getItem('lang'));
     broadcasterService.changeLangBroadcast$.subscribe(res => {
       translateService.setDefaultLang(res.lang);
     });
+    this.documentRequirementsForm = this.fb.group({
+      selectionProdi: [''],
+      sifatDokumen: this.fb.array([]),
+      selectedDocuments: this.fb.array([]) // FormArray untuk checkbox
+    });
     this.programActive = 0;
     this.selectionPathActive = 0;
     this.loader = false;
     this.loading = false;
-    this.loadtableCityParticipant = false;
-    this.isMoreThanOneData = false;
     // this.selectedSelectionPath = '';
     this.selectedSelectionPathParticipant = '';
+
+    
   }
 
   ngOnInit() {
     this.loadProfile();
-    // if (this.userType == 1) {
-    //   this.dtOptions[0] = {
-    //     pagingType: 'full_numbers',
-    //     pageLength: 10,
-    //     processing: true,
-    //     // retrieve: true,
-    //     destroy: true,
-    //     language: {
-    //       info: 'Show _START_ to _END_ from _TOTAL_ data',
-    //       zeroRecords: 'No data found!',
-    //       emptyTable: 'No data found!',
-    //       lengthMenu: 'Show _MENU_ data',
-    //       processing: 'Loading data. . . . .',
-    //       infoFiltered: '',
-    //       infoEmpty: ''
-    //     },
-    //     order: [[0, 'asc']],
-    //     initComplete: () => { }
-    //   };
-    //   this.dtOptions[1] = {
-    //     pagingType: 'full_numbers',
-    //     pageLength: 10,
-    //     processing: true,
-    //     // retrieve: true,
-    //     destroy: true,
-    //     language: {
-    //       info: 'Show _START_ to _END_ from _TOTAL_ data',
-    //       zeroRecords: 'No data found!',
-    //       emptyTable: 'No data found!',
-    //       lengthMenu: 'Show _MENU_ data',
-    //       processing: 'Loading data. . . . .',
-    //       infoFiltered: '',
-    //       infoEmpty: ''
-    //     },
-    //     order: [[0, 'asc']],
-    //     initComplete: () => {
-    //     }
-    //   };
-    //   this.dtOptions[2] = {
-    //     pagingType: 'full_numbers',
-    //     pageLength: 10,
-    //     processing: true,
-    //     // retrieve: true,
-    //     destroy: true,
-    //     language: {
-    //       info: 'Show _START_ to _END_ from _TOTAL_ data',
-    //       zeroRecords: 'No data found!',
-    //       emptyTable: 'No data found!',
-    //       lengthMenu: 'Show _MENU_ data',
-    //       processing: 'Loading data. . . . .',
-    //       infoFiltered: '',
-    //       infoEmpty: ''
-    //     },
-    //     order: [[0, 'asc']],
-    //     initComplete: () => {
-    //     }
-    //   };
-    //   this.dtOptions[3] = {
-    //     pagingType: 'full_numbers',
-    //     pageLength: 10,
-    //     processing: true,
-    //     // retrieve: true,
-    //     destroy: true,
-    //     language: {
-    //       info: 'Show _START_ to _END_ from _TOTAL_ data',
-    //       zeroRecords: 'No data found!',
-    //       emptyTable: 'No data found!',
-    //       lengthMenu: 'Show _MENU_ data',
-    //       processing: 'Loading data. . . . .',
-    //       infoFiltered: '',
-    //       infoEmpty: ''
-    //     },
-    //     order: [[0, 'asc']],
-    //     initComplete: () => {
-    //     }
-    //   };
-    //   this.dtOptions[4] = {
-    //     pagingType: 'full_numbers',
-    //     pageLength: 10,
-    //     processing: true,
-    //     // retrieve: true,
-    //     destroy: true,
-    //     language: {
-    //       info: 'Show _START_ to _END_ from _TOTAL_ data',
-    //       zeroRecords: 'No data found!',
-    //       emptyTable: 'No data found!',
-    //       lengthMenu: 'Show _MENU_ data',
-    //       processing: 'Loading data. . . . .',
-    //       infoFiltered: '',
-    //       infoEmpty: ''
-    //     },
-    //     order: [[0, 'asc']],
-    //     initComplete: () => {
-    //     }
-    //   };
+    this.loadDokument();
+    this.mapCategoryDocumentService.getListProdi().subscribe(item => {
+       this.listSelectionProdi = item.data.map((e)=>{
+        return { value : e.id, label : e.nama_prodi}
+       })
+    })
+    this.mapCategoryDocumentService.getListMap().subscribe(item => {
+       this.listSelectionMap = item.datas
+      //  this.listSelectionMap = item.data.map((e)=>{
+      //   return { value : e.id, label : e.nama_prodi}
+      //  })
+    })
+    
+  }
 
-    //   this.dtOptions[7] = {
-    //     pagingType: 'full_numbers',
-    //     pageLength: 10,
-    //     processing: true,
-    //     // retrieve: true,
-    //     destroy: true,
-    //     language: {
-    //       info: 'Show _START_ to _END_ from _TOTAL_ data',
-    //       zeroRecords: 'No data found!',
-    //       emptyTable: 'No data found!',
-    //       lengthMenu: 'Show _MENU_ data',
-    //       processing: 'Loading data. . . . .',
-    //       infoFiltered: '',
-    //       infoEmpty: ''
-    //     },
-    //     order: [[0, 'asc']],
-    //     initComplete: () => {
-    //     }
-    //   };
-    //   this.dtOptions[8] = {
-    //     pagingType: 'full_numbers',
-    //     pageLength: 10,
-    //     processing: true,
-    //     // retrieve: true,
-    //     destroy: true,
-    //     language: {
-    //       info: 'Show _START_ to _END_ from _TOTAL_ data',
-    //       zeroRecords: 'No data found!',
-    //       emptyTable: 'No data found!',
-    //       lengthMenu: 'Show _MENU_ data',
-    //       processing: 'Loading data. . . . .',
-    //       infoFiltered: '',
-    //       infoEmpty: ''
-    //     },
-    //     order: [[0, 'asc']],
-    //     initComplete: () => {
-    //     }
-    //   };
-    //   this.loadReportingSelectionPath();
-    //   this.loadReportingParticipantPerSelectionPath();
-    //   this.loadReportingParticipantPerStudyProgram();
-    //   this.loadReportingParticipantPerProvince();
-    //   this.loadReportingParticipantPerCity();
-    //   this.loadReportingParticipantPerSchool();
-    //   this.loadReportingParticipantPerGender();
-    //   this.loadReportingSelectionPath();
-    //   this.loadReportingPINBuyer();
-    //   this.loadReportingProgram();
-    //   this.loadReportingParticipantperStep();
-    //   this.loadReportingActiveProgramStudy();
-    //   // filters
-    //   this.getSelectionPathFilters();
-    //   this.getMappingPathYearFilters();
-    // }
-    // else {
-    //   this.dtOptions[5] = {
-    //     pagingType: 'full_numbers',
-    //     pageLength: 10,
-    //     processing: true,
-    //     retrieve: true,
-    //     language: {
-    //       info: 'Show _START_ to _END_ from _TOTAL_ data',
-    //       zeroRecords: 'No data found!',
-    //       emptyTable: 'No data found!',
-    //       lengthMenu: 'Show _MENU_ data',
-    //       processing: 'Loading data. . . . .',
-    //       infoFiltered: '',
-    //       infoEmpty: ''
-    //     },
-    //     order: [[0, 'asc']],
-    //     initComplete: () => {
-    //     }
-    //   };
-    //   this.dtOptions[6] = {
-    //     pagingType: 'full_numbers',
-    //     pageLength: 10,
-    //     processing: true,
-    //     retrieve: true,
-    //     language: {
-    //       info: 'Show _START_ to _END_ from _TOTAL_ data',
-    //       zeroRecords: 'No data found!',
-    //       emptyTable: 'No data found!',
-    //       lengthMenu: 'Show _MENU_ data',
-    //       processing: 'Loading data. . . . .',
-    //       infoFiltered: '',
-    //       infoEmpty: ''
-    //     },
-    //     order: [[0, 'asc']],
-    //     initComplete: () => {
-    //     }
-    //   };
-    //   this.loadReportingRegistrationHistory();
-    // }
+  loadDokument(){
+    this.mapCategoryDocumentService.getListDocument().subscribe(item => {
+       this.documents = item.data;
+    })
+  }
+  
+
+// onRadioChange(event: Event, documentId: number) {
+//     const input = event.target as HTMLInputElement;
+//     const status = input.value;
+
+//     const document = this.documents.find(doc => doc.id === documentId);
+//     if (document) {
+//       document.selectedStatus = status;
+//     }
+
+//     console.log(document)
+//   }
+
+  simpanMapping() {
+
+    if(this.terpilih.length == 0){
+      this.broadcasterService.notifBroadcast(true, {
+          title: "Gagal",
+          msg: "Mapping Dokumen Tidak Boleh Kosong !",
+          timeout: 3000,
+          theme: "default",
+          position: "top-right",
+          type: "error",
+        });
+        return
+    }
+    const result = {
+      prodi: this.selectionProdiSelected,
+      terpilih: this.terpilih
+    };
+
+    console.log(result);
+
+  }
+
+   onCheckboxChange(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const isChecked = input.checked;
+    const documentId = Number(input.value);
+
+    if (isChecked) {
+      // Jika checkbox di-check, tambahkan dokumen ke array 'terpilih'
+      const document = this.documents.find(doc => doc.id === documentId);
+      if (document) {
+        this.terpilih.push({
+          dokumen_id: documentId,
+          sifatdokumen: document.selectedStatus || 0 // Default to 0 if no status is selected
+        });
+        document.isChecked = true; // Track checkbox state
+      }
+    } else {
+      // Jika checkbox di-uncheck, hapus dokumen dari array 'terpilih'
+      this.terpilih = this.terpilih.filter(doc => doc.dokumen_id !== documentId);
+
+      // Reset status dokumen dan nonaktifkan radio button
+      const document = this.documents.find(doc => doc.id === documentId);
+      if (document) {
+        document.selectedStatus = 0; // Reset status
+        document.isChecked = false; // Track checkbox state
+      }
+    }
+  }
+
+   onRadioChange(event: Event, documentId: number) {
+    const input = event.target as HTMLInputElement;
+    const status = Number(input.value);
+
+    const document = this.documents.find(doc => doc.id === documentId);
+    if (document) {
+      document.selectedStatus = status;
+
+      // Perbarui status dokumen di array 'terpilih'
+      const index = this.terpilih.findIndex(doc => doc.dokumen_id === documentId);
+      if (index !== -1) {
+        this.terpilih[index].sifatdokumen = status;
+      } else {
+        // Jika dokumen belum ada dalam 'terpilih', tambahkan
+        this.terpilih.push({
+          dokumen_id: documentId,
+          sifatdokumen: status
+        });
+      }
+    }
+  }
+
+  searchByProdiFk(prodi_fk:any) {
+    this.selectionProdiSelected = prodi_fk.value;
+    
+    this.filteredData = this.listSelectionMap.filter(item => item.prodi_fk === prodi_fk.value);  
+    if (this.filteredData.length > 0) {
+        this.documents.forEach(doc => {
+        const match = this.filteredData.find(element => element.dokumen_fk === doc.id);
+          if (match) {
+            doc.prodi_fk = match.prodi_fk
+            doc.isChecked = true
+            doc.selectedStatus = match.selectedStatus
+            // Update or add to terpilih
+            const existingIndex = this.terpilih.findIndex(d => d.dokumen_id === doc.id);
+            if (existingIndex !== -1) {
+              this.terpilih[existingIndex].sifatdokumen = doc.selectedStatus;
+            } else {
+              this.terpilih.push({
+                dokumen_id: doc.id,
+                sifatdokumen: doc.selectedStatus
+              });
+            }
+          }else{
+            doc.isChecked = false
+            doc.selectedStatus = 0 
+          }
+        });
+    }else{
+        this.documents.forEach(doc => {
+          doc.selectedStatus = 0 // Reset status
+          doc.isChecked = false
+        });
+        this.terpilih = [];
+    }
+
+    console.log(this.documents)
+
   }
 
   loadProfile() {
@@ -311,15 +246,13 @@ export class AdmMapProdiCategoryDocumentComponent implements OnInit {
       });
     }
     else {
-      //as admin
       this.userType = 1;
     }
   }
 
-  gotoAdmissionDashboard() {
-    window.open('https://dev-fe.trisakti.ac.id/dashboard/login', "_blank");
+  goBack(): void {
+    this.location.back();
   }
-
 
 
 }
