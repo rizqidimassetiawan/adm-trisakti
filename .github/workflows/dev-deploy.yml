@@ -17,4 +17,4 @@ jobs:
           password: ${{ secrets.PASS }}
           script: |
             cd /var/www/adm-trisakti
-            git pull 
+            git pull origin dev
