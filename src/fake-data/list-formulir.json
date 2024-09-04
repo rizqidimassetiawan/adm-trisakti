@@ -1,0 +1,14 @@
+{
+ "datas" : [
+  {
+    "id" : 1,
+    "nama" : "Medis",
+    "status" : 1
+  },
+  {
+    "id" : 2,
+    "nama" : "Non Medis",
+    "status" : 1
+  }
+ ]
+}

@@ -41,6 +41,31 @@ const routes: Routes = [
         data: {animation: '2'}
       },
       {
+        path: 'adm-master-document',
+        loadChildren: './theme/adm-master-document/adm-master-document.module#AdmMasterDocumentModule',
+        data: {animation: '2'}
+      },
+      {
+        path: 'adm-master-type-examp',
+        loadChildren: './theme/adm-master-type-examp/adm-master-type-examp.module#AdmMasterTypeExampModule',
+        data: {animation: '2'}
+      },
+      {
+        path: 'adm-master-student-interes',
+        loadChildren: './theme/adm-master-student-interes/adm-master-student-interes.module#AdmMasterStudentInteresModule',
+        data: {animation: '2'}
+      },
+      {
+        path: 'adm-master-selection-category',
+        loadChildren: './theme/adm-master-selection-category/adm-master-selection-category.module#AdmMasterSelectionCategoryModule',
+        data: {animation: '2'}
+      },
+      {
+        path: 'adm-master-form-category',
+        loadChildren: './theme/adm-master-form-category/adm-master-form-category.module#AdmMasterFormCategoryModule',
+        data: {animation: '2'}
+      },
+      {
         path: 'new-registration',
         loadChildren: './theme/new-registration/new-registration.module#NewRegistrationModule',
         data: {animation: '2'}
