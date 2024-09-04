@@ -754,4 +754,15 @@ export class AdminManagementService extends BaseService{
     return this.http.get(url);
   }
 
+  getDataTipeUjian(): Observable<any> {
+    return this.getApi('fake-data/tipe-ujian.json');
+  }
+
+  getDataFormulir(): Observable<any> {
+    return this.getApi('fake-data/list-formulir.json');
+  }
+  getDataMinat(): Observable<any> {
+    return this.getApi('fake-data/list-minat.json');
+  }
+
 }

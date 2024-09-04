@@ -2,42 +2,52 @@
   "data": [
    {
     "id": 1,
+    "status" : 1,
     "title": "Project Proposal"
   },
   {
     "id": 2,
+    "status" : 1,
     "title": "Meeting Minutes"
   },
   {
     "id": 3,
+    "status" : 1,
     "title": "Requirements Specification"
   },
   {
     "id": 4,
+    "status" : 1,
     "title": "Technical Design Document"
   },
   {
     "id": 5,
+    "status" : 1,
     "title": "User Manual"
   },
   {
     "id": 6,
+    "status" : 1,
     "title": "Test Plan"
   },
   {
     "id": 7,
+    "status" : 1,
     "title": "Deployment Guide"
   },
   {
     "id": 8,
+    "status" : 0,
     "title": "Release Notes"
   },
   {
     "id": 9,
+    "status" : 1,
     "title": "Risk Assessment"
   },
   {
     "id": 10,
+    "status" : 0,
     "title": "Budget Report"
   }
   ]
