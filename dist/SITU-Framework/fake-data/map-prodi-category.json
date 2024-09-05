@@ -1,0 +1,70 @@
+{
+ "datas" : [
+  {
+    "id" : 1,
+    "prodi_fk" : 1,
+    "dokumen_fk" : 3,
+    "selectedStatus" : 1
+  },
+  {
+    "id" : 2,
+    "prodi_fk" : 1,
+    "dokumen_fk" : 4,
+    "selectedStatus": 2
+  },
+  {
+    "id" : 3,
+    "prodi_fk" : 1,
+    "dokumen_fk" : 7,
+    "selectedStatus": 2
+  },
+  {
+    "id" : 4,
+    "prodi_fk" : 1,
+    "dokumen_fk" : 8,
+    "selectedStatus": 1
+  },
+  {
+    "id" : 5,
+    "prodi_fk" : 1,
+    "dokumen_fk" : 10,
+    "selectedStatus": 2
+  },
+  {
+    "id" : 6,
+    "prodi_fk" : 2,
+    "dokumen_fk" : 1,
+    "selectedStatus": 2
+  },
+  {
+    "id" : 7,
+    "prodi_fk" : 2,
+    "dokumen_fk" : 5,
+    "selectedStatus": 2
+  },
+  {
+    "id" : 8,
+    "prodi_fk" : 2,
+    "dokumen_fk" : 7,
+    "selectedStatus": 2
+  },
+  {
+    "id" : 9,
+    "prodi_fk" : 2,
+    "dokumen_fk" : 6,
+    "selectedStatus": 2
+  },
+  {
+    "id" : 10,
+    "prodi_fk" : 2,
+    "dokumen_fk" : 9,
+    "selectedStatus": 2
+  },
+  {
+    "id" : 11,
+    "prodi_fk" : 3,
+    "dokumen_fk" : 1,
+    "selectedStatus": 1
+  }
+ ]
+}
