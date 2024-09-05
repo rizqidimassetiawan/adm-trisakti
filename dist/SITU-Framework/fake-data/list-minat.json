@@ -1,0 +1,14 @@
+{
+ "datas" : [
+  {
+    "id" : 1,
+    "nama" : "Robotika",
+    "status" : 1
+  },
+  {
+    "id" : 2,
+    "nama" : "Alam",
+    "status" : 1
+  }
+ ]
+}
