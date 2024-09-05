@@ -18,4 +18,4 @@ jobs:
           script: |
             cd repositories/adm-trisakti
             git pull origin dev
-            cp -r SITU-Framework ~/fe-trisakti.amisbudi.cloud 
+            cp -R dist/SITU-Framework/* ~/admission.amisbudi.cloud/
