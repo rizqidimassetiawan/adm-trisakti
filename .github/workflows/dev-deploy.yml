@@ -16,5 +16,6 @@ jobs:
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASS }}
           script: |
-            cd /var/www/adm-trisakti
+            cd /repositories/adm-trisakti
             git pull origin dev
+            cp -r SITU-Framework ~/fe-trisakti.amisbudi.cloud 
