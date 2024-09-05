@@ -739,7 +739,11 @@
     "generate-email-nim": "Generate Email & Nim",
     "status-kelengkapan-data": "Kelengkapan Data",
     "document-complete": "Semua dokumen Anda telah lengkap. Silakan menunggu hingga semua dokumen Anda disetujui oleh admin, agar dapat melihat data NIM & Email.",
-    "generate-score": "Klik untuk generate skor"
+    "generate-score": "Klik untuk generate skor",
+    "schedule-selection": "Seleksi Ujian",
+    "schedule-category": "Kategori Ujian",
+    "schedule-session": "Sesi",
+    "schedule-date": "Tanggal"
   },
   "DASHBOARD": {
     "business_process": "Proses Bisnis",
@@ -769,6 +773,7 @@
     "master-type-examp": "Kategori Ujian",
     "master-form-selection": "Formulir",
     "master-stundent-interes": "Minat Camaba",
+    "master-schedules": "Jadwal Ujian",
     "manage-master-mapping": "Mapping",
     "mapping-doc-kategory": "Dokumen to Kategori",
     "mapping-category-prody": "Kategori Formulir to Prodi",
@@ -798,7 +803,8 @@
     "document-new-student": "Data Dokumen",
     "verification-document": "Data Mahasiswa",
     "verification-detail-document": "Detail Data Mahasiswa",
-    "credit-transfer": "Penyetaraan Mata Kuliah"
+    "credit-transfer": "Penyetaraan Mata Kuliah",
+    "schedule-category": "Kategori Ujian"
   },
   "ROOT": {
     "accepted": "Diterima",

@@ -736,7 +736,11 @@
     "generate-email-nim": "Generate Email & Nim",
     "status-kelengkapan-data": "Completeness Status",
     "document-complete": "All your documents are complete. Please wait until all your documents are approved by admin, in order to see NIM & Email data.",
-    "generate-score": "Click to generate score"
+    "generate-score": "Click to generate score",
+    "schedule-selection": "Schedule Selection",
+    "schedule-category": "Schedule Category",
+    "schedule-session": "Session",
+    "schedule-date": "Date"
   },
   "DASHBOARD": {
     "business_process": "Business Process",
@@ -794,7 +798,8 @@
     "document-new-student": "Document Data",
     "verification-document": "New Student Data",
     "verification-detail-document": "New Student Detail Data",
-    "credit-transfer": "Course Equalization"
+    "credit-transfer": "Course Equalization",
+    "schedule-category": "Schedule Category"
   },
   "ROOT": {
     "accepted": "Accepted",

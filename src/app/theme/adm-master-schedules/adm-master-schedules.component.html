@@ -1,6 +1,6 @@
 <div class="row">
   <div class="col-12">
-    <app-card cardTitle="Master Kategori Formulir" cardClass="card-datatable" headerClass="text-center text-md-left"
+    <app-card cardTitle="Master Jadwal Ujian" cardClass="card-datatable" headerClass="text-center text-md-left"
       [hidHeader]="false" [options]="false" [loading]="loader">
 
       <div class="row p-4">
@@ -10,7 +10,10 @@
               <thead class="thead-light">
                 <tr>
                   <th scope="col" style="padding-left: 10px">{{ 'CONTENT.no' | translate}}</th>
-                  <th scope="col">{{ 'CONTENT.form-kategory' | translate}}</th>
+                  <th scope="col">{{ 'CONTENT.schedule-selection' | translate}}</th>
+                  <th scope="col">{{ 'CONTENT.schedule-category' | translate}}</th>
+                  <th scope="col">{{ 'CONTENT.schedule-session' | translate}}</th>
+                  <th scope="col">{{ 'CONTENT.schedule-date' | translate}}</th>
                   <th scope="col" class="center-table">{{ 'CONTENT.active-status' | translate}}</th>
                   <th scope="col" class="center-table">{{ 'CONTENT.action' | translate}}</th>
                 </tr>
@@ -18,7 +21,10 @@
               <tbody *ngIf="tableData?.length != 0">
                 <tr *ngFor="let data of tableData; let i = index;">
                   <th scope="row" style="padding-left: 10px">{{ i+1 }}</th>
-                  <td>{{ data.nama }}</td>
+                  <td>{{ data.selection_path_id }}</td>
+                  <td>{{ data.category_id }}</td>
+                  <td>{{ data.session }}</td>
+                  <td>{{ data.date }}</td>
                   <td class="center-table">
                     <span class="badge badge-{{ data.status == 1 ? 'success' : 'danger' }}">{{
                       data.status == 1 ? ('ROOT.active' | translate) : ('ROOT.nonactive' | translate)}}
@@ -62,7 +68,7 @@
                 <div class="row">
                   <div class="col-sm-12">
                     <div class="form-group mb-2">
-                      <label class="form-label m-b-0 f-w-400">{{ 'CONTENT.form-kategory' | translate }}</label>
+                      <label class="form-label m-b-0 f-w-400">{{ 'CONTENT.schedule-category' | translate }}</label>
                       <input type="text" class="form-control uppercase" name="name" formControlName="name">
                     </div>
                   </div>

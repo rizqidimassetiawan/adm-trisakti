@@ -92,7 +92,7 @@ const Participants = [
 ];
 
 const NewStudent = [
-  {       
+  {
         id: 11,
         title: 'MENU.new-student-data',
         type: 'item',
@@ -285,6 +285,15 @@ const AdminUniversity = [
         hidden: false,
         breadcrumbs: false,
       },
+      {
+        id: 'adm-mr-new-student-data',
+        title: 'MENU.master-schedules',
+        type: 'item',
+        url: '/adm-master-schedules',
+        classes: 'nav-item',
+        hidden: false,
+        breadcrumbs: false,
+      },
     ]
   },
 ];
@@ -349,7 +358,7 @@ const NavigationItems = [
   }
 ];
 
-const participants = 
+const participants =
       {
         id: 'adm-mp-participant-data',
         title: 'MENU.participant-data',
@@ -372,7 +381,7 @@ const participants =
         ]
       }
 
-const pembayaran = 
+const pembayaran =
   {
     id: 'adm-mp-payment-data',
     title: 'MENU.payment-data',
@@ -394,7 +403,7 @@ const pembayaran =
     }
 ]
 
-const dokumen = 
+const dokumen =
   {
     id: 'adm-mp-document-data',
     title: 'MENU.document-data',
@@ -417,7 +426,7 @@ const dokumen =
     ]
   }
 
-const kelulusan = 
+const kelulusan =
   {
     id: 'adm-mp-approval-data',
     title: 'MENU.approval-data',
@@ -428,7 +437,7 @@ const kelulusan =
     breadcrumbs: true,
   }
 
-const persetujuan = 
+const persetujuan =
   {
     id: 'adm-mp-approval-participant-score-data',
     title: 'MENU.approval-participant-score-data',
@@ -439,7 +448,7 @@ const persetujuan =
     breadcrumbs: true,
   }
 
-const score = 
+const score =
   {
     id: 'adm-mp-participant-score-data',
     title: 'MENU.participant-score-data',
@@ -488,7 +497,7 @@ export class NavigationItem {
         this.addOrReplace(participant);
       },this);
     }
-    
+
     if (this.oauthService.checkScope('admission-admisi')) {
       Dashboard.forEach(function(dashboard){
         this.addOrReplace(dashboard);
@@ -506,7 +515,7 @@ export class NavigationItem {
         this.addOrReplace(admin);
       },this);
     }
-    
+
     if (this.oauthService.checkScope('admission-admin')) {
       Admins.forEach(function(admin){
         this.addOrReplace(admin);
@@ -538,7 +547,7 @@ export class NavigationItem {
         this.addOrReplace(adminNewstudent);
       },this);
     }
-    
+
     if (this.oauthService.checkScope('admission-admin-participant')) {
       AdminUniversity.forEach(function(adminUniversity) {
         this.addOrReplace(adminUniversity);
@@ -564,13 +573,13 @@ export class NavigationItem {
         this.addOrReplaceSubAdmin(kelulusan);
       },this);
     }
-    
+
     if (this.oauthService.checkScope('admission-university')) {
       Dashboard.forEach(function(dashboard){
         this.addOrReplace(dashboard);
       },this);
     }
-    
+
     if (this.oauthService.checkScope('admission-university')) {
       AdminUniversity.forEach(function(adminUniversity) {
         this.addOrReplace(adminUniversity);

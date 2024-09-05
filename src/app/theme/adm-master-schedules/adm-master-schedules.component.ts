@@ -68,13 +68,23 @@ export class AdmMasterSchedulesComponent implements OnInit {
   }
 
   createDataDocument(){
-    let nama = this.DataFormFormulir.get('name').value;
+    let seleksiPathId = this.DataFormFormulir.get('selection_path_id').value;
+    let kategoriId = this.DataFormFormulir.get('category_id').value;
+    let sesi = this.DataFormFormulir.get('session').value;
+    let tanggal = this.DataFormFormulir.get('date').value;
     // Memeriksa apakah ID ada untuk menentukan apakah ini operasi edit atau tambah
     if (this.selectionScheduleId !== undefined && this.selectionScheduleId !== '') {
       // Mengedit data yang ada berdasarkan ID
       this.tableData = this.tableData.map(item => {
         if (item.id === this.selectionScheduleId) {
-          return { ...item, nama: nama, status: 1 }; // Update data yang sesuai dengan ID
+          return {
+            ...item,
+            seleksiPathId: seleksiPathId,
+            kategoriId: kategoriId,
+            sesi: sesi,
+            tanggal: tanggal,
+            status: 1
+          }; // Update data yang sesuai dengan ID
         }
         return item; // Kembalikan data lainnya tanpa perubahan
       });
@@ -82,7 +92,10 @@ export class AdmMasterSchedulesComponent implements OnInit {
       // Menambah data baru jika ID tidak ada
       this.tableData.push({
         id : this.tableData.length + 1,
-        nama: nama,
+        seleksiPathId: seleksiPathId,
+        kategoriId: kategoriId,
+        sesi: sesi,
+        tanggal: tanggal,
         status: 1
       });
     }
@@ -91,7 +104,7 @@ export class AdmMasterSchedulesComponent implements OnInit {
 
   loadScheduleDataTable() {
     this.loadtableProgramData = true;
-    this.adminManagementService.getDataFormulir().subscribe(response => {
+    this.adminManagementService.getDataSchedule().subscribe(response => {
       if (response !== null) {
         this.tableData = response.datas;
         this.dtTrigger.next(); // Trigger for load datatable
@@ -118,7 +131,12 @@ export class AdmMasterSchedulesComponent implements OnInit {
 
   editData(e:any){
     this.selectionScheduleId = e.id
-    this.DataFormFormulir.patchValue({name: e.nama});
+    this.DataFormFormulir.patchValue({
+      seleksiPathId: e.seleksiPathId,
+      kategoriId: e.kategoriId,
+      sesi: e.sesi,
+      tanggal: e.tanggal,
+    });
 
   }
 

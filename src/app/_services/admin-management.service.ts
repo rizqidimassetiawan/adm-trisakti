@@ -547,12 +547,12 @@ export class AdminManagementService extends BaseService{
     const url = this.getUrl(this.namespace, 're_raport_requirement_document', params);
     return this.http.get(url);
   }
-  
+
   createUtbkRequirementDocument(body): Observable<any> {
     const url = this.getUrl(this.namespace, 'cr_utbk_requirement_document');
     return this.http.post(url, body);
   }
-  
+
   updateUtbkRequirementDocument(body): Observable<any> {
     const url = this.getUrl(this.namespace, 'upd_utbk_requirement_document');
     return this.http.post(url, body);
@@ -612,12 +612,12 @@ export class AdminManagementService extends BaseService{
     return this.http.post(url, body);
   }
 
-  
+
   getPassingGradeUniversity(params): Observable<any> {
     const url = this.getUrl(this.namespace, 're_approval_participant_score', params);
     return this.http.get(url);
   }
-  
+
   createMoodleCategory(body): Observable<any> {
     const url = this.getUrl(this.namespace, 'cr_moodle_category');
     return this.http.post(url, body);
@@ -678,7 +678,7 @@ export class AdminManagementService extends BaseService{
     return this.http.post(url, body);
   }
 
-  
+
   getMoodleGroup(params): Observable<any> {
     const url = this.getUrl(this.namespace, 're_moodle_group', params);
     return this.http.get(url);
@@ -698,12 +698,12 @@ export class AdminManagementService extends BaseService{
     const url = this.getUrl(this.namespace, 'cr_mapping_doc_new_student');
     return this.http.post(url, body);
   }
-  
+
   deleteMappingDocNewStudent(body): Observable<any> {
     const url = this.getUrl(this.namespace, 'del_mapping_doc_new_student');
     return this.http.post(url, body);
   }
-  
+
   createRegistrationResultProgramStudy(body): Observable<any> {
     const url = this.getUrl(this.namespace, 'cr_registration_result_prodi');
     return this.http.post(url, body);
@@ -718,27 +718,27 @@ export class AdminManagementService extends BaseService{
     const url = this.getUrl(this.namespace, 'up_rejected_status_new_student');
     return this.http.post(url, body);
   }
-  
+
   getProgramStudyByFacultyAdmin(params): Observable<any> {
     const url = this.getUrl(this.namespace, 're_program_study_by_admin_faculty', params);
     return this.http.get(url);
   }
-  
+
   updateCreditTransferAdmin(body): Observable<any> {
     const url = this.getUrl(this.namespace, 'up_mapping_credit_transfer');
     return this.http.post(url, body);
   }
-  
+
   getCreditTransferResult(params): Observable<any> {
     const url = this.getUrl(this.namespace, 'get_credit_transfer_equalization', params);
     return this.http.get(url);
   }
-  
+
   getStudyProgramPassingGrade(params): Observable<any> {
     const url = this.getUrl(this.namespace, 'get_program_study_passing_grade_with_selection_path', params);
     return this.http.get(url);
   }
-  
+
   insertStudentIdEmailStudent(body): Observable<any> {
     const url = this.getUrl(this.namespace, 'insert_student_id_and_email');
     return this.http.post(url, body);
@@ -763,6 +763,9 @@ export class AdminManagementService extends BaseService{
   }
   getDataMinat(): Observable<any> {
     return this.getApi('fake-data/list-minat.json');
+  }
+  getDataSchedule(): Observable<any> {
+    return this.getApi('fake-data/schedules.json');
   }
 
 }
