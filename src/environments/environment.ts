@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  apiUrl: 'https://103.181.182.247:8000',
+  apiUrl: 'http://103.181.182.247:8000',
   appCode: 206
 };
 
