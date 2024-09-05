@@ -1,0 +1,19 @@
+{
+ "datas" : [
+  {
+    "id" : 1,
+    "nama" : "TULIS",
+    "status" : 1
+  },
+  {
+    "id" : 2,
+    "nama" : "LISAN",
+    "status" : 1
+  },
+  {
+    "id" : 3,
+    "nama" : "Open Book",
+    "status" : 1
+  }
+ ]
+}
