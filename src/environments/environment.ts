@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  apiUrl: 'http://103.181.182.247:8000',
+  apiUrl: 'https://gateway.amisbudi.com',
   appCode: 206
 };
 
