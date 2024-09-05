@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  apiUrl: 'https://dev-gateway.trisakti.ac.id',
+  apiUrl: 'http://103.181.182.247:8000',
   appCode: 206
 };
 

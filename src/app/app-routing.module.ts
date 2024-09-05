@@ -192,7 +192,12 @@ const routes: Routes = [
       {
         path: 'error',
         loadChildren: './theme/error/error.module#ErrorModule'
-      }
+      },
+      {
+        path: 'adm-master-schedules',
+        loadChildren: './theme/adm-master-schedules/adm-master-schedules.module#AdmMasterSchedulesModule',
+        data: {animation: '2'}
+      },
     ]
   },
   {
