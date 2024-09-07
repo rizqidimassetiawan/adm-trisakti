@@ -8,6 +8,7 @@ import { NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
 import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CurrencyPipe, formatDate, Location } from '@angular/common';
+import { MapCategoryDocumentService } from 'src/app/_services/map-category-document.service';
 import Swal from 'sweetalert2';
 import { forEach, identity } from 'underscore';
 import { data } from 'jquery';
@@ -71,6 +72,9 @@ export class SelectionDataComponent implements OnInit {
   public registrationStep: string;
   public listRegistrationStep: any;
   public documentType: string;
+  public documentProdi: any = [];
+  public formulirProdi: any = [];
+  public documentArray: any;
   public listDocumentType: any;
   public studyProgram: string;
   public listStudyProgram: any;
@@ -129,6 +133,9 @@ export class SelectionDataComponent implements OnInit {
   public tableSelectionPath: Array<any>;
   public tableDocumentReq: Array<any>;
   public tablePinPrice: Array<any>;
+  public tableFormulir: Array<any>;
+  public tableHeaderDokumen: Array<any>;
+  public tableBodyDokumen: Array<any>;
   public tableStudyProgram: Array<any>;
   public tableStudyProgramMapping: Array<any>;
   public loadtableExamLocData: boolean;
@@ -171,8 +178,12 @@ export class SelectionDataComponent implements OnInit {
   public session: string;
   public isTechnic: string;
   public isTechnicMapp: string;
+  public listMappingDocumen: any;
+  public dataTable: any = [];
   public listSession: Array<any>;
   public listTechnic: Array<any>;
+  public listProdi: any;
+  public listMappingFormulir: any = [];
   public isTechnicMapping: any;
   public studyProgramSelected: string;
   public examId: any;
@@ -224,6 +235,7 @@ export class SelectionDataComponent implements OnInit {
   constructor(
     public translate: TranslateService,
     private broadcasterService: BroadcasterService,
+    private mapCategoryDocumentService : MapCategoryDocumentService,
     private fb: FormBuilder,
     private route: ActivatedRoute,
     private router: Router,
@@ -603,6 +615,20 @@ export class SelectionDataComponent implements OnInit {
       quota: new FormControl('', [Validators.required]),
       active_status: new FormControl('', [Validators.required]),
     });
+
+    this.mapCategoryDocumentService.getListMap().subscribe((element)=>{
+      this.listMappingDocumen = element.datas
+    })
+    this.mapCategoryDocumentService.getMapFormulir().subscribe((element)=>{
+      this.listMappingFormulir = element.datas
+    })
+
+    this.mapCategoryDocumentService.getListProdi().subscribe((element)=>{
+      this.listProdi = element.data.map((e)=>{
+        return { value : e.id, label : e.nama_prodi}
+      })
+    })
+
     this.dtOptions[0] = {
       pagingType: 'full_numbers',
       pageLength: 10,
@@ -1619,6 +1645,10 @@ export class SelectionDataComponent implements OnInit {
       this.documentRequirementsForm.reset();
     }
     this.documentRequirementsModal.show();
+  }
+
+  changeTest(event){
+    console.log(event)
   }
 
   changeDocumentRequirementType(event) {
@@ -3284,304 +3314,383 @@ export class SelectionDataComponent implements OnInit {
   }
 
   // create step 4
-  createDocumentRequirementsData() {
-    if (this.documentRequirementsForm.valid) {
-      this.loading = true;
-      if (this.isReport) {
-        switch (this.formType) {
-          case 'input':
-            let arrayToObjectTechnic = Object.assign({}, ...this.mappingTechnic);
-            let arrayToObjectNonTechnic = Object.assign({}, ...this.mappingNonTechnic);
-            let dataCreate = {};
-            dataCreate =
-            {
-              selection_path_id: this.id,
-              document_type_id: this.documentType,
-              active_status: this.documentRequirementsForm.value.active_status === '1' ? true : false,
-              required: this.documentRequirementsForm.value.mandatory_doc === '1' ? true : false,
-              mapping_report_subject_path_technic: arrayToObjectTechnic,
-              mapping_report_subject_path_non_technic: arrayToObjectNonTechnic
-            }
-            const myJson = JSON.stringify(dataCreate);
-            let payload = {
-              json: myJson
-            }
-            this.chartService.createRaportRequirementDocument(payload).subscribe(res => {
-              if (res != null) {
-                if (res.status == 'Success') {
-                  this.loadSuccess();
-                  this.documentRequirementsModal.hide();
-                  this.renderDocumentRequirements();
-                  this.documentRequirementsForm.reset();
-                } else {
-                  this.loadError();
-                }
-              } else {
-                this.loadError();
-              }
-            }, (reason) => {
-              this.loadError();
-            });
-            break;
-          case 'edit':
-            this.mappingTechnic.map(x => {
-              x.id = this.mappingTechnicId,
-                x.selection_path_id = this.id,
-                x.active_status = this.documentRequirementsForm.value.active_status === '1' ? true : false,
-                x.is_technic = true
-            });
-            this.mappingNonTechnic.map(y => {
-              y.id = this.mappingNonTechnicId,
-                y.selection_path_id = this.id,
-                y.active_status = this.documentRequirementsForm.value.active_status === '1' ? true : false,
-                y.is_technic = false
-            });
-            let arrayToObjectTechnicUpd = Object.assign({}, ...this.mappingTechnic);
-            let arrayToObjectNonTechnicUpd = Object.assign({}, ...this.mappingNonTechnic);
-            let dataUpdate = {};
-            dataUpdate =
-            {
-              id: this.documentSelectionId,
-              selection_path_id: this.id,
-              document_type_id: this.documentType,
-              active_status: this.documentRequirementsForm.value.active_status === '1' ? true : false,
-              required: this.documentRequirementsForm.value.mandatory_doc === '1' ? true : false,
-              mapping_report_subject_path_technic: arrayToObjectTechnicUpd,
-              mapping_report_subject_path_non_technic: arrayToObjectNonTechnicUpd
-            }
-            const myJsonUpdate = JSON.stringify(dataUpdate);
-            let payloadUpdate = {
-              json: myJsonUpdate
-            }
-            this.chartService.updateRaportRequirementDocument(payloadUpdate).subscribe(res => {
-              if (res != null) {
-                if (res.status == 'Success') {
-                  this.loadSuccess();
-                  this.documentRequirementsModal.hide();
-                  this.renderDocumentRequirements();
-                  this.documentRequirementsForm.reset();
-                } else {
-                  this.loadError();
-                }
-              } else {
-                this.loadError();
-              }
-            }, (reason) => {
-              this.loadError();
-            });
-            break;
-          default: break;
-        }
-      } else if (this.isUtbkDocument) {
-        switch (this.formType) {
-          case 'input':
-            let arrayToObjectScience = Object.assign({}, ...this.mappingUtbkScience);
-            let arrayToObjectNonScience = Object.assign({}, ...this.mappingUtbkNonScience);
-            let dataCreate = {};
-            dataCreate =
-            {
-              selection_path_id: this.id,
-              document_type_id: this.documentType,
-              active_status: this.documentRequirementsForm.value.active_status === '1' ? true : false,
-              required: this.documentRequirementsForm.value.mandatory_doc === '1' ? true : false,
-              mapping_utbk_path_science: arrayToObjectScience,
-              mapping_utbk_path_non_science: arrayToObjectNonScience
-            }
-            const myJson = JSON.stringify(dataCreate);
-            let payload = {
-              json: myJson
-            }
-            this.chartService.createUtbkRequirementDocument(payload).subscribe(res => {
-              if (res != null) {
-                if (res.status == 'Success') {
-                  this.loadSuccess();
-                  this.closeDocumentReqModals();
-                  this.renderDocumentRequirements();
-                } else {
-                  this.loadError();
-                }
-              } else {
-                this.loadError();
-              }
-            }, (reason) => {
-              this.loadError();
-            });
-            break;
-          case 'edit':
-            this.mappingUtbkScience.map(x => {
-              x.id = this.mappingTechnicId,
-                x.selection_path_id = this.id,
-                x.active_status = this.documentRequirementsForm.value.active_status === '1' ? true : false,
-                x.is_science = true
-            });
-            this.mappingUtbkNonScience.map(y => {
-              y.id = this.mappingNonTechnicId,
-                y.selection_path_id = this.id,
-                y.active_status = this.documentRequirementsForm.value.active_status === '1' ? true : false,
-                y.is_science = false
-            });
-            let arrayToObjectTechnicUpd = Object.assign({}, ...this.mappingUtbkScience);
-            let arrayToObjectNonTechnicUpd = Object.assign({}, ...this.mappingUtbkNonScience);
-            let dataUpdate = {};
-            dataUpdate =
-            {
-              id: this.documentSelectionId,
-              selection_path_id: this.id,
-              document_type_id: this.documentType,
-              active_status: this.documentRequirementsForm.value.active_status === '1' ? true : false,
-              required: this.documentRequirementsForm.value.mandatory_doc === '1' ? true : false,
-              mapping_utbk_path_science: arrayToObjectTechnicUpd,
-              mapping_utbk_path_non_science: arrayToObjectNonTechnicUpd
-            }
-            const myJsonUpdate = JSON.stringify(dataUpdate);
-            let payloadUpdate = {
-              json: myJsonUpdate
-            }
-            this.chartService.updateUtbkRequirementDocument(payloadUpdate).subscribe(res => {
-              if (res != null) {
-                if (res.status == 'Success') {
-                  this.loadSuccess();
-                  this.renderDocumentRequirements();
-                  this.closeDocumentReqModals();
-                } else {
-                  this.loadError();
-                }
-              } else {
-                this.loadError();
-              }
-            }, (reason) => {
-              this.loadError();
-            });
-            break;
-          default: break;
-        }
+  // createDocumentRequirementsData() {
+    
+  //   if (this.documentRequirementsForm.valid) {
+  //     this.loading = true;
+  //     if (this.isReport) {
+  //       switch (this.formType) {
+  //         case 'input':
+  //           let arrayToObjectTechnic = Object.assign({}, ...this.mappingTechnic);
+  //           let arrayToObjectNonTechnic = Object.assign({}, ...this.mappingNonTechnic);
+  //           let dataCreate = {};
+  //           dataCreate =
+  //           {
+  //             selection_path_id: this.id,
+  //             document_type_id: this.documentType,
+  //             active_status: this.documentRequirementsForm.value.active_status === '1' ? true : false,
+  //             required: this.documentRequirementsForm.value.mandatory_doc === '1' ? true : false,
+  //             mapping_report_subject_path_technic: arrayToObjectTechnic,
+  //             mapping_report_subject_path_non_technic: arrayToObjectNonTechnic
+  //           }
+  //           const myJson = JSON.stringify(dataCreate);
+  //           let payload = {
+  //             json: myJson
+  //           }
+  //           this.chartService.createRaportRequirementDocument(payload).subscribe(res => {
+  //             if (res != null) {
+  //               if (res.status == 'Success') {
+  //                 this.loadSuccess();
+  //                 this.documentRequirementsModal.hide();
+  //                 this.renderDocumentRequirements();
+  //                 this.documentRequirementsForm.reset();
+  //               } else {
+  //                 this.loadError();
+  //               }
+  //             } else {
+  //               this.loadError();
+  //             }
+  //           }, (reason) => {
+  //             this.loadError();
+  //           });
+  //           break;
+  //         case 'edit':
+  //           this.mappingTechnic.map(x => {
+  //             x.id = this.mappingTechnicId,
+  //               x.selection_path_id = this.id,
+  //               x.active_status = this.documentRequirementsForm.value.active_status === '1' ? true : false,
+  //               x.is_technic = true
+  //           });
+  //           this.mappingNonTechnic.map(y => {
+  //             y.id = this.mappingNonTechnicId,
+  //               y.selection_path_id = this.id,
+  //               y.active_status = this.documentRequirementsForm.value.active_status === '1' ? true : false,
+  //               y.is_technic = false
+  //           });
+  //           let arrayToObjectTechnicUpd = Object.assign({}, ...this.mappingTechnic);
+  //           let arrayToObjectNonTechnicUpd = Object.assign({}, ...this.mappingNonTechnic);
+  //           let dataUpdate = {};
+  //           dataUpdate =
+  //           {
+  //             id: this.documentSelectionId,
+  //             selection_path_id: this.id,
+  //             document_type_id: this.documentType,
+  //             active_status: this.documentRequirementsForm.value.active_status === '1' ? true : false,
+  //             required: this.documentRequirementsForm.value.mandatory_doc === '1' ? true : false,
+  //             mapping_report_subject_path_technic: arrayToObjectTechnicUpd,
+  //             mapping_report_subject_path_non_technic: arrayToObjectNonTechnicUpd
+  //           }
+  //           const myJsonUpdate = JSON.stringify(dataUpdate);
+  //           let payloadUpdate = {
+  //             json: myJsonUpdate
+  //           }
+  //           this.chartService.updateRaportRequirementDocument(payloadUpdate).subscribe(res => {
+  //             if (res != null) {
+  //               if (res.status == 'Success') {
+  //                 this.loadSuccess();
+  //                 this.documentRequirementsModal.hide();
+  //                 this.renderDocumentRequirements();
+  //                 this.documentRequirementsForm.reset();
+  //               } else {
+  //                 this.loadError();
+  //               }
+  //             } else {
+  //               this.loadError();
+  //             }
+  //           }, (reason) => {
+  //             this.loadError();
+  //           });
+  //           break;
+  //         default: break;
+  //       }
+  //     } else if (this.isUtbkDocument) {
+  //       switch (this.formType) {
+  //         case 'input':
+  //           let arrayToObjectScience = Object.assign({}, ...this.mappingUtbkScience);
+  //           let arrayToObjectNonScience = Object.assign({}, ...this.mappingUtbkNonScience);
+  //           let dataCreate = {};
+  //           dataCreate =
+  //           {
+  //             selection_path_id: this.id,
+  //             document_type_id: this.documentType,
+  //             active_status: this.documentRequirementsForm.value.active_status === '1' ? true : false,
+  //             required: this.documentRequirementsForm.value.mandatory_doc === '1' ? true : false,
+  //             mapping_utbk_path_science: arrayToObjectScience,
+  //             mapping_utbk_path_non_science: arrayToObjectNonScience
+  //           }
+  //           const myJson = JSON.stringify(dataCreate);
+  //           let payload = {
+  //             json: myJson
+  //           }
+  //           this.chartService.createUtbkRequirementDocument(payload).subscribe(res => {
+  //             if (res != null) {
+  //               if (res.status == 'Success') {
+  //                 this.loadSuccess();
+  //                 this.closeDocumentReqModals();
+  //                 this.renderDocumentRequirements();
+  //               } else {
+  //                 this.loadError();
+  //               }
+  //             } else {
+  //               this.loadError();
+  //             }
+  //           }, (reason) => {
+  //             this.loadError();
+  //           });
+  //           break;
+  //         case 'edit':
+  //           this.mappingUtbkScience.map(x => {
+  //             x.id = this.mappingTechnicId,
+  //               x.selection_path_id = this.id,
+  //               x.active_status = this.documentRequirementsForm.value.active_status === '1' ? true : false,
+  //               x.is_science = true
+  //           });
+  //           this.mappingUtbkNonScience.map(y => {
+  //             y.id = this.mappingNonTechnicId,
+  //               y.selection_path_id = this.id,
+  //               y.active_status = this.documentRequirementsForm.value.active_status === '1' ? true : false,
+  //               y.is_science = false
+  //           });
+  //           let arrayToObjectTechnicUpd = Object.assign({}, ...this.mappingUtbkScience);
+  //           let arrayToObjectNonTechnicUpd = Object.assign({}, ...this.mappingUtbkNonScience);
+  //           let dataUpdate = {};
+  //           dataUpdate =
+  //           {
+  //             id: this.documentSelectionId,
+  //             selection_path_id: this.id,
+  //             document_type_id: this.documentType,
+  //             active_status: this.documentRequirementsForm.value.active_status === '1' ? true : false,
+  //             required: this.documentRequirementsForm.value.mandatory_doc === '1' ? true : false,
+  //             mapping_utbk_path_science: arrayToObjectTechnicUpd,
+  //             mapping_utbk_path_non_science: arrayToObjectNonTechnicUpd
+  //           }
+  //           const myJsonUpdate = JSON.stringify(dataUpdate);
+  //           let payloadUpdate = {
+  //             json: myJsonUpdate
+  //           }
+  //           this.chartService.updateUtbkRequirementDocument(payloadUpdate).subscribe(res => {
+  //             if (res != null) {
+  //               if (res.status == 'Success') {
+  //                 this.loadSuccess();
+  //                 this.renderDocumentRequirements();
+  //                 this.closeDocumentReqModals();
+  //               } else {
+  //                 this.loadError();
+  //               }
+  //             } else {
+  //               this.loadError();
+  //             }
+  //           }, (reason) => {
+  //             this.loadError();
+  //           });
+  //           break;
+  //         default: break;
+  //       }
 
-      } else {
-        switch (this.formType) {
-          case 'input':
-            let payload = {};
-            const data = {
-              selection_path_id: this.id,
-              document_type_id: this.documentRequirementsForm.controls['document_type_id'].value,
-              active_status: this.documentRequirementsForm.controls['active_status'].value,
-              required: this.documentRequirementsForm.controls['mandatory_doc'].value,
-              is_value: this.documentRequirementsForm.controls['is_input_nilai'].value,
-            };
-            this.chartService.postSelectionDocument(data).subscribe(res => {
-              if (res != null) {
-                if (res.status == 'Success') {
-                  this.loadSuccess();
-                  this.documentRequirementsModal.hide();
-                  this.documentRequirementsForm.reset();
-                  this.renderDocumentRequirements();
-                } else {
-                  this.loadError();
-                }
-              } else {
-                this.loadError();
-              }
-            }, (reason) => {
-              this.loadError();
-            });
-            break;
-          case 'edit':
-            const dataUpdate = {
-              id: this.documentSelectionId,
-              selection_path_id: this.id,
-              document_type_id: this.documentRequirementsForm.value.document_type_id,
-              active_status: this.documentRequirementsForm.value.active_status,
-              required: this.documentRequirementsForm.value.mandatory_doc,
-              is_value: this.documentRequirementsForm.controls['is_input_nilai'].value,
-            };
-            this.chartService.updSelectionDocument(dataUpdate).subscribe(res => {
-              if (res != null) {
-                if (res.status == 'Success') {
-                  this.loadSuccess();
-                  this.documentRequirementsModal.hide();
-                  this.documentRequirementsForm.reset();
-                  this.renderDocumentRequirements();
-                } else {
-                  this.loadError();
-                }
-              } else {
-                this.loadError();
-              }
-            }, (reason) => {
-              this.loadError();
-            });
-            break;
-          default: break;
+  //     } else {
+  //       switch (this.formType) {
+  //         case 'input':
+  //           let payload = {};
+  //           const data = {
+  //             selection_path_id: this.id,
+  //             document_type_id: this.documentRequirementsForm.controls['document_type_id'].value,
+  //             active_status: this.documentRequirementsForm.controls['active_status'].value,
+  //             required: this.documentRequirementsForm.controls['mandatory_doc'].value,
+  //             is_value: this.documentRequirementsForm.controls['is_input_nilai'].value,
+  //           };
+  //           this.chartService.postSelectionDocument(data).subscribe(res => {
+  //             if (res != null) {
+  //               if (res.status == 'Success') {
+  //                 this.loadSuccess();
+  //                 this.documentRequirementsModal.hide();
+  //                 this.documentRequirementsForm.reset();
+  //                 this.renderDocumentRequirements();
+  //               } else {
+  //                 this.loadError();
+  //               }
+  //             } else {
+  //               this.loadError();
+  //             }
+  //           }, (reason) => {
+  //             this.loadError();
+  //           });
+  //           break;
+  //         case 'edit':
+  //           const dataUpdate = {
+  //             id: this.documentSelectionId,
+  //             selection_path_id: this.id,
+  //             document_type_id: this.documentRequirementsForm.value.document_type_id,
+  //             active_status: this.documentRequirementsForm.value.active_status,
+  //             required: this.documentRequirementsForm.value.mandatory_doc,
+  //             is_value: this.documentRequirementsForm.controls['is_input_nilai'].value,
+  //           };
+  //           this.chartService.updSelectionDocument(dataUpdate).subscribe(res => {
+  //             if (res != null) {
+  //               if (res.status == 'Success') {
+  //                 this.loadSuccess();
+  //                 this.documentRequirementsModal.hide();
+  //                 this.documentRequirementsForm.reset();
+  //                 this.renderDocumentRequirements();
+  //               } else {
+  //                 this.loadError();
+  //               }
+  //             } else {
+  //               this.loadError();
+  //             }
+  //           }, (reason) => {
+  //             this.loadError();
+  //           });
+  //           break;
+  //         default: break;
+  //       }
+  //     }
+  //   }
+  // }
+  
+  createDocumentRequirementsData(){
+    let idProdi = []
+    let tableBody = []
+    let header = []
+    let data1 = {}
+    let data2 = {}
+
+    this.documentProdi.forEach((element: any) => {
+      idProdi = [...new Set([...idProdi, element])]
+    });
+
+    this.listMappingDocumen.forEach(element => {
+      idProdi.forEach((dat)=>{
+        if(dat == element.prodi_fk){
+          const isUniqueHeader = !header.some((item) => item.nama_dokumen === element.nama_dokumen );
+          const isUnique = !tableBody.some((item) => item.nama_prodi === element.nama_prodi );
+          if(isUniqueHeader){
+            data2 = {
+              nama_dokumen : element.nama_dokumen,
+              dokumen_id : element.dokumen_fk,
+            }
+            header = [...new Set([...header, data2 ])]
+          }
+          
+          this.tableHeaderDokumen = header
+
+          if(isUnique){
+            data1 = {
+              id : tableBody.length + 1,
+              nama_prodi : element.nama_prodi,
+              prodi_id : element.prodi_fk,
+            }
+            tableBody = [...new Set([...tableBody, data1 ])]
+          }
         }
-      }
-    }
+      })
+    });
+
+    this.tableBodyDokumen = tableBody
+    console.log(this.tableHeaderDokumen)
+    console.log(this.tableBodyDokumen)
   }
+
 
   // create step 5
   createDetailPINPriceData() {
-    if (this.pinPriceForm.valid) {
-      this.loading = true;
-      switch (this.formType) {
-        case 'input':
-          const data = {
-            selection_path_id: this.id,
-            price: this.pinPriceForm.controls['price'].value,
-            maks_study_program: this.pinPriceForm.controls['maks_study_program'].value,
-            active_status: this.pinPriceForm.controls['active_status'].value,
-            // category: this.categoryFormPrice,
-            is_medical: this.isMedical
-          };
-          this.chartService.postPINPriceData(data).subscribe(res => {
-            if (res != null) {
-              if (res.status == 'Success') {
-                this.loadSuccess();
-                this.pinPriceDataModal.hide();
-                this.renderDetailPINPrice();
-                this.checkActivePinPrice();
-                this.loading = false;
-              } else {
-                this.loadError();
-                this.loading = false;
-              }
-            } else {
-              this.loadError();
-              this.loading = false;
-            }
-          }, (reason) => {
-            this.loadError();
-          });
-          break;
-        case 'edit':
-          const dataUpdate = {
-            id: this.pinPriceId,
-            selection_path_id: this.id,
-            price: this.pinPriceForm.value.price,
-            maks_study_program: this.pinPriceForm.value.maks_study_program,
-            active_status: this.pinPriceForm.value.active_status,
-            is_medical: this.isMedical
-          };
-          this.chartService.updPINPriceData(dataUpdate).subscribe(res => {
-            if (res != null) {
-              if (res.status == 'Success') {
-                this.loadSuccess();
-                this.pinPriceDataModal.hide();
-                this.renderDetailPINPrice();
-                this.checkActivePinPrice();
-                this.loading = false;
-              } else {
-                this.loadError();
-                this.loading = false;
-              }
-            } else {
-              this.loadError();
-              this.loading = false;
-            }
-          }, (reason) => {
-            this.loadError();
-          });
-          break;
-        default: break;
+    let idProdi = []
+    let table = []
+    this.formulirProdi.forEach((element: any) => {
+      idProdi = [...new Set([...idProdi, element])]
+    });
+
+    this.listMappingFormulir.forEach(element => {
+      idProdi.forEach((dat)=>{
+        if(dat == element.prodi_fk){
+          element.id = table.length + 1
+          table = [...new Set([...table, element ])]
+        }
+      })
+    });
+
+    this.tableFormulir = table
+    // if (this.pinPriceForm.valid) {
+    //   this.loading = true;
+    //   switch (this.formType) {
+    //     case 'input':
+    //       const data = {
+    //         selection_path_id: this.id,
+    //         price: this.pinPriceForm.controls['price'].value,
+    //         maks_study_program: this.pinPriceForm.controls['maks_study_program'].value,
+    //         active_status: this.pinPriceForm.controls['active_status'].value,
+    //         // category: this.categoryFormPrice,
+    //         is_medical: this.isMedical
+    //       };
+    //       this.chartService.postPINPriceData(data).subscribe(res => {
+    //         if (res != null) {
+    //           if (res.status == 'Success') {
+    //             this.loadSuccess();
+    //             this.pinPriceDataModal.hide();
+    //             this.renderDetailPINPrice();
+    //             this.checkActivePinPrice();
+    //             this.loading = false;
+    //           } else {
+    //             this.loadError();
+    //             this.loading = false;
+    //           }
+    //         } else {
+    //           this.loadError();
+    //           this.loading = false;
+    //         }
+    //       }, (reason) => {
+    //         this.loadError();
+    //       });
+    //       break;
+    //     case 'edit':
+    //       const dataUpdate = {
+    //         id: this.pinPriceId,
+    //         selection_path_id: this.id,
+    //         price: this.pinPriceForm.value.price,
+    //         maks_study_program: this.pinPriceForm.value.maks_study_program,
+    //         active_status: this.pinPriceForm.value.active_status,
+    //         is_medical: this.isMedical
+    //       };
+    //       this.chartService.updPINPriceData(dataUpdate).subscribe(res => {
+    //         if (res != null) {
+    //           if (res.status == 'Success') {
+    //             this.loadSuccess();
+    //             this.pinPriceDataModal.hide();
+    //             this.renderDetailPINPrice();
+    //             this.checkActivePinPrice();
+    //             this.loading = false;
+    //           } else {
+    //             this.loadError();
+    //             this.loading = false;
+    //           }
+    //         } else {
+    //           this.loadError();
+    //           this.loading = false;
+    //         }
+    //       }, (reason) => {
+    //         this.loadError();
+    //       });
+    //       break;
+    //     default: break;
+    //   }
+    // }
+  }
+
+  deleteDataDocument (data){
+    Swal.fire({
+      title: this.confirmation,
+      text: this.sure,
+      type: 'question',
+      showConfirmButton: true,
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#ffba57',
+      confirmButtonText: this.yes,
+      cancelButtonText: this.no
+    }).then((confirm) => {
+      if (confirm.value) {
+         this.tableFormulir = this.tableFormulir.filter(item => item.id !== data.id);
       }
-    }
+    });
   }
 
   // create step 6

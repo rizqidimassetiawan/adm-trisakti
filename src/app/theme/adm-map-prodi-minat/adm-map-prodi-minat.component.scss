@@ -1,0 +1,29 @@
+td {
+  table-layout: fixed;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+}
+
+th {
+  table-layout: fixed;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+}
+
+.center-table {
+  text-align: center;
+}
+
+.center-text {
+  display: inline-flex;
+  text-align: center;
+}
+
+.divider {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+.set-center {
+  display: flex;
+  justify-content: space-around;
+}

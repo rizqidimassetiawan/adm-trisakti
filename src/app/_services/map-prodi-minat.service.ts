@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
 @Injectable({
   providedIn: 'root'
 })
-export class MapCategoryDocumentService extends BaseService {
+export class MapProdiMinatService extends BaseService {
 
   namespace = "map_category_document";
   
@@ -16,17 +16,14 @@ export class MapCategoryDocumentService extends BaseService {
     super(http);
   }
 
-  getListDocument(): Observable<any> {
-    return this.getApi('fake-data/document-list_id.json');
+  getListMinat(): Observable<any> {
+    return this.getApi('fake-data/list-minat.json');
   }
   getListProdi(): Observable<any> {
     return this.getApi('fake-data/prodi-list_id.json');
   }
   getListMap(): Observable<any> {
     return this.getApi('fake-data/map-prodi-category.json');
-  }
-  getMapFormulir(): Observable<any> {
-    return this.getApi('fake-data/map-prodi-formulir.json');
   }
   // simpanData(e:any): Observable<any> {
   //   return this.getApi('assets/fake-data/db.json',e);

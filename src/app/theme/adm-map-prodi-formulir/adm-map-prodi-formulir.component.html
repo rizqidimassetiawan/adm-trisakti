@@ -1,0 +1,118 @@
+<div class="row">
+  <div class="col-12">
+    <app-card cardTitle="Mapping Prodi to Formulir" cardClass="card-datatable" headerClass="text-center text-md-left"
+      [hidHeader]="false" [options]="false" [loading]="loader">
+
+      <div class="row p-4">
+        <div class="col-12 col-md-8">
+          <div class="table-responsive pb-1 pr-5">
+            <table datatable class="table table-hover" [dtOptions]="dtOptions" [dtTrigger]="dtTrigger">
+              <thead class="thead-light">
+                <tr>
+                  <th scope="col" style="padding-left: 10px">{{ 'CONTENT.no' | translate}}</th>
+                  <th scope="col">{{ 'CONTENT.label-prodi' | translate}}</th>
+                  <th scope="col" class="center-table">{{ 'CONTENT.name' | translate}}</th>
+                  <th scope="col" class="center-table">{{ 'CONTENT.price' | translate}}</th>
+                  <th scope="col" class="center-table">{{ 'CONTENT.medical-type' | translate}}</th>
+                  <th scope="col" class="center-table">{{ 'CONTENT.action' | translate}}</th>
+                </tr>
+              </thead>
+              <tbody *ngIf="tableData?.length != 0">
+                <tr *ngFor="let data of tableData; let i = index;">
+                  <th scope="row" style="padding-left: 10px">{{ i+1 }}</th>
+                  <td>{{ data.nama_prodi }}</td>
+                  <td>{{ data.nama_formulir }}</td>
+                  <td>{{ data.harga }}</td>
+                  <td class="center-table">
+                    <span class="badge badge-{{ data.kategori_formulir == 1 ? 'success' : 'primary' }}">{{
+                      data.kategori_formulir == 1 ? ('CONTENT.label-medis' | translate) : ('CONTENT.label-nonmedis' | translate)}}
+                    </span>
+                  </td>
+                  <td class="center-table">
+                    <button class="btn btn-warning btn-sm btn-round has-ripple" [placement]="'top'"
+                      ngbTooltip="{{'ROOT.edit' | translate}}" (click)="editData(data);">
+                      <i class="icofont icofont-ui-edit"></i> <span class="d-sm-none"> {{'ROOT.edit' |
+                        translate}}</span>
+                    </button>
+                    <button class="btn btn-danger btn-sm btn-round has-ripple m-1" [placement]="'top'"
+                      ngbTooltip="{{'ROOT.delete' | translate}}" (click)="deleteDataDocument(data)">
+                      <i class="icofont icofont-ui-delete"></i> <span class="d-sm-none"> {{'ROOT.detail' |
+                        translate}}</span>
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+              <tbody *ngIf="tableData?.length == 0 && !loadtableApprovalData">
+                <tr>
+                  <td colspan="4" class="no-data-available text-center">Data tidak ditemukan!</td>
+                  <td class="hidden"></td>
+                  <td class="hidden"></td>
+                  <td class="hidden"></td>
+                </tr>
+              </tbody>
+              <tbody *ngIf="tableData?.length == 0 && loadtableApprovalData">
+                <tr>
+                  <td colspan="4" class="no-data-available text-center">Loading Data....</td>
+                  <td class="hidden"></td>
+                  <td class="hidden"></td>
+                  <td class="hidden"></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="col-12 col-md-4">
+          <app-card cardTitle="{{'CONTENT.form-data' | translate }}" [hidHeader]="false" [options]="false">
+            <div class="col-12 pt-3">
+              <form [formGroup]="DataFormFormulir" (ngSubmit)="createDataDocument()"
+                class="md-float-material form-material" action="javascript:">
+                <div class="row">
+                  <div class="col-12 mb-3">
+                    <label class="label f-w-600">Pilih Prodi</label>
+                    <ng-select [(ngModel)]="selectionProdiId" name="year" [options]="listSelectionProdi" [ngClass]="'custom bg-white'"
+                      [ngModelOptions]="{ standalone: true }"></ng-select>
+                  </div>
+                  <div class="col-sm-12">
+                    <div class="form-group mb-2">
+                      <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.name' | translate }}</label>
+                      <input type="text" class="form-control uppercase" name="name" formControlName="name">
+                    </div>
+                  </div>
+                  <div class="col-sm-12">
+                    <div class="form-group mb-2">
+                      <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.label-price' | translate }}</label>
+                      <input type="text" appRupiahFormat  class="form-control uppercase" name="harga" formControlName="harga">
+                    </div>
+                  </div>
+                  <div class="col-sm-12 form-group mb-2">
+                    <h6 class="form-label m-b-0 f-w-600">{{ 'CONTENT.medical-type'| translate}}</h6> <br>
+                    <div class="custom-control custom-radio custom-control-inline mr-4">
+                      <input type="radio" id="medical-type1" name="medicalType" class="custom-control-input" value="1" required
+                        formControlName="medicalType">
+                      <label class="custom-control-label " for="medical-type1">{{ 'CONTENT.label-medis' | translate }}</label>
+                    </div>
+                    <div class="custom-control custom-radio custom-control-inline ml-4">
+                      <input type="radio" id="medical-type2" name="medicalType" class="custom-control-input" value="2" required
+                        formControlName="medicalType">
+                      <label class="custom-control-label" for="medical-type2">{{ 'CONTENT.label-nonmedis' | translate }}</label>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 pt-3 pl-4 pr-4 pb-2 mt-4">
+                  <button class="btn btn-info btn-round btn-md btn-block">
+                    <i class="icofont icofont-save pr-2"></i> Simpan
+                  </button>
+                </div>
+              </form>
+              <div class="col-12 pl-4 pr-4">
+                <button class="btn btn-outline-danger btn-round btn-md btn-block" (click)="batal()">
+                  <i class="icofont icofont-save pr-2"></i> Batal
+                </button>
+              </div>
+            </div>
+          </app-card>
+        </div>
+      </div>
+    </app-card>
+  </div>
+</div>

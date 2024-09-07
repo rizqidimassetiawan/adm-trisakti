@@ -398,6 +398,42 @@
                     <thead class="thead-light">
                       <tr>
                         <th scope="col" style="padding-left: 10px">{{ 'CONTENT.no' | translate}}</th>
+                        <th scope="col">Prodi<th>
+                        <th scope="col" *ngFor="let test of tableHeaderDokumen; let i = index;">{{test}}</th>
+                        <!-- <th scope="col" class="center-table">{{ 'CONTENT.action' | translate}}</th> -->
+                      </tr>
+                    </thead>
+                    <tbody *ngIf="tableBodyDokumen?.length != 0">
+                      <tr *ngFor="let data of tableBodyDokumen; let i = index;">
+                        <th scope="row" style="padding-left: 10px">{{ i+1 }}</th>
+                        <td>{{ data.nama_prodi }}</td>
+                        <td scope="col" *ngFor="let cek of tableHeaderDokumen; let i = index;">{{cek.dokumen_id}}</td>
+                      </tr>
+                    </tbody>
+                    <tbody *ngIf="tableBodyDokumen?.length == 0 && !loadtableSelectionDocumentData">
+                      <tr>
+                        <td colspan="5" class="no-data-available text-center">Data tidak ditemukan!</td>
+                        <td class="hidden"></td>
+                        <td class="hidden"></td>
+                        <td class="hidden"></td>
+                        <td class="hidden"></td>
+                      </tr>
+                    </tbody>
+                    <tbody *ngIf="tableDocumentReq?.length == 0 && loadtableSelectionDocumentData">
+                      <tr>
+                        <td colspan="5" class="no-data-available text-center">Loading Data....</td>
+                        <td class="hidden"></td>
+                        <td class="hidden"></td>
+                        <td class="hidden"></td>
+                        <td class="hidden"></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <!-- <table datatable class="table table-striped table-hover" [dtOptions]="dtOptions[4]"
+                    [dtTrigger]="dtTrigger4">
+                    <thead class="thead-light">
+                      <tr>
+                        <th scope="col" style="padding-left: 10px">{{ 'CONTENT.no' | translate}}</th>
                         <th scope="col">{{ 'CONTENT.document-name' | translate}}</th>
                         <th scope="col" class="center-table">{{ 'CONTENT.document-type' | translate}}</th>
                         <th scope="col" class="center-table">
@@ -448,7 +484,7 @@
                         <td class="hidden"></td>
                       </tr>
                     </tbody>
-                  </table>
+                  </table> -->
                 </div>
               </app-card>
               <div class="col text-center">
@@ -462,6 +498,93 @@
           </div>
         </wizard-step>
         <wizard-step stepTitle="{{'CONTENT.pin-price-data' | translate}}" navigationSymbol="4">
+          <div class="row">
+            <div class="col-md-12">
+              <app-alert type="info" class="text-justify">{{ 'CONTENT.info-pin-price-active' | translate}}</app-alert>
+              <app-card cardTitle="{{ 'CONTENT.pin-price-data' | translate }}" cardClass="card-datatable"
+                headerClass="text-center text-md-left" [hidHeader]="false" [options]="false"
+                [loading]="loadtablePINPriceData">
+                <form class="md-float-material form-material" action="javascript:">
+                  <div class="row p-2">
+                    <div class="col-md-3">
+                      <div class="form-group mb-2">
+                        <ng-select name="activeStatusStep5" [allowClear]="false"
+                          [placeholder]="'CONTENT.active-status' | translate" [ngClass]="'custom bg-white'"
+                          [notFoundMsg]="'ROOT.no_data_found'|translate" [(ngModel)]="activeStatusStep5"
+                          (deselected)="onDeselected('activeStatusStep5')" [options]="listActiveStatusFilters"
+                          (selected)="applyFiltersPinPrice(activeStatusStep5)"></ng-select>
+                      </div>
+                    </div>
+                    <div class="col-9 text-center text-md-right">
+                      <button class="btn btn-success btn-sm btn-round has-ripple"
+                        (click)="openFormPinPrice(null, 'input')" [disabled]="isDataPinPriceActive">
+                        <i class="icofont icofont-plus"></i> {{'CONTENT.add-pin-price' | translate}}
+                      </button>
+                    </div>
+                  </div>
+                </form>
+                <div class="table-responsive pb-5">
+                  <table datatable class="table table-striped table-hover" [dtOptions]="dtOptions[5]"
+                    [dtTrigger]="dtTrigger5">
+                    <thead class="thead-light">
+                      <tr>
+                        <th scope="col" style="padding-left: 10px">{{ 'CONTENT.no' | translate}}</th>
+                        <th scope="col" class="center-table">{{ 'CONTENT.label-prodi' | translate}}</th>
+                        <th scope="col" class="center-table">{{ 'CONTENT.label-form' | translate}}</th>
+                        <th scope="col" class="center-table">{{ 'CONTENT.medical-type' | translate}}</th>
+                        <th scope="col" class="center-table">{{ 'CONTENT.pin-price' | translate}}</th>
+                        <th scope="col" class="center-table">{{ 'CONTENT.action' | translate}}</th>
+                      </tr>
+                    </thead>
+                    <tbody *ngIf="tableFormulir?.length != 0">
+                      <tr *ngFor="let data of tableFormulir; let i = index;">
+                        <th scope="row" style="padding-left: 10px">{{ i+1 }}</th>
+                        <td class="text-left">{{ data.nama_prodi}}</td>
+                        <td class="text-left">{{ data.nama_formulir}}</td>
+                        <td class="center-table">{{ data.kategori_formulir === '1' ? 'Medis' : 'Non Medis'}}</td>
+                        <td class="text-right">{{ data.harga | currency:'Rp. ':'symbol':'1.0-0' }}</td>
+                        <td class="center-table">
+                          <button class="btn btn-danger btn-sm btn-round has-ripple m-1" [placement]="'top'"
+                            ngbTooltip="{{'ROOT.delete' | translate}}" (click)="deleteDataDocument(data)">
+                            <i class="icofont icofont-ui-delete"></i> <span class="d-sm-none"> {{'ROOT.detail' | translate}}</span>
+                          </button>
+                        </td>
+                      </tr>
+                    </tbody>
+                    <tbody *ngIf="tableFormulir?.length == 0 && !loadtablePINPriceData">
+                      <tr>
+                        <td colspan="6" class="no-data-available text-center">Data tidak ditemukan!</td>
+                        <td class="hidden"></td>
+                        <td class="hidden"></td>
+                        <td class="hidden"></td>
+                        <td class="hidden"></td>
+                        <td class="hidden"></td>
+                      </tr>
+                    </tbody>
+                    <tbody *ngIf="tablePinPrice?.length == 0 && loadtablePINPriceData">
+                      <tr>
+                        <td colspan="6" class="no-data-available text-center">Loading Data....</td>
+                        <td class="hidden"></td>
+                        <td class="hidden"></td>
+                        <td class="hidden"></td>
+                        <td class="hidden"></td>
+                        <td class="hidden"></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </app-card>
+            </div>
+          </div>
+          <div class="col text-center">
+            <button type="button" class="btn btn-secondary btn-sm" previousStep><i
+                class="icofont icofont-curved-left"></i> {{'ROOT.back' | translate}}</button>
+            <button type="button" class="btn btn-primary btn-sm m-1" (click)="goToStep6()"
+              [disabled]="loadtablePINPriceData || disabledGotoMapingProdi">
+              {{'ROOT.next' | translate}} <i class="icofont icofont-curved-right"></i></button>
+          </div>
+        </wizard-step>
+        <!-- <wizard-step stepTitle="{{'CONTENT.pin-price-data' | translate}}" navigationSymbol="4">
           <div class="row">
             <div class="col-md-12">
               <app-alert type="info" class="text-justify">{{ 'CONTENT.info-pin-price-active' | translate}}</app-alert>
@@ -553,7 +676,7 @@
               [disabled]="loadtablePINPriceData || disabledGotoMapingProdi">
               {{'ROOT.next' | translate}} <i class="icofont icofont-curved-right"></i></button>
           </div>
-        </wizard-step>
+        </wizard-step> -->
         <wizard-step stepTitle="{{'CONTENT.study-program-data' | translate}}" navigationSymbol="5">
           <div class="row">
             <div class="col-md-12">
@@ -1228,7 +1351,26 @@
     <form class="md-float-material form-material" action="javascript:" [formGroup]="documentRequirementsForm"
       (ngSubmit)="createDocumentRequirementsData()">
       <div class="row">
-        <div class="col-sm-12">
+        <div class="col-12">
+          <div class="form-group mb-2">
+            <label class="form-label m-b-0 f-w-600">Prodi</label>
+            <ng-select name="document_type" [placeholder]="'CONTENT.choose-prodi-type' | translate"
+              [ngClass]="'custom bg-white index-up'" required [multiple]="true" [(ngModel)]="documentProdi"
+              [ngModelOptions]="{ standalone: true }" (selected)="changeTest($event)" [options]="listProdi"></ng-select>
+          
+            <label *ngIf="!isMedical" id="validation-email-error"
+              class="error jquery-validation-error small form-text invalid-feedback">{{ 'ROOT.required' |
+              translate }}</label>
+          </div>
+        </div>
+        <div class="form-group mb-0 mt-4 text-right">
+          <div class="btn-group">
+            <button type="submit" class="btn btn-primary btn-sm">
+              <i class="ti-save"></i> {{ 'ROOT.save' | translate }}
+            </button>
+          </div>
+        </div>
+        <!-- <div class="col-sm-12">
           <div class="form-group mb-2">
             <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.choose-document-type' | translate }}</label>
             <ng-select name="document_type" [placeholder]="'CONTENT.choose-document-type' | translate"
@@ -1379,7 +1521,7 @@
               </button>
             </div>
           </div>
-        </div>
+        </div> -->
       </div>
     </form>
   </div>
@@ -1404,15 +1546,16 @@
       <div class="row">
         <div class="col-sm-12">
           <div class="form-group mb-2">
-            <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.medical-type' | translate }}</label>
-            <ng-select name="is_medical" [placeholder]="'CONTENT.medical-type'|translate" [ngClass]="'custom bg-white'"
-              formControlName="is_medical" [notFoundMsg]="'ROOT.no_data_found'|translate" [(ngModel)]="isMedical"
-              [options]="listMedical"></ng-select>
-            <label *ngIf="!isMedical" id="validation-email-error"
+            <label class="form-label m-b-0 f-w-600">Prodi</label>
+              <ng-select name="formulir_type" [placeholder]="'CONTENT.choose-prodi-type' | translate"
+                [ngClass]="'custom bg-white index-up'" required [multiple]="true"
+                [(ngModel)]="formulirProdi" [ngModelOptions]="{ standalone: true }" (selected)="changeTest($event)" [options]="listProdi"></ng-select>
+
+              <label *ngIf="!isMedical" id="validation-email-error"
               class="error jquery-validation-error small form-text invalid-feedback">{{ 'ROOT.required' |
               translate }}</label>
           </div>
-          <div class="form-group mb-2">
+          <!-- <div class="form-group mb-2">
             <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.pin-price' | translate }}</label>
             <input type="text" class="form-control" name="pinPrice" required formControlName="price" currencyMask
               [options]="{prefix: 'Rp', allowZero: true, align: 'left', precision: 0 }"
@@ -1450,11 +1593,10 @@
               class="error text-danger small form-text">
               {{ 'CONTENT.please-input' | translate }}{{ 'CONTENT.active-status' | translate }}
             </label>
-          </div>
+          </div> -->
           <div class="form-group mb-0 mt-4 text-right">
             <div class="btn-group">
-              <button type="submit" class="btn btn-primary btn-sm" (click)="pinPriceDataModal.hide()"
-                [disabled]="pinPriceForm.invalid">
+              <button type="submit" class="btn btn-primary btn-sm">
                 <i class="ti-save"></i> {{ 'ROOT.save' | translate }}
               </button>
             </div>

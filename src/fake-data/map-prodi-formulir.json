@@ -1,0 +1,20 @@
+{
+  "datas": [
+    {
+      "id": 1,
+      "prodi_fk": "1",
+      "nama_prodi": "Teknik Informatika",
+      "nama_formulir": "Formulir Pendaftaran (PMB)",
+      "harga": 50000,
+      "kategori_formulir": "1"
+    },
+    {
+      "id": 2,
+      "prodi_fk": "2",
+      "nama_prodi": "Sistem Informasi",
+      "nama_formulir": "Formulir Penelitian",
+      "harga": 10000,
+      "kategori_formulir": "2"
+    }
+  ]
+}

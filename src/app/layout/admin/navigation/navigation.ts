@@ -237,6 +237,24 @@ const AdminUniversity = [
             classes: 'nav-item',
             hidden: false,
             breadcrumbs: true,
+          },
+          {
+            id: 'adm-mr-new-student-data',
+            title: 'MENU.mapping-prodi-minat',
+            type: 'item',
+            url: '/adm-map-prodi-minat',
+            classes: 'nav-item',
+            hidden: false,
+            breadcrumbs: true,
+          },
+          {
+            id: 'adm-mr-new-student-data',
+            title: 'MENU.mapping-doc-formulir',
+            type: 'item',
+            url: '/adm-map-prodi-formulir',
+            classes: 'nav-item',
+            hidden: false,
+            breadcrumbs: true,
           }
         ]
       },

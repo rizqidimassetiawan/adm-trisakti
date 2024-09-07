@@ -10,8 +10,10 @@ import { FormsModule } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
 import { CurrencyPipe } from '@angular/common';
 import { CurrencyMaskModule } from 'ng2-currency-mask';
+import { RupiahFormatDirective } from 'src/app/directive/rupiah-format.directive';
+
 @NgModule({
-  declarations: [SelectionDataComponent],
+  declarations: [SelectionDataComponent,RupiahFormatDirective],
   imports: [
     CommonModule,
     SelectionDataRoutingModule,

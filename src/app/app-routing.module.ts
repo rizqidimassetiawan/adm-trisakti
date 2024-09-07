@@ -41,6 +41,16 @@ const routes: Routes = [
         data: {animation: '2'}
       },
       {
+        path: 'adm-map-prodi-minat',
+        loadChildren: './theme/adm-map-prodi-minat/adm-map-prodi-minat.module#AdmMapProdiMinatModule',
+        data: {animation: '2'}
+      },
+      {
+        path: 'adm-map-prodi-formulir',
+        loadChildren: './theme/adm-map-prodi-formulir/adm-map-prodi-formulir.module#AdmMapProdiFormulirModule',
+        data: {animation: '2'}
+      },
+      {
         path: 'adm-master-document',
         loadChildren: './theme/adm-master-document/adm-master-document.module#AdmMasterDocumentModule',
         data: {animation: '2'}

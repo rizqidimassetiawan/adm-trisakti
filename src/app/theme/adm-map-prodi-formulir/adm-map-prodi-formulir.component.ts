@@ -4,16 +4,16 @@ import { DataTableDirective } from 'angular-datatables';
 import { Subject } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
 import { BroadcasterService } from 'src/app/_services/broadcaster.service';
-import { AdminManagementService } from 'src/app/_services/admin-management.service';
 import Swal from 'sweetalert2';
-
+import { MapProdiFormulitService } from 'src/app/_services/map-prodi-formulir.service';
 
 @Component({
-  selector: 'app-adm-master-form-category',
-  templateUrl: './adm-master-form-category.component.html',
-  styleUrls: ['./adm-master-form-category.component.scss']
+  selector: 'app-adm-map-prodi-formulir',
+  templateUrl: './adm-map-prodi-formulir.component.html',
+  styleUrls: ['./adm-map-prodi-formulir.component.scss']
 })
-export class AdmMasterFormCategoryComponent implements OnInit {
+export class AdmMapProdiFormulirComponent implements OnInit {
+
   
   @ViewChildren(DataTableDirective) dtElements: QueryList<DataTableDirective>;
   @ViewChild(DataTableDirective, { static: true }) public dtElement: DataTableDirective;
@@ -22,7 +22,10 @@ export class AdmMasterFormCategoryComponent implements OnInit {
   public tableData: Array<any>;
   public dtTrigger = new Subject();
   public loadtableProgramData: boolean;
+  public selectedProdi: any;
   public selectionScheduleId: any;
+  public selectionProdiId: any;
+  public listSelectionProdi: any;
 
   public confirmation: string;
   public sure: string;
@@ -32,12 +35,10 @@ export class AdmMasterFormCategoryComponent implements OnInit {
   public failedDel: string;
 
   constructor(
-    
     public translate: TranslateService,
-    private adminManagementService : AdminManagementService,
+    private serviceMapProdiFormulir : MapProdiFormulitService,
     private broadcasterService: BroadcasterService,
     private fb: FormBuilder
-
   ) {
 
     translate.setDefaultLang(localStorage.getItem('lang'));
@@ -59,34 +60,59 @@ export class AdmMasterFormCategoryComponent implements OnInit {
 
    }
 
- DataFormFormulir = this.fb.group({
-    prodi_id:['',Validators.required],
+   DataFormFormulir = this.fb.group({
     name:['',Validators.required],
     harga:['',Validators.required],
-    kategori:['',Validators.required],
+    medicalType:['',Validators.required],
   });
 
   ngOnInit() {
+     this.serviceMapProdiFormulir.getListProdi().subscribe(item => {
+       this.listSelectionProdi = item.data.map((e)=>{
+        return { value : e.id, label : e.nama_prodi}
+       })
+    })
     this.loadScheduleDataTable()
   }
 
-  createDataDocument(){
+    createDataDocument(){
     let nama = this.DataFormFormulir.get('name').value;
+    let harga = this.DataFormFormulir.get('harga').value;
+    let tipe = this.DataFormFormulir.get('medicalType').value;
+
+    this.listSelectionProdi.forEach(element => {
+          if (element.value === this.selectionProdiId) {
+            this.selectedProdi = { nama: element.label, id: element.value }
+            return 
+          }
+    })
+
     // Memeriksa apakah ID ada untuk menentukan apakah ini operasi edit atau tambah
     if (this.selectionScheduleId !== undefined && this.selectionScheduleId !== '') {
       // Mengedit data yang ada berdasarkan ID
       this.tableData = this.tableData.map(item => {
         if (item.id === this.selectionScheduleId) {
-          return { ...item, nama: nama, status: 1 }; // Update data yang sesuai dengan ID
+          console.log(item)
+          return { 
+            ...item, 
+             nama_formulir: nama, 
+             status: 1,
+             nama_prodi : this.selectedProdi.nama,
+             prodi_fk : this.selectedProdi.value,
+             harga : harga,
+             kategori_formulir : tipe
+            };
         }
-        return item; // Kembalikan data lainnya tanpa perubahan
+        return item;
       });
     } else {
-      // Menambah data baru jika ID tidak ada
       this.tableData.push({
         id : this.tableData.length + 1,
         nama: nama,
-        status: 1
+        nama_prodi : this.selectedProdi.nama,
+        prodi_fk : this.selectedProdi.value,
+        harga : harga,
+        kategori_formulir : tipe
       });
     }
     this.DataFormFormulir.reset();
@@ -94,7 +120,7 @@ export class AdmMasterFormCategoryComponent implements OnInit {
 
   loadScheduleDataTable() {
     this.loadtableProgramData = true;
-    this.adminManagementService.getDataFormulir().subscribe(response => {
+    this.serviceMapProdiFormulir.getListMap().subscribe(response => {
       if (response !== null) {
         this.tableData = response.datas;
         this.dtTrigger.next(); // Trigger for load datatable
@@ -107,6 +133,7 @@ export class AdmMasterFormCategoryComponent implements OnInit {
     }, err => {
       this.loadtableProgramData = false;
     });
+    console.log(this.tableData)
   }
 
   renderProgramDataTable(): void {
@@ -121,11 +148,24 @@ export class AdmMasterFormCategoryComponent implements OnInit {
 
   editData(e:any){
     this.selectionScheduleId = e.id
-    this.DataFormFormulir.patchValue({name: e.nama});
-
+    // this.listSelectionProdi.forEach(element => {
+    //   console.log(e.prodi_fk)
+    //   if (element.value == e.prodi_fk) {
+    //     this.selectionProdiId = String(element.value)
+    //     return 
+    //   }
+    // })
+    
+    this.DataFormFormulir.patchValue({
+      name: e.nama_formulir,
+      harga: String(e.harga),
+      medicalType : e.kategori_formulir
+    });
   }
 
+
   batal(){
+    this.selectionProdiId = ''
     this.selectionScheduleId = ''
     this.DataFormFormulir.reset();
   }

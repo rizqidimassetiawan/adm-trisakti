@@ -3,67 +3,89 @@
   {
     "id" : 1,
     "prodi_fk" : 1,
+    "nama_prodi" : "Teknik Informatika",
     "dokumen_fk" : 3,
+    "nama_dokumen" : "Requirements Specification",
     "selectedStatus" : 1
   },
   {
     "id" : 2,
     "prodi_fk" : 1,
+    "nama_prodi": "Teknik Informatika",
     "dokumen_fk" : 4,
+    "nama_dokumen": "Technical Design Document",
     "selectedStatus": 2
   },
   {
     "id" : 3,
     "prodi_fk" : 1,
+    "nama_prodi" : "Teknik Informatika",
     "dokumen_fk" : 7,
+    "nama_dokumen": "Deployment Guide",
     "selectedStatus": 2
   },
   {
     "id" : 4,
     "prodi_fk" : 1,
+    "nama_prodi" : "Teknik Informatika",
     "dokumen_fk" : 8,
+    "nama_dokumen" : "Release Notes",
     "selectedStatus": 1
   },
   {
     "id" : 5,
     "prodi_fk" : 1,
+    "nama_prodi" : "Teknik Informatika",
     "dokumen_fk" : 10,
+    "nama_dokumen" : "Budget Report",
     "selectedStatus": 2
   },
   {
     "id" : 6,
     "prodi_fk" : 2,
+    "nama_prodi" : "Sistem Informasi",
     "dokumen_fk" : 1,
+    "nama_dokumen" : "Project Proposal",
     "selectedStatus": 2
   },
   {
     "id" : 7,
     "prodi_fk" : 2,
+    "nama_prodi" : "Sistem Informasi",
     "dokumen_fk" : 5,
+    "nama_dokumen" : "User Manual",
     "selectedStatus": 2
   },
   {
     "id" : 8,
     "prodi_fk" : 2,
+    "nama_prodi" : "Sistem Informasi",
     "dokumen_fk" : 7,
+    "nama_dokumen" :"Deployment Guide",
     "selectedStatus": 2
   },
   {
     "id" : 9,
     "prodi_fk" : 2,
+    "nama_prodi" : "Sistem Informasi",
     "dokumen_fk" : 6,
-    "selectedStatus": 2
+    "nama_dokumen" : "Test Plan",
+   "selectedStatus": 2
   },
   {
     "id" : 10,
     "prodi_fk" : 2,
+    "nama_prodi" : "Sistem Informasi",
     "dokumen_fk" : 9,
+    "nama_dokumen" : "Risk Assessment",
     "selectedStatus": 2
   },
   {
     "id" : 11,
     "prodi_fk" : 3,
+    "nama_prodi" : "Manajemen Informatika",
     "dokumen_fk" : 1,
+    "nama_dokumen" : "Project Proposal",
     "selectedStatus": 1
   }
  ]
