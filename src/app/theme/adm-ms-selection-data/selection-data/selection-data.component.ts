@@ -163,7 +163,7 @@ export class SelectionDataComponent implements OnInit {
   public examDate: any;
   public hideCheckBox: boolean;
   public selectedProdiMap: any;
-  public selectedItems: any;
+  public selectedItems: any = [];
   public mappingAllId: string;
   public IDx: string;
   public statusfilter: string;
@@ -3546,6 +3546,49 @@ export class SelectionDataComponent implements OnInit {
   //     }
   //   }
   // }
+
+  onChangeDokumen(event: any, dokumenId: number, data: any, dokumenName: string) {
+    // Cari apakah prodi sudah ada di selectedItems
+    const prodiIndex = this.selectedItems.findIndex(item => item.prodi_id === data.prodi_id);
+    if (event.target.checked) {
+      if (prodiIndex === -1) {
+        // Jika prodi belum ada, tambahkan ke array selectedItems
+        this.selectedItems.push({
+          nama_prodi: data.nama_prodi,
+          prodi_id: data.prodi_id,
+          detail: [{ dokumen_fk: dokumenId, nama_dokumen: dokumenName }]
+        });
+      } else {
+        // Jika prodi sudah ada, cek apakah dokumen sudah ada di detail
+        const dokumenExist = this.selectedItems[prodiIndex].detail.some(d => d.dokumen_fk === dokumenId);
+        if (!dokumenExist) {
+          // Tambahkan dokumen ke detail jika belum ada
+          this.selectedItems[prodiIndex].detail.push({ dokumen_fk: dokumenId, nama_dokumen: dokumenName });
+        }
+      }
+    } else {
+      // Jika checkbox tidak dicentang, hapus dokumen dari detail
+      if (prodiIndex !== -1) {
+        // Cari indeks dokumen di detail
+        const dokumenIndex = this.selectedItems[prodiIndex].detail.findIndex(d => d.dokumen_fk === dokumenId);
+        if (dokumenIndex !== -1) {
+          // Hapus dokumen dari detail
+          this.selectedItems[prodiIndex].detail.splice(dokumenIndex, 1);
+        }
+
+        // Hapus prodi dari selectedItems jika detail kosong
+        if (this.selectedItems[prodiIndex].detail.length === 0) {
+          this.selectedItems.splice(prodiIndex, 1);
+        }
+      }
+    }
+
+    // this.selectedItems = this.selectedItems.filter(item => {
+    //   return this.documentProdi.some(doc => doc === item.prodi_id);
+    // });
+
+    console.log(this.selectedItems)
+  }
   
   createDocumentRequirementsData(){
     let idProdi = []
@@ -3586,8 +3629,8 @@ export class SelectionDataComponent implements OnInit {
     });
 
     this.tableBodyDokumen = tableBody
-    console.log(this.tableHeaderDokumen)
-    console.log(this.tableBodyDokumen)
+    this.selectedItems = []
+    this.documentRequirementsModal.hide()
   }
 
 
@@ -3609,6 +3652,7 @@ export class SelectionDataComponent implements OnInit {
     });
 
     this.tableFormulir = table
+    this.pinPriceDataModal.hide()
     // if (this.pinPriceForm.valid) {
     //   this.loading = true;
     //   switch (this.formType) {

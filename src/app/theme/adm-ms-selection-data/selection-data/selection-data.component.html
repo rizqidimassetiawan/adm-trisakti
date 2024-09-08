@@ -395,19 +395,23 @@
                 <div class="table-responsive pb-4">
                   <table datatable class="table table-striped table-hover" [dtOptions]="dtOptions[4]"
                     [dtTrigger]="dtTrigger4">
-                    <thead class="thead-light">
-                      <tr>
+                      <tr class="thead-light">
                         <th scope="col" style="padding-left: 10px">{{ 'CONTENT.no' | translate}}</th>
-                        <th scope="col">Prodi<th>
-                        <th scope="col" *ngFor="let test of tableHeaderDokumen; let i = index;">{{test}}</th>
-                        <!-- <th scope="col" class="center-table">{{ 'CONTENT.action' | translate}}</th> -->
+                        <th scope="col">Prodi</th>
+                        <th scope="col" class="center-table" *ngFor="let cek of tableHeaderDokumen; let i = index;">{{cek.nama_dokumen}}</th>
                       </tr>
-                    </thead>
                     <tbody *ngIf="tableBodyDokumen?.length != 0">
                       <tr *ngFor="let data of tableBodyDokumen; let i = index;">
                         <th scope="row" style="padding-left: 10px">{{ i+1 }}</th>
                         <td>{{ data.nama_prodi }}</td>
-                        <td scope="col" *ngFor="let cek of tableHeaderDokumen; let i = index;">{{cek.dokumen_id}}</td>
+                        <td class="center-table" scope="row" *ngFor="let cek of tableHeaderDokumen; let i = index;">
+                          <div class="col-12">
+                            <label>
+                              <input type="checkbox" (change)="onChangeDokumen($event, cek.dokumen_id, data, cek.nama_dokumen)" [value]="cek.dokumen_id">
+                            </label>
+                          </div>
+                          <!-- <input type="checkbox" class="form-check-input" [value]="cek.dokumen_id"> -->
+                        </td>
                       </tr>
                     </tbody>
                     <tbody *ngIf="tableBodyDokumen?.length == 0 && !loadtableSelectionDocumentData">
@@ -1362,166 +1366,18 @@
               class="error jquery-validation-error small form-text invalid-feedback">{{ 'ROOT.required' |
               translate }}</label>
           </div>
-        </div>
-        <div class="form-group mb-0 mt-4 text-right">
-          <div class="btn-group">
-            <button type="submit" class="btn btn-primary btn-sm">
-              <i class="ti-save"></i> {{ 'ROOT.save' | translate }}
-            </button>
-          </div>
-        </div>
-        <!-- <div class="col-sm-12">
-          <div class="form-group mb-2">
-            <label class="form-label m-b-0 f-w-600">{{ 'CONTENT.choose-document-type' | translate }}</label>
-            <ng-select name="document_type" [placeholder]="'CONTENT.choose-document-type' | translate"
-              [ngClass]="'custom bg-white index-up'" required formControlName="document_type_id"
-              [(ngModel)]="documentType" (selected)="changeDocumentRequirementType($event)"
-              [options]="listDocumentType"></ng-select>
-            <label *ngIf="!documentType" class="error text-danger small form-text">
-              {{ 'CONTENT.please-input' | translate }}{{ 'CONTENT.document-type' | translate }}
-            </label>
-            <label id="validation-email-error" class="error jquery-validation-error small form-text invalid-feedback">{{
-              'CONTENT.please-choose' | translate }} {{ 'CONTENT.document-type' | translate }}</label>
-          </div>
-          <div *ngIf="isReport || isUtbkDocument" class="row">
-            <div class="col-md-6">
-              <div class="form-group mb-2">
-                <label class="form-label ml-1 m-b-0 f-w-600">{{ isUtbkDocument === true ? ('CONTENT.saintek' | translate) : ('CONTENT.technic' | translate) }}</label>
-                <div class="form-check ml-4">
-                  <input class="form-check-input mt-0" type="checkbox" id="gridCheck1" formControlName="math"
-                    (change)="onCheckMath($event)">
-                  <label class="form-check-label" for="gridCheck1">Matematika</label>
-                </div>
-                <div [hidden]="isUtbkDocument" class="form-check ml-4">
-                  <input class="form-check-input mt-0" type="checkbox" id="gridCheck2" formControlName="bahasa"
-                    (change)="onCheckBahasa($event)">
-                  <label class="form-check-label" for="gridCheck2">Bahasa</label>
-                </div>
-                <div [hidden]="isUtbkDocument"  class="form-check ml-4">
-                  <input class="form-check-input mt-0" type="checkbox" id="gridCheck3" formControlName="eng"
-                    (change)="onCheckEnglish($event)">
-                  <label class="form-check-label" for="gridCheck3">English</label>
-                </div>
-                <div class="form-check ml-4">
-                  <input class="form-check-input mt-0" type="checkbox" id="gridCheck4" formControlName="physics"
-                    (change)="onCheckPhysics($event)">
-                  <label class="form-check-label" for="gridCheck4">Fisika</label>
-                </div>
-                <div class="form-check ml-4">
-                  <input class="form-check-input mt-0" type="checkbox" id="gridCheck5" formControlName="chemicals"
-                    (change)="onCheckChemical($event)">
-                  <label class="form-check-label" for="gridCheck5">Kimia</label>
-                </div>
-                <div class="form-check ml-4">
-                  <input class="form-check-input mt-0" type="checkbox" id="gridCheck6" formControlName="biology"
-                    (change)="onCheckBiology($event)">
-                  <label class="form-check-label" for="gridCheck6">Biologi</label>
-                </div>
-              </div>
-            </div>
-            <div class="col-md-6">
-              <div class="form-group mb-2 m">
-                <label class="form-label ml-1 m-b-0 f-w-600">{{isUtbkDocument === true ? ('CONTENT.soshum' | translate) : ('CONTENT.non-technic' | translate)}}</label>
-                <div class="form-check ml-4">
-                  <input class="form-check-input mt-0" type="checkbox" id="gridCheck7" formControlName="math2"
-                    (change)="onCheckMathNonTechnic($event)">
-                  <label class="form-check-label" for="gridCheck7">Matematika</label>
-                </div>
-                <div [hidden]="isUtbkDocument"  class="form-check  ml-4">
-                  <input class="form-check-input mt-0" type="checkbox" id="gridCheck8" formControlName="bahasa2"
-                    (change)="onCheckBahasaNonTechnic($event)">
-                  <label class="form-check-label" for="gridCheck8">Bahasa</label>
-                </div>
-                <div [hidden]="isUtbkDocument" class="form-check ml-4">
-                  <input class="form-check-input mt-0" type="checkbox" id="gridCheck9" formControlName="eng2"
-                    (change)="onCheckEnglishNonTechnic($event)">
-                  <label class="form-check-label" for="gridCheck9">English</label>
-                </div>
-                <div class="form-check ml-4">
-                  <input class="form-check-input mt-0" type="checkbox" id="gridCheck10" formControlName="economy"
-                    (change)="onCheckEconomyNonTechnic($event)">
-                  <label class="form-check-label" for="gridCheck10">Ekonomi</label>
-                </div>
-                <div class="form-check ml-4">
-                  <input class="form-check-input mt-0" type="checkbox" id="gridCheck11" formControlName="sosiology"
-                    (change)="onCheckSociologicalNonTechnic($event)">
-                  <label class="form-check-label" for="gridCheck11">Sosiologi</label>
-                </div>
-                <div class="form-check ml-4">
-                  <input class="form-check-input mt-0" type="checkbox" id="gridCheck12" formControlName="geography"
-                    (change)="onCheckGeographyNonTechnic($event)">
-                  <label class="form-check-label" for="gridCheck12">Geografi</label>
-                </div>
-                <div *ngIf="isUtbkDocument" class="form-check ml-4">
-                  <input class="form-check-input mt-0" type="checkbox" id="gridCheck13" formControlName="sejarah"
-                    (change)="onSejarahNonTechnic($event)">
-                  <label class="form-check-label" for="gridCheck13">Sejarah</label>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="form-group mb-2">
-            <h6 class="form-label m-b-0 f-w-600">{{ 'CONTENT.active-status'| translate}}</h6> <br>
-            <div class="custom-control custom-radio custom-control-inline">
-              <input type="radio" id="active_status1" name="active_status" class="custom-control-input" value="1"
-                formControlName="active_status" required>
-              <label class="custom-control-label " for="active_status1">{{ 'ROOT.yes' | translate }}</label>
-            </div>
-            <div class="custom-control custom-radio custom-control-inline">
-              <input type="radio" id="active_status2" name="active_status" class="custom-control-input" value="0"
-                [checked]="true" formControlName="active_status" required>
-              <label class="custom-control-label" for="active_status2">{{ 'ROOT.no' | translate }}</label>
-            </div>
-            <label
-              *ngIf="fdr.active_status.errors && fdr.active_status.errors.required && (fdr.active_status.touched || fdr.active_status.dirty)"
-              class="error text-danger small form-text">
-              {{ 'CONTENT.please-input' | translate }}{{ 'CONTENT.active-status' | translate }}
-            </label>
-          </div>
-          <div class="form-group mb-2">
-            <h6 class="form-label m-b-0 f-w-600">{{ 'CONTENT.mandatory-doc'| translate}}</h6> <br>
-            <div class="custom-control custom-radio custom-control-inline">
-              <input type="radio" id="mandatory" name="mandatory_doc" class="custom-control-input" value="1"
-                formControlName="mandatory_doc" required>
-              <label class="custom-control-label " for="mandatory">{{ 'ROOT.yes' | translate }}</label>
-            </div>
-            <div class="custom-control custom-radio custom-control-inline">
-              <input type="radio" id="mandatory2" name="mandatory_doc" class="custom-control-input" value="0"
-                [checked]="true" formControlName="mandatory_doc" required>
-              <label class="custom-control-label" for="mandatory2">{{ 'ROOT.no' | translate }}</label>
-            </div>
-            <label
-              *ngIf="fdr.mandatory_doc.errors && fdr.mandatory_doc.errors.required && (fdr.mandatory_doc.touched || fdr.mandatory_doc.dirty)"
-              class="error text-danger small form-text">
-              {{ 'CONTENT.please-input' | translate }}{{ 'CONTENT.mandatory-doc' | translate }}
-            </label>
-          </div>
-          <div *ngIf="isTranscriptDocument" class="form-group mb-2">
-            <h6 class="form-label m-b-0 f-w-600">{{ 'CONTENT.input-nilai'| translate}}</h6> <br>
-            <div class="custom-control custom-radio custom-control-inline">
-              <input type="radio" id="inputNilai" name="is_input_nilai" class="custom-control-input" value="1"
-                formControlName="is_input_nilai" required>
-              <label class="custom-control-label " for="inputNilai">{{ 'ROOT.yes' | translate }}</label>
-            </div>
-            <div class="custom-control custom-radio custom-control-inline">
-              <input type="radio" id="inputNilai2" name="is_input_nilai" class="custom-control-input" value="0"
-                formControlName="is_input_nilai" required>
-              <label class="custom-control-label" for="inputNilai2">{{ 'ROOT.no' | translate }}</label>
-            </div>
-            <label
-              *ngIf="fdr.is_input_nilai.errors && fdr.is_input_nilai.errors.required && (fdr.is_input_nilai.touched || fdr.is_input_nilai.dirty)"
-              class="error text-danger small form-text">
-              {{ 'CONTENT.please-input' | translate }}{{ 'CONTENT.input-nilai' | translate }}
-            </label>
-          </div>
+
           <div class="form-group mb-0 mt-4 text-right">
             <div class="btn-group">
-              <button type="submit" class="btn btn-primary btn-sm" [disabled]="documentRequirementsForm.invalid">
-                <i class="ti-save"></i> {{ 'ROOT.save' | translate }}
+              <button type="submit" class="btn btn-primary btn-sm" [disabled]="!documentProdi">
+                <!-- <span *ngIf="loading" class="spinner-grow spinner-grow-sm" role="status"></span> -->
+                <span class="btn-text">
+                  <i class="ti-save"></i> {{ 'ROOT.save' | translate }}
+                </span>
               </button>
             </div>
           </div>
-        </div> -->
+        </div>
       </div>
     </form>
   </div>
